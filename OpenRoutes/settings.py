@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'adminApp',
     'guestApp',
+    'operatorApp',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,8 @@ DATABASES = {
         'NAME': 'db_openroutes' ,
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'localhost',    
+        'HOST': 'localhost',
+        'PORT': '3308',   
         }
 }
 
