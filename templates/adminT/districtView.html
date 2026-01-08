@@ -31,7 +31,7 @@
                                                 <td class="sl-no">{{ forloop.counter }}</td>
                                                 <td class="district-name">{{ district.name }}</td>
                                                     <td class="actions">
-                                                        <form method="post" action="{% url 'distDelete' district.id %}" style="display:inline;">
+                                                        <form method="post" action="{% url 'distDelete' district.pk %}" style="display:inline;">
                                                             {% csrf_token %}
                                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                                                 <i class="fas fa-trash"></i>

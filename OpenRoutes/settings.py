@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'adminApp',
     'guestApp',
     'operatorApp',
+    'userApp',
 ]
 
 MIDDLEWARE = [

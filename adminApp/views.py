@@ -24,7 +24,7 @@ def distView(request):
     return render(request, 'adminT/districtView.html', {'districts':districts})
 
 def distDelete(request, id):
-    district = District.objects.get(id=id)
+    district = District.objects.get(district_id=id)
     if request.method == 'POST':
         district.delete()
         return HttpResponse("<script>alert('District deleted successfully!!!');window.location.href ='/distView/';</script>")
