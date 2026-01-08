@@ -25,7 +25,15 @@ def distView(request):
 
 def distDelete(request, id):
     district = District.objects.get(district_id=id)
-    if request.method == 'POST':
-        district.delete()
-        return HttpResponse("<script>alert('District deleted successfully!!!');window.location.href ='/distView/';</script>")
-    return redirect('/distView/')
+    district.delete()
+    return HttpResponse("<script>alert('District deleted successfully!!!');window.location.href ='/distView/';</script>")
+
+def distEdit(request,id):
+    if request.method=='POST':
+        districtname=request.POST.get("districtname")
+        dis = District.objects.get(district_id=id)
+        dis.name = districtname
+        dis.save()
+        return distView(request)
+    district = District.objects.get(district_id=id)
+    return render(request,"adminT/districtEdit.html",{'district':district})

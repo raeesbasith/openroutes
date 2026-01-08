@@ -1,0 +1,48 @@
+{% load static %}
+{% include "adminT/header.html" %}
+
+<div class="main-panel">        
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+
+                        <h4 class="card-title">Edit District</h4>
+
+                        <!-- Alert Messages -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form class="forms-sample" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="exampleInputName1">District Name</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="exampleInputName1"
+                                       name="districtname"
+                                       value="{{ d.district_name }}"
+                                       placeholder="District Name"
+                                       required>
+                            </div>
+                            
+                            <button type="submit" name="submit" class="btn btn-primary mr-2">Update</button>
+                            <a href="{% url 'distView' %}" class="btn btn-light">Cancel</a>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "adminT/footer.html" %}
