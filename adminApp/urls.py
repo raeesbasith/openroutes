@@ -14,4 +14,6 @@ urlpatterns = [
     path('locationView/', views.locationView, name='locationView'),
     path('locationDelete/<int:id>/', views.locationDelete, name='locationDelete'),
     path('locationEdit/<int:id>/', views.locationEdit, name='locationEdit'),
+    path('disabilityRegn/', views.disabilityRegn, name='disabilityRegn'),
+    path('disabilityInsert/', views.disabilityInsert, name='disabilityInsert'),
 ]

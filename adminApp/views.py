@@ -74,3 +74,16 @@ def locationEdit(request,id):
         return HttpResponse("<script>alert('Location updated successfully!!!');window.location.href ='/locationView/';</script>")
     location = Location.objects.get(location_id=id)
     return render(request,"adminT/locationEdit.html",{'location':location})
+
+def disabilityRegn(request):
+    return render(request, 'adminT/disabilityRegn.html')
+def disabilityInsert(request):
+    if request.method == 'POST':
+        disability = request.POST.get('disability')
+        if Disability.objects.filter(disability_type=disability).exists():
+            return HttpResponse("<script>alert('Already exists!!!');window.location.href ='/disabilityRegn/';</script>")
+        dob = Disability()
+        dob.disability_type = disability
+        dob.save()
+        return HttpResponse("<script>alert('Disability added successfully!!!');window.location.href ='/disabilityRegn/';</script>")
+    return HttpResponse("Invalid request")
