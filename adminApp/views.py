@@ -65,3 +65,12 @@ def locationDelete(request, id):
     location.delete()
     return HttpResponse("<script>alert('Location deleted successfully!!!');window.location.href ='/locationView/';</script>")
 
+def locationEdit(request,id):
+    if request.method == 'POST':
+        locationname = request.POST.get("locationname")
+        loc = Location.objects.get(location_id=id)
+        loc.name = locationname
+        loc.save()
+        return HttpResponse("<script>alert('Location updated successfully!!!');window.location.href ='/locationView/';</script>")
+    location = Location.objects.get(location_id=id)
+    return render(request,"adminT/locationEdit.html",{'location':location})

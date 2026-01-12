@@ -5,20 +5,20 @@
   
     <div class="card shadow-lg rounded-4 border-0">
       <div class="card-body p-5"> <!-- Increased padding for wider form -->
-        <h5 class="card-title text-center mb-4 text-uppercase">Edit District</h5>
+        <h5 class="card-title text-center mb-4 text-uppercase">Location Name</h5>
   
         <!-- Vertical Form -->
-        <form class="row g-4" method="post" action="{% url 'distEdit' district.district_id %}">
+        <form class="row g-4" method="post" action="{% url 'locationEdit' location.location_id %}">
           {% csrf_token %}
   
           <div class="col-12">
-            <label for="inputName" class="form-label">District Name</label>
-            <input type="text" class="form-control form-control-lg" name="districtname" id="inputName" value="{{district.name}}" placeholder="Enter district name">
+            <label for="inputName" class="form-label">Name</label>
+            <input type="text" class="form-control form-control-lg" name="locationname" id="inputName" value="{{location.name}}" placeholder="Enter location name">
           </div>
   
           <div class="text-center mt-4">
             <button type="submit" class="btn btn-gradient btn-lg w-75">Update</button>
-            <a href="{% url 'distView' %}" class="btn btn-outline-secondary btn-lg w-75 mt-3">Cancel</a>
+            <button type="reset" class="btn btn-outline-secondary btn-lg w-75 mt-3">Reset</button>
           </div>
         </form>
         <!-- Vertical Form -->
