@@ -1,0 +1,35 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+<!-- Basic Form Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Basic Form</h6>
+                <form method="POST" action="{% url 'locationInsert' %}">
+                    {% csrf_token %}
+                   
+                <div class="mb-3">
+                    <label class="form-label">District</label>
+                        <select id="inputState" name="did" class="input100" required>
+                            <option value="">Choose District...</option>
+                            {% for d in districts %}
+                            <option value="{{ d.district_id }}" style="color:black">{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                </div>
+                    <div class="mb-3">
+                        <label for="exampleInputId" class="form-label">Location</label>
+                        <input type="text" name="lname" placeholder="Enter your locationname">
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Basic Form End -->
+ {% include 'adminT/footer.html' %}

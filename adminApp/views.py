@@ -1,4 +1,5 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .models import *
 
 # Create your views here.
@@ -34,6 +35,23 @@ def distEdit(request,id):
         dis = District.objects.get(district_id=id)
         dis.name = districtname
         dis.save()
-        return distView(request)
+        return HttpResponse("<script>alert('District updated successfully!!!');window.location.href ='/distView/';</script>")
     district = District.objects.get(district_id=id)
     return render(request,"adminT/districtEdit.html",{'district':district})
+
+def locationRegn(request):
+    districts = District.objects.all()
+    return render(request, 'adminT/locationRegn.html', {'districts': districts})
+
+def locationInsert(request):
+    if request.method == "POST":
+        district_id = request.POST.get("did")
+        lname = request.POST.get("lname")
+        lob = Location()
+        lob.name = lname
+        lob.district_id = District.objects.get(district_id=district_id)
+        if Location.objects.filter(name=lname, district_id=district_id).exists():
+            return HttpResponse("<script>alert('Already Exists..');window.location='locationRegn/';</script>")
+        else:
+            lob.save() 
+            return HttpResponse("<script>alert('Location inserted successfully');window.location='locationRegn/';</script>")

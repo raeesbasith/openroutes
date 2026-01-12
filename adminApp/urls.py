@@ -8,5 +8,7 @@ urlpatterns = [
     path('distRegnInsert/', views.distRegnInsert, name='distRegnInsert'),
     path('distView/', views.distView, name='distView'),
     path('distDelete/<int:id>/', views.distDelete, name='distDelete'),
-    path('distEdit/<int:id>/', views.distEdit, name='distEdit')
+    path('distEdit/<int:id>/', views.distEdit, name='distEdit'),
+    path('locationRegn/', views.locationRegn, name='locationRegn'),
+    path('locationInsert/', views.locationInsert, name='locationInsert'),
 ]
