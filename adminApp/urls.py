@@ -11,4 +11,5 @@ urlpatterns = [
     path('distEdit/<int:id>/', views.distEdit, name='distEdit'),
     path('locationRegn/', views.locationRegn, name='locationRegn'),
     path('locationInsert/', views.locationInsert, name='locationInsert'),
+    path('locationView/', views.locationView, name='locationView'),
 ]

@@ -54,4 +54,8 @@ def locationInsert(request):
             return HttpResponse("<script>alert('Already Exists..');window.location='locationRegn/';</script>")
         else:
             lob.save() 
-            return HttpResponse("<script>alert('Location inserted successfully');window.location='locationRegn/';</script>")
+            return HttpResponse("<script>alert('Location inserted successfully');window.location='/locationView/';</script>")
+        
+def locationView(request):
+    locations = Location.objects.all().order_by('name')
+    return render(request, 'adminT/locationView.html', {'locationdata': locations})
