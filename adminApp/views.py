@@ -59,3 +59,9 @@ def locationInsert(request):
 def locationView(request):
     locations = Location.objects.all().order_by('name')
     return render(request, 'adminT/locationView.html', {'locationdata': locations})
+
+def locationDelete(request, id):
+    location = Location.objects.get(location_id=id)
+    location.delete()
+    return HttpResponse("<script>alert('Location deleted successfully!!!');window.location.href ='/locationView/';</script>")
+

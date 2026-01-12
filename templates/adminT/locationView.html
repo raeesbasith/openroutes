@@ -33,7 +33,7 @@
                                                 <td class="location-name">{{ loc.name }}</td>
                                                 <td class="location-district">{{ loc.district_id.name }}</td>
                                                     <td class="actions">
-                                                        <a href="" class="btn" title="Delete" onclick="return confirm('Are you sure you want to delete {{ loc.name }}?');">
+                                                        <a href="{% url 'locationDelete' loc.location_id %}" class="btn" title="Delete" onclick="return confirm('Are you sure you want to delete {{ loc.name }}?');">
                                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                                                 <i class="fas fa-trash">Delete</i>
                                                             </button>

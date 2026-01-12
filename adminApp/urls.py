@@ -12,4 +12,5 @@ urlpatterns = [
     path('locationRegn/', views.locationRegn, name='locationRegn'),
     path('locationInsert/', views.locationInsert, name='locationInsert'),
     path('locationView/', views.locationView, name='locationView'),
+    path('locationDelete/<int:id>/', views.locationDelete, name='locationDelete'),
 ]
