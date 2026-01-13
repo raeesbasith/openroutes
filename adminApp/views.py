@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import *
 
 # Create your views here.
@@ -57,8 +57,9 @@ def locationInsert(request):
             return HttpResponse("<script>alert('Location inserted successfully');window.location='/locationView/';</script>")
         
 def locationView(request):
+    districts = District.objects.all().order_by('name')
     locations = Location.objects.all().order_by('name')
-    return render(request, 'adminT/locationView.html', {'locationdata': locations})
+    return render(request, 'adminT/locationView.html', {'districts': districts, 'locationdata': locations})
 
 def locationDelete(request, id):
     location = Location.objects.get(location_id=id)
@@ -74,6 +75,14 @@ def locationEdit(request,id):
         return HttpResponse("<script>alert('Location updated successfully!!!');window.location.href ='/locationView/';</script>")
     location = Location.objects.get(location_id=id)
     return render(request,"adminT/locationEdit.html",{'location':location})
+
+def filllocation(request):
+    try:
+        did = int(request.POST.get("did"))
+        location = Location.objects.filter(district_id=did).values('location_id', 'name')
+        return JsonResponse(list(location), safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 def disabilityRegn(request):
     return render(request, 'adminT/disabilityRegn.html')

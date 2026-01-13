@@ -12,6 +12,7 @@ urlpatterns = [
     path('locationRegn/', views.locationRegn, name='locationRegn'),
     path('locationInsert/', views.locationInsert, name='locationInsert'),
     path('locationView/', views.locationView, name='locationView'),
+    path('filllocation/', views.filllocation, name='filllocation'),
     path('locationDelete/<int:id>/', views.locationDelete, name='locationDelete'),
     path('locationEdit/<int:id>/', views.locationEdit, name='locationEdit'),
     path('disabilityRegn/', views.disabilityRegn, name='disabilityRegn'),
