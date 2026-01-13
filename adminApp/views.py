@@ -87,3 +87,20 @@ def disabilityInsert(request):
         dob.save()
         return HttpResponse("<script>alert('Disability added successfully!!!');window.location.href ='/disabilityRegn/';</script>")
     return HttpResponse("Invalid request")
+
+def disabilityView(request):
+    disabilities = Disability.objects.all().order_by('disability_type')
+    return render(request, 'adminT/disabilityView.html', {'disabilities':disabilities})
+def disabilityDelete(request, id):
+    disability = Disability.objects.get(disability_id=id)
+    disability.delete()
+    return HttpResponse("<script>alert('Disability deleted successfully!!!');window.location.href ='/disabilityView/';</script>")
+def disabilityEdit(request,id):
+    if request.method=='POST':
+        disabilitytype=request.POST.get("disabilitytype")
+        dis = Disability.objects.get(disability_id=id)
+        dis.disability_type = disabilitytype
+        dis.save()
+        return HttpResponse("<script>alert('Disability updated successfully!!!');window.location.href ='/disabilityView/';</script>")
+    disability = Disability.objects.get(disability_id=id)
+    return render(request,"adminT/disabilityEdit.html",{'disability':disability})

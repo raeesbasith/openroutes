@@ -1,0 +1,144 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+<main id="main" class="main">
+  <div class="col-lg-100 mx-auto mt-50"> <!-- Increased column width -->
+  
+    <div class="card shadow-lg rounded-4 border-0">
+      <div class="card-body p-5"> <!-- Increased padding for wider form -->
+        <h5 class="card-title text-center mb-4 text-uppercase">Edit District</h5>
+  
+        <!-- Vertical Form -->
+        <form class="row g-4" method="post" action="{% url 'disabilityEdit' disability.disability_id %}">
+          {% csrf_token %}
+  
+          <div class="col-12">
+            <label for="inputName" class="form-label">Disability Type</label>
+            <input type="text" class="form-control form-control-lg" name="disabilitytype" id="inputName" value="{{disability.disability_type}}" placeholder="Enter disability type">
+          </div>
+  
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-gradient btn-lg w-75">Update</button>
+            <a href="{% url 'disabilityView' %}" class="btn btn-outline-secondary btn-lg w-75 mt-3">Cancel</a>
+          </div>
+        </form>
+        <!-- Vertical Form -->
+  
+      </div>
+    </div>
+    </div>
+  </div>
+</main>
+
+<!-- Optional: Add custom styles in your CSS file -->
+<style>
+  /* General layout and background styling */
+  .main {
+    padding: 60px 250px; /* Balanced padding for better spacing */
+    background-color: #f9f9f9; /* Light background */
+  }
+
+  /* Card Styling with rounded corners and smooth shadow */
+  .card {
+    border-radius: 20px; /* Smooth rounded corners */
+    background-color: #ffffff;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+  }
+
+  /* Card Title Styling */
+  .card-title {
+    color: #495057;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  /* Button Styling */
+  .btn {
+    padding: 14px 28px; /* Larger buttons for better clicking area */
+    font-size: 1.1rem;
+    border-radius: 50px; /* Fully rounded buttons */
+    transition: all 0.3s ease;
+  }
+
+  /* Gradient Button Styling */
+  .btn-gradient {
+    background: linear-gradient(45deg, #4e73df, #1cc88a); /* Attractive gradient */
+    color: white;
+    border: none;
+  }
+
+  /* Hover effect for gradient button */
+  .btn-gradient:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Outline button with hover effect */
+  .btn-outline-secondary {
+    color: #6c757d;
+    border: 2px solid #6c757d;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+    transform: translateY(-5px); /* Hover lift effect */
+  }
+
+  /* Form Input Field Styling */
+  .form-control-lg {
+    padding: 1.25rem 2rem; /* Increased padding for a larger feel */
+    font-size: 1.125rem;
+    border-radius: 25px;
+    border: 2px solid #ddd;
+    transition: all 0.3s ease;
+  }
+
+  /* Focus effect on input fields */
+  .form-control-lg:focus {
+    border-color: #4e73df; /* Blue border on focus */
+    box-shadow: 0 0 10px rgba(78, 115, 223, 0.4); /* Subtle glow effect */
+  }
+
+  /* Form Label Styling */
+  .form-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #495057;
+  }
+
+  /* Row styling */
+  .row {
+    margin-top: 30px; /* Spacing between form elements */
+  }
+
+  /* Adjusting width of input fields to extend towards right */
+  .form-control-lg {
+    width: 100%; /* Ensure full width of input */
+  }
+
+  /* Extending the form container further to the right */
+  .col-lg-10 {
+    width: 83.33%; /* Adjusted to 10 columns instead of 8 (wider container) */
+  }
+
+  /* Responsiveness: Adjust layout for smaller screens */
+  @media (max-width: 768px) {
+    .col-lg-10 {
+      width: 100%; /* Full width on smaller screens */
+    }
+
+    .btn {
+      width: 100%; /* Full-width buttons on small screens */
+    }
+
+    .form-control-lg {
+      padding: 1.25rem 1.5rem; /* Adjusted padding for smaller screens */
+    }
+  }
+</style>
+
+{% include 'adminT/footer.html' %}
