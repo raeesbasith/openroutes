@@ -1,12 +1,13 @@
 from django.db import models
-from guestApp.models import login
-from adminApp.models import Location
+from guestApp.models import *
+from adminApp.models import *
 # Create your models here.
-class OperatorProfile(models.Model):
-    user = models.OneToOneField(login, on_delete=models.CASCADE)
-    agency_name = models.CharField(max_length=50)
-    description = models.TextField()
-    contact_no = models.IntegerField()
-    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
-    verification_status = models.CharField(max_length=10, default="PENDING")
-    subscription_plan = models.CharField(max_length=10, default="FREE")
+class Operator(models.Model):
+    operator_id = models.AutoField(primary_key=True)
+    operator_name = models.CharField(max_length=100)  
+    contact = models.CharField(max_length=15)
+    address = models.CharField(max_length=255)
+    email = models.EmailField(max_length=100)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, default='pending')
+    license = models.ImageField(upload_to='licenses/')
