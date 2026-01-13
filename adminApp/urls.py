@@ -19,4 +19,9 @@ urlpatterns = [
     path('disabilityView/', views.disabilityView, name='disabilityView'),
     path('disabilityDelete/<int:id>/', views.disabilityDelete, name='disabilityDelete'),
     path('disabilityEdit/<int:id>/', views.disabilityEdit, name='disabilityEdit'),
+    path('accessibilityRegn/', views.accessibilityRegn, name='accessibilityRegn'),
+    path('accessibilityInsert/', views.accessibilityInsert, name='accessibilityInsert'),
+    path('accessibilityView/', views.accessibilityView, name='accessibilityView'),
+    path('accessibilityDelete/<int:id>/', views.accessibilityDelete, name='accessibilityDelete'),
+    path('accessibilityEdit/<int:id>/', views.accessibilityEdit, name='accessibilityEdit'),
 ]

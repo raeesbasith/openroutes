@@ -85,7 +85,7 @@ def disabilityInsert(request):
         dob = Disability()
         dob.disability_type = disability
         dob.save()
-        return HttpResponse("<script>alert('Disability added successfully!!!');window.location.href ='/disabilityRegn/';</script>")
+        return HttpResponse("<script>alert('Disability added successfully!!!');window.location.href ='/disabilityView/';</script>")
     return HttpResponse("Invalid request")
 
 def disabilityView(request):
@@ -104,3 +104,32 @@ def disabilityEdit(request,id):
         return HttpResponse("<script>alert('Disability updated successfully!!!');window.location.href ='/disabilityView/';</script>")
     disability = Disability.objects.get(disability_id=id)
     return render(request,"adminT/disabilityEdit.html",{'disability':disability})
+
+def accessibilityRegn(request):
+    return render(request, 'adminT/accessibilityRegn.html')
+def accessibilityInsert(request):
+    if request.method == 'POST':
+        accessibility = request.POST.get('accessibility')
+        if Accessibility.objects.filter(accessibility_feature=accessibility).exists():
+            return HttpResponse("<script>alert('Already exists!!!');window.location.href ='/accessibilityRegn/';</script>")
+        aob = Accessibility()
+        aob.accessibility_feature = accessibility
+        aob.save()
+        return HttpResponse("<script>alert('Accessibility feature added successfully!!!');window.location.href ='/accessibilityView/';</script>")
+    return HttpResponse("Invalid request")
+def accessibilityView(request):
+    accessibilities = Accessibility.objects.all().order_by('accessibility_feature')
+    return render(request, 'adminT/accessibilityView.html', {'accessibilities':accessibilities})
+def accessibilityDelete(request, id):
+    accessibility = Accessibility.objects.get(accessibility_id=id)
+    accessibility.delete()
+    return HttpResponse("<script>alert('Accessibility feature deleted successfully!!!');window.location.href ='/accessibilityView/';</script>")
+def accessibilityEdit(request,id):
+    if request.method=='POST':
+        accessibilityfeature=request.POST.get("accessibilityfeature")
+        acc = Accessibility.objects.get(accessibility_id=id)
+        acc.accessibility_feature = accessibilityfeature
+        acc.save()
+        return HttpResponse("<script>alert('Accessibility feature updated successfully!!!');window.location.href ='/accessibilityView/';</script>")
+    accessibility = Accessibility.objects.get(accessibility_id=id)
+    return render(request,"adminT/accessibilityEdit.html",{'accessibility':accessibility})

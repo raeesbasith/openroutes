@@ -1,0 +1,177 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+<div class="registration-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div class="col-md-8 col-lg-6">
+                <form action="{% url 'accessibilityInsert' %}" method="POST"> 
+                {% csrf_token %}
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h1 class="text-center mb-4">Accessibility features Registration</h1>
+                        <p class="text-center text-muted mb-4">Add a new accessibility feature to the platform</p>
+                        
+                        <div class="form-group">
+                            <label for="district">Accessibility feature<span class="required">*</span></label>
+                            <input type="text" 
+                                   class="form-control custom-input" 
+                                   id="accessibility" 
+                                   name="accessibility" 
+                                   placeholder="Enter the accessibility feature"
+                                   pattern="[A-Z][a-zA-Z\s]*" 
+                                   required/>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" 
+                                    name="submit" 
+                                    class="btn btn-primary custom-btn">
+                                Add 
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .registration-wrapper {
+        min-height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .custom-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 30px 20px 20px;
+    }
+
+    .admin-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .card-body {
+        padding: 40px;
+        background: white;
+    }
+
+    .card-body h1 {
+        color: #2d3748;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .required {
+        color: #e53e3e;
+    }
+
+    .custom-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .custom-input::placeholder {
+        color: #a0aec0;
+    }
+
+    .custom-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 14px 40px;
+        font-weight: 600;
+        font-size: 16px;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+        min-width: 200px;
+    }
+
+    .custom-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    .custom-btn:active {
+        transform: translateY(0);
+    }
+
+    .text-muted {
+        color: #718096 !important;
+        font-size: 14px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 30px 20px;
+        }
+
+        .card-body h1 {
+            font-size: 24px;
+        }
+
+        .custom-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+{% include 'adminT/footer.html' %}
