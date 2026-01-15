@@ -289,7 +289,7 @@
             
             <div class="logo">
                 <h1>
-                    AbleJourney
+                    OpenRoutes <span class="logo-icon">🌍</span>
                 </h1>
             </div>
 
@@ -299,10 +299,11 @@
             </div>
 
             <div class="success-message" id="successMessage">
-                Login successful! Welcome to AbleJourney.
+                Login successful! Welcome to OpenRoutes.
             </div>
 
-            <form id="registrationForm" novalidate>
+            <form method="post" action="{% url 'login_insert' %}"  id="registrationForm" novalidate>
+                {% csrf_token %}
 
                 <div class="form-group">
                     <label for="username">Username <span class="required">*</span></label>
@@ -326,7 +327,7 @@
             </form>
 
             <div class="login-link">
-                Dont have an account? <a href="#login">Register here</a>
+                Dont have an account? <a href="{% url 'regn_select' %}">Register here</a>
             </div>
         </div>
     </div>
@@ -422,8 +423,7 @@
 
         // Form submission
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
+            // Validate form before submission
             let isFormValid = true;
             inputs.forEach(input => {
                 if (!validateField(input)) {
@@ -431,28 +431,15 @@
                 }
             });
 
-            if (isFormValid) {
-                // Show success message
-                document.getElementById('successMessage').classList.add('show');
-                
-                // Reset form
-                form.reset();
-                document.getElementById('strengthBar').className = 'password-strength-bar';
-                
-                // Hide success message and close modal after 2 seconds
-                setTimeout(() => {
-                    document.getElementById('successMessage').classList.remove('show');
-                    closeModal();
-                }, 2000);
-
-                console.log('Form submitted successfully');
-            } else {
+            if (!isFormValid) {
+                e.preventDefault();
                 // Scroll to first error
                 const firstError = form.querySelector('.error');
                 if (firstError) {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
+            // If valid, allow form to submit naturally to the server
         });
     </script>
 </body>
