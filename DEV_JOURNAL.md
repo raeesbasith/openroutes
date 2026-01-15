@@ -16,3 +16,6 @@ Deleted existing migration files, cleared the corresponding entries from the `dj
 
 **Lesson:**  
 Renaming models can break migration history. Always handle model renames carefully and understand how Django migrations track schema changes before modifying or deleting tables.
+
+## 2026-01-14
+Created seperate regn pages for traveller and operator

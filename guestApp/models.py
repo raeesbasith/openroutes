@@ -7,4 +7,3 @@ class login(models.Model):
     password = models.CharField(max_length=50)
     role = models.CharField(max_length=20)
     status = models.CharField(max_length=20, default='active')
-    created_at = models.DateTimeField(auto_now_add=True)

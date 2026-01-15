@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | OpenRoutes</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .register-container {
+            background: #ffffff;
+            padding: 40px;
+            width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .register-container h2 {
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .traveller-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .traveller-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .operator-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .operator-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="register-container">
+    <h2>Register As</h2>
+
+    <a href="/traveller-register/">
+        <button class="register-btn traveller-btn">
+            Traveller
+        </button>
+    </a>
+
+    <a href="">
+        <button class="register-btn operator-btn">
+            Business
+        </button>
+    </a>
+
+    <p class="note">
+        Choose the appropriate option to continue registration
+    </p>
+</div>
+
+</body>
+</html>
