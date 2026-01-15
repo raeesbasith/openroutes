@@ -62,7 +62,7 @@ def operator_regn(request):
         address = request.POST.get('address')
         email = request.POST.get('email')
         district_id = request.POST.get('districtid')
-        license_file = request.FILES.get('operator_license')
+        license_file = request.FILES.get('license')
 
         if login.objects.filter(username=username).exists():
             return HttpResponse('<script>alert("Username already exists! Please choose a different username."); window.location.href="/operator-register/";</script>')
