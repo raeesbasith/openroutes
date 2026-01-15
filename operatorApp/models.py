@@ -8,6 +8,6 @@ class Operator(models.Model):
     contact = models.CharField(max_length=15)
     address = models.CharField(max_length=255)
     email = models.EmailField(max_length=100)
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=20, default='requested')
     license = models.ImageField(upload_to='operator_licenses/')

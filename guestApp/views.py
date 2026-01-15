@@ -23,6 +23,7 @@ def traveller_regn(request):
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
+        district_id = request.POST.get('districtid')
         pincode = request.POST.get('pincode')
         city = request.POST.get('city')
 
@@ -36,19 +37,21 @@ def traveller_regn(request):
         lob.status = 'active'
         lob.save()
 
+        district = District.objects.get(district_id=district_id)
         tob = TravellerProfile()
         tob.traveller_name = name
         tob.email = email
         tob.phone = phone
         tob.address = address
+        tob.district = district
         tob.pincode = pincode
         tob.city = city
         tob.login = lob
         tob.save()
 
         return HttpResponse('<script>alert("Registration successful! Please login to continue."); window.location.href="/login/";</script>')
-    
-    return render(request, 'guest/traveller_regn.html')
+    districts = District.objects.all()
+    return render(request, 'guest/traveller_regn.html', {'districts': districts})
 
 def operator_regn(request):
     if request.method == 'POST':
