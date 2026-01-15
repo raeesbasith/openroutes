@@ -1,10 +1,10 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
 from .models import login
 from userApp.models import TravellerProfile
 from adminApp.models import District
 from operatorApp.models import Operator
-
 # Create your views here.
 def guestHome(request):
     return render(request, 'guest/index.html')
@@ -14,6 +14,31 @@ def traveller_regn(request):
     return render(request, 'guest/traveller_regn.html')
 def login_view(request):
     return render(request, 'guest/loginpage.html')
+def login_insert(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        logindata = login.objects.filter(username=username).first()
+
+        if logindata:
+            if logindata.password == password:
+                request.session['login_id'] = logindata.login_id
+                role = logindata.role
+                status = logindata.status
+                if role == 'admin':
+                    return redirect('/admin-home/')
+                elif role == 'traveller':
+                    return redirect('/traveller-home/')
+                elif role == 'operator':
+                    if status == 'active':    
+                        return redirect('/operator-home/')
+                    else:
+                        return HttpResponse('<script>alert("Your operator account is under review. Please wait for approval."); window.location.href="/login/";</script>')
+            else:
+                return HttpResponse('<script>alert("Invalid password! Please try again."); window.location.href="/login/";</script>')
+        return render(request, 'guest/loginpage.html', {'error': 'Invalid username! Please try again.'})
+    return render(request, 'guest/loginpage.html')
+                    
 
 def traveller_regn(request):
     if request.method == 'POST':
