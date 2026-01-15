@@ -8,7 +8,7 @@ class District(models.Model):
 class Location(models.Model):
     location_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    district_id = models.ForeignKey(District, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
 
 class Disability(models.Model):
     disability_id = models.AutoField(primary_key=True)

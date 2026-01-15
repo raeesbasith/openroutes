@@ -7,4 +7,5 @@ urlpatterns = [
     path('register-select/',views.regn_select, name='regn_select'),
     path('traveller-register/',views.traveller_regn, name='traveller_regn'),
     path('login/',views.login_view, name='login'),
+    path('operator-register/',views.operator_regn, name='operator_regn'),
 ]
