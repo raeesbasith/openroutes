@@ -301,7 +301,7 @@
                 Registration successful! Welcome to AbleJourney.
             </div>
 
-            <form id="registrationForm" novalidate method="post" action="{% url 'operator_regn' %}">
+            <form id="registrationForm" novalidate method="post" action="{% url 'operator_regn' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="name">Agency Name <span class="required">*</span></label>
