@@ -22,5 +22,5 @@ urlpatterns = [
     path('',include('adminApp.urls')),
     path('',include('guestApp.urls')),
     path('',include('userApp.urls')),
-    #path('',include('operatorApp.urls')),
+    path('',include('operatorApp.urls')),
 ]
