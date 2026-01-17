@@ -71,13 +71,13 @@
 <div class="register-container">
     <h2>Register As</h2>
 
-    <a href="/traveller-register/">
+    <a href="{% url 'guest:traveller_register' %}">
         <button class="register-btn traveller-btn">
             Traveller
         </button>
     </a>
 
-    <a href="/operator-register/">
+    <a href="{% url 'guest:operator_register' %}">
         <button class="register-btn operator-btn">
             Business
         </button>

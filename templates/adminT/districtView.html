@@ -31,16 +31,18 @@
                                                 <td class="sl-no">{{ forloop.counter }}</td>
                                                 <td class="district-name">{{ district.name }}</td>
                                                     <td class="actions">
-                                                        <a href="{% url 'distDelete' id=district.district_id %}" class="btn" title="Delete" onclick="return confirm('Are you sure you want to delete this district?');">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                                <i class="fas fa-trash">Delete</i>
-                                                            </button>
-                                                        </a>
-                                                        <a href="{% url 'distEdit' id=district.district_id %}" class="btn" title="Edit" style="display:inline;">
-                                                            <button type="submit" class="btn btn-sm btn-outline-primary" title="Edit">
-                                                                <i class="fas fa-edit">Edit</i>
-                                                            </button>
-                                                        </a>
+                                                        <div class="action-btns">
+                                                            <a href="{% url 'distEdit' id=district.district_id %}" class="btn" title="Edit">
+                                                                <button type="submit" class="edit-btn" title="Edit">
+                                                                    <i class="fas fa-edit"></i> Edit
+                                                                </button>
+                                                            </a>
+                                                            <a href="{% url 'distDelete' id=district.district_id %}" class="btn" title="Delete" onclick="return confirm('Are you sure you want to delete this district?');">
+                                                                <button type="submit" class="delete-btn" title="Delete">
+                                                                    <i class="fas fa-trash"></i> Delete
+                                                                </button>
+                                                            </a>
+                                                        </div>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -127,21 +129,47 @@
     }
 
     .actions {
-        width: 120px;
+        width: 150px;
         text-align: center;
     }
 
+    .action-btns {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .edit-btn,
     .delete-btn {
-        border: 1px solid #e53e3e;
-        color: #e53e3e;
-        padding: 6px 12px;
-        border-radius: 6px;
+        padding: 6px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .edit-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background-color: #45a049;
+        transform: translateY(-1px);
+    }
+
+    .delete-btn {
+        background-color: #f44336;
+        color: white;
     }
 
     .delete-btn:hover {
-        background: #e53e3e;
-        color: white;
+        background-color: #da190b;
         transform: translateY(-1px);
     }
 

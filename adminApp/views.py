@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from .models import *
+from operatorApp.models import Operator
 
 # Create your views here.
 def adminHome(request):
@@ -142,3 +143,6 @@ def accessibilityEdit(request,id):
         return HttpResponse("<script>alert('Accessibility feature updated successfully!!!');window.location.href ='/accessibilityView/';</script>")
     accessibility = Accessibility.objects.get(accessibility_id=id)
     return render(request,"adminT/accessibilityEdit.html",{'accessibility':accessibility})
+def operatorVerification(request):
+    operators = Operator.objects.filter(status='requested').order_by('operator_id')
+    return render(request, 'adminT/operatorVerification.html', {'operators': operators})

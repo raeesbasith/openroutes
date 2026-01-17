@@ -1,0 +1,190 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th {
+            background-color: #1572e8;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            /* text-align: center */
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .license-link {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        .license-link:hover {
+            text-decoration: underline;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        button {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .approve-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .approve-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .reject-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .reject-btn:hover {
+            background-color: #da190b;
+        }
+        
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table-wrapper table {
+            min-width: 900px;
+        }
+        
+        @media (max-width: 768px) {
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            button {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            
+            .action-btns {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+<body>
+    <div class="container">
+        <h1>Operator Verification</h1>
+        
+        <div class="table-wrapper">
+            <table>
+            <thead>
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Operator Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>District</th>
+                    <th>License</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if operators %}
+                {% for operator in operators%}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ operator.operator_name }}</td>
+                    <td>{{ operator.contact }}</td>
+                    <td>{{ operator.email }}</td>
+                    <td>{{ operator.address }}</td>
+                    <td>{{ operator.district.name }}</td>
+                    <td><a href="{{ operator.license }}" class="license-link" target="_blank"  style="color: #1572e8; text-decoration: none;">View License</a></td>
+                    <td style="text-align: center;">{{ operator.status }}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="approve-btn">Approve</button>
+                            <button class="reject-btn">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="9">No operators found.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    
+{% include 'adminT/footer.html' %}

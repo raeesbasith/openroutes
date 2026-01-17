@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import *
 
 urlpatterns = [
     path('admin-home/', views.adminHome, name='adminHome'),
@@ -25,4 +24,5 @@ urlpatterns = [
     path('accessibilityView/', views.accessibilityView, name='accessibilityView'),
     path('accessibilityDelete/<int:id>/', views.accessibilityDelete, name='accessibilityDelete'),
     path('accessibilityEdit/<int:id>/', views.accessibilityEdit, name='accessibilityEdit'),
+    path('operator-verification/', views.operatorVerification, name='operatorVerification'),
 ]
