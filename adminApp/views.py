@@ -101,10 +101,12 @@ def disabilityInsert(request):
 def disabilityView(request):
     disabilities = Disability.objects.all().order_by('disability_type')
     return render(request, 'adminT/disabilityView.html', {'disabilities':disabilities})
+
 def disabilityDelete(request, id):
     disability = Disability.objects.get(disability_id=id)
     disability.delete()
     return HttpResponse("<script>alert('Disability deleted successfully!!!');window.location.href ='/disabilityView/';</script>")
+
 def disabilityEdit(request,id):
     if request.method=='POST':
         disabilitytype=request.POST.get("disabilitytype")
@@ -117,6 +119,7 @@ def disabilityEdit(request,id):
 
 def accessibilityRegn(request):
     return render(request, 'adminT/accessibilityRegn.html')
+
 def accessibilityInsert(request):
     if request.method == 'POST':
         accessibility = request.POST.get('accessibility')
@@ -127,13 +130,16 @@ def accessibilityInsert(request):
         aob.save()
         return HttpResponse("<script>alert('Accessibility feature added successfully!!!');window.location.href ='/accessibilityView/';</script>")
     return HttpResponse("Invalid request")
+
 def accessibilityView(request):
     accessibilities = Accessibility.objects.all().order_by('accessibility_feature')
     return render(request, 'adminT/accessibilityView.html', {'accessibilities':accessibilities})
+
 def accessibilityDelete(request, id):
     accessibility = Accessibility.objects.get(accessibility_id=id)
     accessibility.delete()
     return HttpResponse("<script>alert('Accessibility feature deleted successfully!!!');window.location.href ='/accessibilityView/';</script>")
+
 def accessibilityEdit(request,id):
     if request.method=='POST':
         accessibilityfeature=request.POST.get("accessibilityfeature")
@@ -143,6 +149,11 @@ def accessibilityEdit(request,id):
         return HttpResponse("<script>alert('Accessibility feature updated successfully!!!');window.location.href ='/accessibilityView/';</script>")
     accessibility = Accessibility.objects.get(accessibility_id=id)
     return render(request,"adminT/accessibilityEdit.html",{'accessibility':accessibility})
+
 def operatorVerification(request):
     operators = Operator.objects.filter(status='requested').order_by('operator_id')
     return render(request, 'adminT/operatorVerification.html', {'operators': operators})
+
+def licenseView(request, id):
+    operator = Operator.objects.get(operator_id=id)
+    return render(request, 'adminT/licenseView.html', {'operator': operator})

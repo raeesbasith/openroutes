@@ -1,0 +1,15 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div style="max-width: 800px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px;">
+    <h2>{{ operator.operator_name }} - License Document</h2>
+    <hr>
+    <div style="margin-top: 20px; text-align: center;">
+        <img src="{{ operator.license }}" alt="License" style="max-width: 100%; border: 1px solid #ddd;">
+    </div>
+    <div style="margin-top: 20px;">
+        <a href="{% url 'operatorVerification' %}" style="color: #1572e8;">← Back to Verification</a>
+    </div>
+</div>
+
+{% include 'adminT/footer.html' %}
