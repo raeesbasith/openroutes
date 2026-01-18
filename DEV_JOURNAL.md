@@ -18,4 +18,10 @@ Deleted existing migration files, cleared the corresponding entries from the `dj
 Renaming models can break migration history. Always handle model renames carefully and understand how Django migrations track schema changes before modifying or deleting tables.
 
 ## 2026-01-14
-Created seperate regn pages for traveller and operator
+Created seperate regn pages for traveller and operator. I was using the same regn page. But its very complex. 
+
+## 2026-01-17
+The urls are very messy in this whole project. From next time onwards, follow the best coding practices in that. 
+
+## 2026-01-17
+I needed to use operator.license.urls in the license view. I was using only operator.license. Thats why the image was not viewing. In django, the browser need url. DB stores file path. Therefore always use .url in templates

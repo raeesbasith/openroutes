@@ -1,14 +1,42 @@
 {% load static %}
 {% include 'adminT/header.html' %}
 
-<div style="max-width: 800px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px;">
-    <h2>{{ operator.operator_name }} - License Document</h2>
-    <hr>
-    <div style="margin-top: 20px; text-align: center;">
-        <img src="{{ operator.license }}" alt="License" style="max-width: 100%; border: 1px solid #ddd;">
-    </div>
-    <div style="margin-top: 20px;">
-        <a href="{% url 'operatorVerification' %}" style="color: #1572e8;">← Back to Verification</a>
+<div class="container">
+    <div class="page-inner">
+        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+            <div>
+                <h3 class="fw-bold mb-3">License View</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card" style="text-align: center;">
+                    <div class="card-header">
+                        <h4 class="card-title">Operator License</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if operator.license %}
+                            <div class="mb-3">
+                                <a href="{{ operator.license.url }}" target="_blank" class="btn btn-info">
+                                    <i class="fas fa-eye"></i>👁 View License (PDF)
+                                </a>
+                            </div>
+
+                            <div class="mb-3">
+                                <a href="{{ operator.license.url }}" download class="btn btn-success">
+                                    <i class="fas fa-download"></i>⬇ Download License (PDF)
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                No license uploaded.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
