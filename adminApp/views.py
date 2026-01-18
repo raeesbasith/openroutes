@@ -161,8 +161,11 @@ def licenseView(request, id):
 
 def operatorApprove(request, id):
     operator = Operator.objects.get(operator_id=id)
+    lob = login.objects.get(login_id=operator.login_id)
+    lob.status = 'active'
     operator.status = 'approved'
     operator.save()
+    lob.save()
     return HttpResponse("<script>alert('Operator approved!!!'); window.location.href = '/operator-verification/';</script>")
 
 def operatorReject(request, id):
