@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from .models import *
 from operatorApp.models import Operator
+from guestApp.models import login
 
 # Create your views here.
 def adminHome(request):
@@ -157,3 +158,15 @@ def operatorVerification(request):
 def licenseView(request, id):
     operator = Operator.objects.get(operator_id=id)
     return render(request, 'adminT/licenseView.html', {'operator': operator})
+
+def operatorApprove(request, id):
+    operator = Operator.objects.get(operator_id=id)
+    operator.status = 'approved'
+    operator.save()
+    return HttpResponse("<script>alert('Operator approved!!!'); window.location.href = '/operator-verification/';</script>")
+
+def operatorReject(request, id):
+    operator = Operator.objects.get(operator_id=id)
+    operator.status = 'rejected'
+    operator.save()
+    return HttpResponse("<script>alert('Operator rejected!!!'); window.location.href = '/operator-verification/';</script>")

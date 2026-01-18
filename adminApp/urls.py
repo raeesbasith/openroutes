@@ -26,4 +26,6 @@ urlpatterns = [
     path('accessibilityEdit/<int:id>/', views.accessibilityEdit, name='accessibilityEdit'),
     path('operator-verification/', views.operatorVerification, name='operatorVerification'),
     path('license-view/<int:id>/', views.licenseView, name='licenseView'),
+    path('operator-approve/<int:id>/', views.operatorApprove, name='operatorApprove'),
+    path('operator-reject/<int:id>/', views.operatorReject, name='operatorReject'),
 ]

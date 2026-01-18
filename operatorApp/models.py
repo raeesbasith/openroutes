@@ -12,3 +12,4 @@ class Operator(models.Model):
     district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=20, default='requested')
     license = models.FileField(upload_to='operator_licenses/', validators=[v])
+    login = models.ForeignKey(login, on_delete=models.CASCADE)
