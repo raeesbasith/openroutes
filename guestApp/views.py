@@ -14,6 +14,7 @@ def traveller_regn(request):
     return render(request, 'guest/traveller_regn.html')
 def login_view(request):
     return render(request, 'guest/loginpage.html')
+
 def login_insert(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -28,7 +29,10 @@ def login_insert(request):
                 if role == 'admin':
                     return redirect('/admin-home/')
                 elif role == 'traveller':
-                    return redirect('/traveller-home/')
+                    if status == 'active':
+                        return redirect('/traveller-home/')
+                    else:
+                        return HttpResponse('<script>alert("Your account is temporarily blocked. Please contact support."); window.location.href="/login/";</script>')
                 elif role == 'operator':
                     if status == 'active':    
                         return redirect('/operator-home/')

@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin | Add New Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #0c2d57;
+      --primary-dark: #081b37;
+      --accent: #ff4b5c;
+      --accent-soft: #ffe2e5;
+      --bg: #f4f6fb;
+      --card-bg: #ffffff;
+      --text-main: #1b1f3b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    /* Top navbar (matches your screenshot, without sidebar) */
+    .topbar {
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #6ee7b7, #0c2d57);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .topbar-pill {
+      background: #f3f4ff;
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: default;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: #0c2d57;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .user-role {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Page container */
+    .page {
+      max-width: 1120px;
+      margin: 28px auto 40px auto;
+      padding: 0 24px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--text-main);
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 9px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border-color: #cbd5f5;
+    }
+
+    .btn-outline:hover {
+      background: #eef2ff;
+    }
+
+    /* Layout cards */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 960px) {
+      .layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+      padding: 20px 20px 18px 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .card-caption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .badge-soft {
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Form styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .field-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 16px;
+    }
+
+    @media (max-width: 720px) {
+      .field-group {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .form-label span.required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .form-label-note {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #f9fafb;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background-color 0.15s ease;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
+      background: #ffffff;
+    }
+
+    .textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .input::placeholder,
+    .textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .input-addon {
+      display: flex;
+      align-items: stretch;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: #f9fafb;
+    }
+
+    .input-addon span {
+      min-width: 40px;
+      background: #f3f4ff;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      border-right: 1px solid var(--border);
+    }
+
+    .input-addon input {
+      border: none;
+      flex: 1;
+      padding: 9px 10px;
+      font-size: 14px;
+      background: transparent;
+    }
+
+    .input-addon input:focus {
+      outline: none;
+      background: #ffffff;
+    }
+
+    .helper-text {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 3px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      background: #f3f4ff;
+      color: var(--primary);
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease,
+        color 0.15s ease;
+    }
+
+    .chip input {
+      display: none;
+    }
+
+    .chip.active {
+      background: #0f172a;
+      border-color: #020617;
+      color: #f9fafb;
+    }
+
+    .chip-icon {
+      font-size: 13px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Photo upload */
+    .photo-drop {
+      border-radius: 12px;
+      border: 1px dashed #cbd5f5;
+      padding: 14px 14px 12px 14px;
+      background: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .photo-drop-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .photo-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .photo-text-main {
+      font-size: 13px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .photo-text-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .photo-btn {
+      font-size: 13px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .photo-btn:hover {
+      background: #f3f4ff;
+      border-color: #c4c9ff;
+    }
+
+    .photo-input {
+      display: none;
+    }
+
+    .photo-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .photo-thumb {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #e5e7eb;
+      aspect-ratio: 4 / 3;
+    }
+
+    .photo-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      border: none;
+      color: #f9fafb;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .badge-counter {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #f3f4ff;
+      color: #4b5563;
+    }
+
+    /* Right column summary */
+    .summary-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      border-radius: 12px;
+      padding: 10px 11px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .metric-tag {
+      font-size: 11px;
+      margin-top: 2px;
+      color: #10b981;
+    }
+
+    .summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .summary-item-label {
+      color: #6b7280;
+    }
+
+    .summary-item-value {
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 10px 0 14px 0;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #166534;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #16a34a;
+    }
+
+    .footer-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 6px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .muted-link {
+      font-size: 12px;
+      color: #6b7280;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .muted-link:hover {
+      color: #4b5563;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 40;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #166534;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25);
+    }
+
+    .toast-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #16a34a;
+    }
+
+    .error-text {
+      font-size: 12px;
+      color: var(--accent);
+      display: none;
+      margin-top: 4px;
+    }
+
+    .input-error,
+    .select-error,
+    .textarea-error {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
+      background: #fef2f2;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo" style="font-size:18px;">TA</div>
+      <div>
+        <div class="topbar-title">OpenRoutes Admin</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px;">
+          Manage your tours and bookings
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-pill">Add New Tour</div>
+      <div class="user-chip">
+        <div class="user-avatar">A</div>
+        <div>
+          <div class="user-name">Admin User</div>
+          <div class="user-role">admin@openroutes.com</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main page -->
+  <main class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Create New Tour Package</div>
+        <div class="page-subtitle">
+          Add a new experience to your catalogue. You can fine‑tune all details later.
+        </div>
+      </div>
+      <div class="page-actions">
+        <button type="button" class="btn btn-outline">Discard</button>
+        <button type="submit" form="tour-form" class="btn btn-primary">
+          Save Tour
+        </button>
+      </div>
+    </div>
+
+    <div class="layout-grid">
+      <!-- Left: Main form -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Tour Details</div>
+            <div class="card-caption">
+              Core information about the tour package.
+            </div>
+          </div>
+          <span class="badge-soft">Step 1 of 1</span>
+        </div>
+
+        <form id="tour-form" autocomplete="off">
+          <!-- District & Location -->
+          <div class="field-group">
+            <div class="form-control">
+              <label class="form-label">
+                District<span class="required">*</span>
+              </label>
+              <select
+                id="district"
+                name="district"
+                class="select"
+                required
+              >
+                <option value="">Select district</option>
+                <option value="colombo">Colombo</option>
+                <option value="galle">Galle</option>
+                <option value="kandy">Kandy</option>
+                <option value="nuwara-eliya">Nuwara Eliya</option>
+              </select>
+              <div class="helper-text">Used to group tours by region.</div>
+              <div class="error-text" data-error-for="district">
+                Please choose a district.
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="form-label">
+                Location<span class="required">*</span>
+                <span class="form-label-note">Changes with district</span>
+              </label>
+              <select
+                id="location"
+                name="location"
+                class="select"
+                required
+              >
+                <option value="">Select location</option>
+              </select>
+              <div class="error-text" data-error-for="location">
+                Please choose a location.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tour name & duration -->
+          <div class="field-group">
+            <div class="form-control">
+              <label class="form-label">
+                Tour name<span class="required">*</span>
+              </label>
+              <input
+                id="tourName"
+                name="tourName"
+                class="input"
+                type="text"
+                placeholder="Ex: Galle Fort & Sunset Cruise"
+                required
+              />
+              <div class="helper-text">
+                This is visible to customers on all listings.
+              </div>
+              <div class="error-text" data-error-for="tourName">
+                Please enter a tour name.
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="form-label">
+                Duration<span class="required">*</span>
+                <span class="form-label-note">In days or hours</span>
+              </label>
+              <input
+                id="duration"
+                name="duration"
+                class="input"
+                type="text"
+                placeholder="Ex: 3 days / 2 nights"
+                required
+              />
+              <div class="error-text" data-error-for="duration">
+                Please specify duration.
+              </div>
+            </div>
+          </div>
+
+          <!-- Price & max persons -->
+          <div class="field-group">
+            <div class="form-control">
+              <label class="form-label">
+                Price per person<span class="required">*</span>
+              </label>
+              <div class="input-addon">
+                <span>LKR</span>
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="25000"
+                  required
+                />
+              </div>
+              <div class="helper-text">
+                You can add seasonal pricing rules later.
+              </div>
+              <div class="error-text" data-error-for="price">
+                Please enter a valid price.
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="form-label">
+                Maximum guests<span class="required">*</span>
+              </label>
+              <input
+                id="maxPersons"
+                name="maxPersons"
+                class="input"
+                type="number"
+                min="1"
+                max="100"
+                placeholder="10"
+                required
+              />
+              <div class="helper-text">
+                We’ll flag overbookings beyond this limit.
+              </div>
+              <div class="error-text" data-error-for="maxPersons">
+                Please specify max guests (at least 1).
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-control">
+            <label class="form-label">
+              Short description<span class="required">*</span>
+              <span class="form-label-note">
+                Highlight what makes this tour special
+              </span>
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              class="textarea"
+              placeholder="Ex: Explore the colonial streets of Galle, enjoy a scenic coastal drive, and end the day with a private sunset cruise in the Indian Ocean."
+              required
+            ></textarea>
+            <div
+              id="descriptionCounter"
+              class="helper-text"
+              style="display:flex;justify-content:space-between;"
+            >
+              <span>Use at least 40 characters.</span>
+              <span><span id="descriptionCount">0</span> / 400</span>
+            </div>
+            <div class="error-text" data-error-for="description">
+              Please add a short description (min 40 characters).
+            </div>
+          </div>
+
+          <!-- Accessibility -->
+          <div class="form-control">
+            <label class="form-label">
+              Accessibility features
+              <span class="form-label-note">Select all that apply</span>
+            </label>
+            <div class="chip-row" id="accessibilityChips">
+              <label class="chip">
+                <input type="checkbox" value="wheelchair-accessible" />
+                <span class="chip-icon">♿</span>
+                <span>Wheelchair access</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="step-free-route" />
+                <span class="chip-icon">↗</span>
+                <span>Step‑free route</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="guide-dogs-allowed" />
+                <span class="chip-icon">🐾</span>
+                <span>Guide dogs allowed</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="hearing-assistance" />
+                <span class="chip-icon">🎧</span>
+                <span>Hearing assistance</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="visual-assistance" />
+                <span class="chip-icon">👁</span>
+                <span>Visual assistance</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="accessible-restrooms" />
+                <span class="chip-icon">🚻</span>
+                <span>Accessible restrooms</span>
+              </label>
+            </div>
+            <div class="helper-text">
+              Accessibility info appears as icons on the customer‑facing page.
+            </div>
+          </div>
+
+          <!-- Photos -->
+          <div class="form-control">
+            <label class="form-label">
+              Tour photos<span class="required">*</span>
+              <span class="form-label-note">
+                Add at least 1, up to 8 images
+              </span>
+            </label>
+            <div class="photo-drop" id="photoDrop">
+              <div class="photo-drop-header">
+                <div class="photo-icon">📷</div>
+                <div style="flex:1;min-width:180px;">
+                  <div class="photo-text-main">
+                    Drag & drop to upload, or choose files
+                  </div>
+                  <div class="photo-text-sub">
+                    JPG or PNG, at least 1200×800px recommended.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="photoButton"
+                  class="photo-btn"
+                  style="white-space:nowrap;"
+                >
+                  <span>+ Add photos</span>
+                </button>
+                <span id="photoCounter" class="badge-counter">
+                  0 / 8 selected
+                </span>
+              </div>
+              <input
+                id="photos"
+                name="photos"
+                class="photo-input"
+                type="file"
+                accept="image/*"
+                multiple
+              />
+              <div
+                id="photoPreview"
+                class="photo-preview-grid"
+                aria-live="polite"
+              ></div>
+            </div>
+            <div class="error-text" data-error-for="photos">
+              Please add at least one photo.
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right: Live summary / quick actions -->
+      <aside class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Preview & Settings</div>
+            <div class="card-caption">
+              Quick summary of the package before publishing.
+            </div>
+          </div>
+          <span class="badge-soft" id="statusBadge">Draft</span>
+        </div>
+
+        <div class="summary-metrics">
+          <div class="metric-card">
+            <div class="metric-label">Base price</div>
+            <div class="metric-value" id="summaryPrice">LKR 0</div>
+            <div class="metric-tag">per person</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Capacity</div>
+            <div class="metric-value">
+              <span id="summaryMaxPersons">0</span> guests
+            </div>
+            <div class="metric-tag" id="summaryDuration">
+              Duration: Not set
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-list">
+          <div>
+            <span class="summary-item-label">Tour name:</span>
+            <span
+              class="summary-item-value"
+              id="summaryTourName"
+            >
+              Untitled tour
+            </span>
+          </div>
+          <div>
+            <span class="summary-item-label">Location:</span>
+            <span
+              class="summary-item-value"
+              id="summaryLocation"
+            >
+              Not selected
+            </span>
+          </div>
+          <div>
+            <span class="summary-item-label">Accessibility:</span>
+            <span id="summaryAccessibility">No features selected</span>
+          </div>
+          <div>
+            <span class="summary-item-label">Photos:</span>
+            <span class="summary-item-value" id="summaryPhotos">
+              0 attached
+            </span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="margin-bottom:14px;">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span id="summaryStatusText">Not yet published</span>
+          </div>
+        </div>
+
+        <div class="pill-row" style="margin-bottom:12px;">
+          <span class="badge-soft">Auto‑save enabled</span>
+          <span class="badge-soft" style="background:#ecfdf3;color:#166534;">
+            Visibility: Private
+          </span>
+        </div>
+
+        <p
+          style="
+            font-size:12px;
+            color:#6b7280;
+            line-height:1.4;
+            margin-bottom:10px;
+          "
+        >
+          Once this tour is published, it will be visible on your website,
+          booking engine, and any connected marketplaces.
+        </p>
+
+        <div class="footer-actions">
+          <div class="footer-left">
+            <span class="muted-link">Preview customer view</span>
+            <span class="muted-link">Duplicate from existing tour</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button
+              type="button"
+              class="btn btn-outline"
+              style="padding:7px 14px;font-size:13px;"
+            >
+              Save as draft
+            </button>
+            <button
+              type="submit"
+              form="tour-form"
+              class="btn btn-primary"
+              style="padding:7px 16px;font-size:13px;"
+            >
+              Publish tour
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <span class="toast-dot"></span>
+    <span id="toastMessage">Tour saved successfully.</span>
+  </div>
+
+  <!-- Inline JS -->
+  <!-- <script>
+    (function () {
+      const districtSelect = document.getElementById("district");
+      const locationSelect = document.getElementById("location");
+      const tourNameInput = document.getElementById("tourName");
+      const priceInput = document.getElementById("price");
+      const maxPersonsInput = document.getElementById("maxPersons");
+      const durationInput = document.getElementById("duration");
+      const descriptionInput = document.getElementById("description");
+      const descriptionCount = document.getElementById("descriptionCount");
+
+      const photoInput = document.getElementById("photos");
+      const photoButton = document.getElementById("photoButton");
+      const photoPreview = document.getElementById("photoPreview");
+      const photoCounter = document.getElementById("photoCounter");
+      const photoDrop = document.getElementById("photoDrop");
+      const maxPhotos = 8;
+
+      const form = document.getElementById("tour-form");
+      const toast = document.getElementById("toast");
+      const toastMessage = document.getElementById("toastMessage");
+
+      const summaryPrice = document.getElementById("summaryPrice");
+      const summaryMaxPersons = document.getElementById("summaryMaxPersons");
+      const summaryDuration = document.getElementById("summaryDuration");
+      const summaryTourName = document.getElementById("summaryTourName");
+      const summaryLocation = document.getElementById("summaryLocation");
+      const summaryAccessibility =
+        document.getElementById("summaryAccessibility");
+      const summaryPhotos = document.getElementById("summaryPhotos");
+      const summaryStatusText =
+        document.getElementById("summaryStatusText");
+
+      const accessibilityChips = document.getElementById(
+        "accessibilityChips"
+      );
+      const statusBadge = document.getElementById("statusBadge");
+
+      // Mock location data mapped by district
+      const locationsByDistrict = {
+        colombo: [
+          "Colombo City",
+          "Mount Lavinia",
+          "Negombo Beach",
+          "Kelaniya Temple",
+        ],
+        galle: [
+          "Galle Fort",
+          "Unawatuna",
+          "Jungle Beach",
+          "Hikkaduwa",
+        ],
+        kandy: [
+          "Kandy City",
+          "Temple of the Tooth",
+          "Peradeniya Gardens",
+          "Knuckles Range",
+        ],
+        "nuwara-eliya": [
+          "Nuwara Eliya Town",
+          "Horton Plains",
+          "Ella",
+          "Gregory Lake",
+        ],
+      };
+
+      // Helpers
+      function setError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const errorEl = document.querySelector(
+          '[data-error-for="' + fieldId + '"]'
+        );
+        if (field) {
+          const isTextarea = field.tagName === "TEXTAREA";
+          const isSelect = field.tagName === "SELECT";
+          field.classList.add(
+            isTextarea
+              ? "textarea-error"
+              : isSelect
+              ? "select-error"
+              : "input-error"
+          );
+        }
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.style.display = "block";
+        }
+      }
+
+      function clearError(fieldId) {
+        const field = document.getElementById(fieldId);
+        const errorEl = document.querySelector(
+          '[data-error-for="' + fieldId + '"]'
+        );
+        if (field) {
+          field.classList.remove(
+            "input-error",
+            "select-error",
+            "textarea-error"
+          );
+        }
+        if (errorEl) {
+          errorEl.style.display = "none";
+        }
+      }
+
+      function showToast(message) {
+        toastMessage.textContent = message;
+        toast.style.display = "flex";
+        clearTimeout(showToast._timeout);
+        showToast._timeout = setTimeout(function () {
+          toast.style.display = "none";
+        }, 2600);
+      }
+
+      function updateSummary() {
+        // Price / capacity / duration
+        const priceValue = priceInput.value
+          ? Number(priceInput.value).toLocaleString("en-LK")
+          : "0";
+        summaryPrice.textContent = "LKR " + priceValue;
+
+        const maxPersonsValue = maxPersonsInput.value || "0";
+        summaryMaxPersons.textContent = maxPersonsValue;
+        summaryDuration.textContent = durationInput.value
+          ? "Duration: " + durationInput.value
+          : "Duration: Not set";
+
+        // Tour name
+        summaryTourName.textContent =
+          tourNameInput.value.trim() || "Untitled tour";
+
+        // Location
+        const districtText =
+          districtSelect.options[districtSelect.selectedIndex]
+            ?.text || "";
+        const locationText =
+          locationSelect.options[locationSelect.selectedIndex]
+            ?.text || "";
+        if (districtText && locationText) {
+          summaryLocation.textContent =
+            locationText + " · " + districtText + " district";
+        } else if (!districtText && !locationText) {
+          summaryLocation.textContent = "Not selected";
+        } else {
+          summaryLocation.textContent =
+            (locationText || "Location not set") +
+            (districtText ? " · " + districtText + " district" : "");
+        }
+
+        // Accessibility
+        const selectedChips =
+          accessibilityChips.querySelectorAll(".chip.active");
+        if (selectedChips.length === 0) {
+          summaryAccessibility.textContent = "No features selected";
+        } else {
+          const labels = Array.prototype.map.call(
+            selectedChips,
+            function (chip) {
+              return chip
+                .textContent.trim()
+                .replace(/\s+/g, " ");
+            }
+          );
+          summaryAccessibility.textContent =
+            labels.join(", ");
+        }
+
+        // Photos
+        const count = photoPreview.querySelectorAll(".photo-thumb")
+          .length;
+        summaryPhotos.textContent = count + " attached";
+
+        // Status
+        const isComplete = Boolean(
+          tourNameInput.value &&
+            districtSelect.value &&
+            locationSelect.value &&
+            priceInput.value &&
+            maxPersonsInput.value &&
+            durationInput.value &&
+            descriptionInput.value.length >= 40 &&
+            count > 0
+        );
+        statusBadge.textContent = isComplete ? "Ready" : "Draft";
+        summaryStatusText.textContent = isComplete
+          ? "Ready to publish"
+          : "Not yet published";
+      }
+
+      // District -> location options
+      districtSelect.addEventListener("change", function () {
+        clearError("district");
+        const value = this.value;
+        locationSelect.innerHTML =
+          '<option value="">Select location</option>';
+        if (locationsByDistrict[value]) {
+          locationsByDistrict[value].forEach(function (loc) {
+            var opt = document.createElement("option");
+            opt.value = loc.toLowerCase().replace(/\s+/g, "-");
+            opt.textContent = loc;
+            locationSelect.appendChild(opt);
+          });
+        }
+        clearError("location");
+        updateSummary();
+      });
+
+      locationSelect.addEventListener("change", function () {
+        clearError("location");
+        updateSummary();
+      });
+
+      // Live bindings
+      [tourNameInput, priceInput, maxPersonsInput, durationInput].forEach(
+        function (input) {
+          input.addEventListener("input", function () {
+            clearError(this.id);
+            updateSummary();
+          });
+        }
+      );
+
+      // Description counter
+      descriptionInput.addEventListener("input", function () {
+        const text = this.value || "";
+        descriptionCount.textContent = String(
+          Math.min(text.length, 400)
+        );
+        if (text.length > 400) {
+          this.value = text.slice(0, 400);
+        }
+        clearError("description");
+        updateSummary();
+      });
+
+      // Accessibility chips
+      accessibilityChips.addEventListener("click", function (e) {
+        const chip = e.target.closest(".chip");
+        if (!chip) return;
+        chip.classList.toggle("active");
+        const checkbox = chip.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+          checkbox.checked = chip.classList.contains("active");
+        }
+        updateSummary();
+      });
+
+      // Photos: open file dialog
+      photoButton.addEventListener("click", function () {
+        photoInput.click();
+      });
+
+      // Drag & drop area
+      ["dragenter", "dragover"].forEach(function (evtName) {
+        photoDrop.addEventListener(
+          evtName,
+          function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            photoDrop.style.background = "#eef2ff";
+          },
+          false
+        );
+      });
+
+      ["dragleave", "drop"].forEach(function (evtName) {
+        photoDrop.addEventListener(
+          evtName,
+          function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            photoDrop.style.background = "#f9fafb";
+          },
+          false
+        );
+      });
+
+      photoDrop.addEventListener("drop", function (e) {
+        const dtFiles = e.dataTransfer?.files;
+        if (dtFiles && dtFiles.length) {
+          handleFiles(dtFiles);
+        }
+      });
+
+      // File input change
+      photoInput.addEventListener("change", function () {
+        if (photoInput.files && photoInput.files.length) {
+          handleFiles(photoInput.files);
+        }
+      });
+
+      function handleFiles(fileList) {
+        const currentCount = photoPreview.querySelectorAll(
+          ".photo-thumb"
+        ).length;
+        let availableSlots = maxPhotos - currentCount;
+        if (availableSlots <= 0) {
+          showToast("You can upload up to " + maxPhotos + " photos.");
+          return;
+        }
+
+        Array.prototype.forEach.call(fileList, function (file) {
+          if (!file.type.startsWith("image/")) return;
+          if (availableSlots <= 0) return;
+          availableSlots--;
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            const url = event.target.result;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "photo-thumb";
+
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = file.name;
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "photo-remove";
+            removeBtn.innerHTML = "&times;";
+            removeBtn.title = "Remove";
+
+            removeBtn.addEventListener("click", function () {
+              wrapper.remove();
+              syncFileInput();
+              updatePhotoCounter();
+              updateSummary();
+            });
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            photoPreview.appendChild(wrapper);
+
+            updatePhotoCounter();
+            updateSummary();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function updatePhotoCounter() {
+        const count = photoPreview.querySelectorAll(".photo-thumb")
+          .length;
+        photoCounter.textContent = count + " / " + maxPhotos + " selected";
+        clearError("photos");
+      }
+
+      // Sync file input with visible thumbnails (for actual submit, we only
+      // validate count; the backend can receive original FileList)
+      function syncFileInput() {
+        // On this template we simply clear input when all images removed.
+        const count = photoPreview.querySelectorAll(".photo-thumb")
+          .length;
+        if (count === 0) {
+          photoInput.value = "";
+        }
+      }
+
+      // Validate form before "saving"
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let hasError = false;
+
+        if (!districtSelect.value) {
+          setError("district", "Please choose a district.");
+          hasError = true;
+        }
+        if (!locationSelect.value) {
+          setError("location", "Please choose a location.");
+          hasError = true;
+        }
+        if (!tourNameInput.value.trim()) {
+          setError("tourName", "Please enter a tour name.");
+          hasError = true;
+        }
+        if (!durationInput.value.trim()) {
+          setError("duration", "Please specify duration.");
+          hasError = true;
+        }
+
+        if (!priceInput.value || Number(priceInput.value) <= 0) {
+          setError("price", "Please enter a valid price.");
+          hasError = true;
+        }
+        if (
+          !maxPersonsInput.value ||
+          Number(maxPersonsInput.value) < 1
+        ) {
+          setError("maxPersons", "Please specify max guests (at least 1).");
+          hasError = true;
+        }
+
+        if (
+          !descriptionInput.value ||
+          descriptionInput.value.trim().length < 40
+        ) {
+          setError(
+            "description",
+            "Description must be at least 40 characters."
+          );
+          hasError = true;
+        }
+
+        const photosCount = photoPreview.querySelectorAll(
+          ".photo-thumb"
+        ).length;
+        if (photosCount === 0) {
+          setError("photos", "Please add at least one photo.");
+          hasError = true;
+        }
+
+        if (hasError) {
+          showToast("Please fix the highlighted fields.");
+          return;
+        }
+
+        showToast("Tour saved successfully (front‑end demo).");
+        statusBadge.textContent = "Ready";
+        summaryStatusText.textContent = "Ready to publish";
+
+        // Here you would typically submit via fetch/AJAX.
+        // Example:
+        // fetch('/api/tours', { method: 'POST', body: new FormData(form) })
+      });
+
+      // Initial summary
+      updateSummary();
+    })();
+  </script> -->
+</body>
+</html>
