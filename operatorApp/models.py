@@ -1,18 +1,9 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from guestApp.models import *
 from adminApp.models import *
-from .views import validate_pdf as v
+
 # Create your models here.
-class Operator(models.Model):
-    operator_id = models.AutoField(primary_key=True)
-    operator_name = models.CharField(max_length=100)  
-    contact = models.CharField(max_length=15)
-    address = models.CharField(max_length=255)
-    email = models.EmailField(max_length=100)
-    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True)
-    status = models.CharField(max_length=20, default='requested')
-    license = models.FileField(upload_to='operator_licenses/', validators=[v])
-    login = models.ForeignKey(login, on_delete=models.CASCADE)
 
 class Tour(models.Model):
     tour_id = models.AutoField(primary_key=True)
@@ -23,7 +14,7 @@ class Tour(models.Model):
     price = models.FloatField()
     duration_days = models.IntegerField()
     max_persons = models.IntegerField()
-    tour_itinerary = models.FileField(upload_to='tour_itineraries/', validators=[v], null=True)
+    tour_itinerary = models.FileField(upload_to='tour_itineraries/', null=True)
     status = models.CharField(max_length=20, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -378,18 +378,27 @@
       cursor: pointer;
       user-select: none;
       border: 1px solid transparent;
-      transition: background 0.15s ease, border-color 0.15s ease,
-        color 0.15s ease;
+      transition: all 0.15s ease;
+      padding: 8px 14px;
     }
-
-    .chip input {
-      display: none;
-    }
-
     .chip.active {
       background: #0f172a;
       border-color: #020617;
       color: #f9fafb;
+    }
+    .chip:hover {
+      border-color: #bfdbfe;
+    }
+    .chip.active:hover {
+      background: #0c1220;
+    }
+    .chip input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      margin: 0;
+      padding: 0;
     }
 
     .chip-icon {
@@ -671,13 +680,13 @@ $(document).ready(function() {
         headers: {"X-CSRFToken": '{{csrf_token}}'}
     });
 
-    $('#districtid').change(function() {
+    $('#district').change(function() {
 
         var districtid = $(this).val();
 
         if(districtid == '') {
-            $('#locations').empty();
-            $('#locations').append('<option value="">Select location</option>');
+            $('#location').empty();
+            $('#location').append('<option value="">Select location</option>');
             return;
         }
 
@@ -689,8 +698,8 @@ $(document).ready(function() {
             dataType: "json",
             success: function (data) {
       // alert('location');
-                $('#locations').empty();
-                $('#locations').append('<option value="">Select location</option>');
+                $('#location').empty();
+                $('#location').append('<option value="">Select location</option>');
                 
                 if(data.length === 0) {
                     return;
@@ -699,14 +708,14 @@ $(document).ready(function() {
                 $.each(data, function (key, val) {
 
                     var option = '<option value="' + val.location_id + '">' + val.name + '</option>';
-                    $('#locations').append(option);
+                    $('#location').append(option);
                 });
             },
             error: function(xhr, status, error) {
                 console.log('Error:', error);
                 console.log('Response:', xhr.responseText);
-                $('#locations').empty();
-                $('#locations').append('<option value="">Select location</option>');
+                $('#location').empty();
+                $('#location').append('<option value="">Select location</option>');
             }
         });
     });
@@ -774,7 +783,7 @@ $(document).ready(function() {
               <label class="form-label">
                 District<span class="required">*</span>
               </label>
-              <select name="districtid" id="districtid" class="select">
+              <select name="district" id="district" class="select">
                                         <option value="">Select District</option>
                                         {% for d in districts %}
                                             <option value="{{ d.district_id }}">{{ d.name }}</option>
@@ -792,8 +801,8 @@ $(document).ready(function() {
                 <span class="form-label-note">Changes with district</span>
               </label>
               <select
-                id="locations"
-                name="locations"
+                id="location"
+                name="location"
                 class="select"
                 required
               >
@@ -813,7 +822,7 @@ $(document).ready(function() {
               </label>
               <input
                 id="tourName"
-                name="tourName"
+                name="tour_name"
                 class="input"
                 type="text"
                 placeholder="Ex: Galle Fort & Sunset Cruise"
@@ -878,7 +887,7 @@ $(document).ready(function() {
               </label>
               <input
                 id="maxPersons"
-                name="maxPersons"
+                name="max_persons"
                 class="input"
                 type="number"
                 min="1"
@@ -929,36 +938,12 @@ $(document).ready(function() {
               <span class="form-label-note">Select all that apply</span>
             </label>
             <div class="chip-row" id="accessibilityChips">
-              <label class="chip">
-                <input type="checkbox" value="wheelchair-accessible" />
-                <span class="chip-icon">♿</span>
-                <span>Wheelchair access</span>
-              </label>
-              <label class="chip">
-                <input type="checkbox" value="step-free-route" />
-                <span class="chip-icon">↗</span>
-                <span>Step‑free route</span>
-              </label>
-              <label class="chip">
-                <input type="checkbox" value="guide-dogs-allowed" />
-                <span class="chip-icon">🐾</span>
-                <span>Guide dogs allowed</span>
-              </label>
-              <label class="chip">
-                <input type="checkbox" value="hearing-assistance" />
-                <span class="chip-icon">🎧</span>
-                <span>Hearing assistance</span>
-              </label>
-              <label class="chip">
-                <input type="checkbox" value="visual-assistance" />
-                <span class="chip-icon">👁</span>
-                <span>Visual assistance</span>
-              </label>
-              <label class="chip">
-                <input type="checkbox" value="accessible-restrooms" />
-                <span class="chip-icon">🚻</span>
-                <span>Accessible restrooms</span>
-              </label>
+              {% for a in accessibilities %}
+                <label class="chip">
+                  <input type="checkbox" name="accessibility" value="{{ a.Accessibility_id }}">
+                  <span>{{ a.accessibility_feature }}</span>
+                </label>
+              {% endfor %}
             </div>
             <div class="helper-text">
               Accessibility info appears as icons on the customer‑facing page.
@@ -972,7 +957,7 @@ $(document).ready(function() {
                 Upload itinerary document
               </span>
             </label>
-            <div class="photo-drop" id="photoDrop">
+            <div class="photo-drop" id="itineraryDrop">
               <div class="photo-drop-header">
                 <div class="photo-icon">📁</div>
                 <div style="flex:1;min-width:180px;">
@@ -985,7 +970,7 @@ $(document).ready(function() {
                 </div>
                 <button
                   type="button"
-                  id="photoButton"
+                  id="itineraryButton"
                   class="photo-btn"
                   style="white-space:nowrap;"
                 >
@@ -993,21 +978,20 @@ $(document).ready(function() {
                 </button>
               </div>
               <input
-                id="photos"
-                name="photos"
+                id="itineraryFile"
+                name="itinerary"
                 class="photo-input"
                 type="file"
-                accept="application/pdf*"
-                multiple
+                accept=".pdf,application/pdf"
               />
               <div
-                id="photoPreview"
+                id="itineraryPreview"
                 class="photo-preview-grid"
                 aria-live="polite"
               ></div>
             </div>
-            <div class="error-text" data-error-for="photos">
-              Please add at least one photo.
+            <div class="error-text" data-error-for="itinerary">
+              Please add a PDF file.
             </div>
           </div>
           
@@ -1044,7 +1028,7 @@ $(document).ready(function() {
               </div>
               <input
                 id="photos"
-                name="photos"
+                name="tour_images"
                 class="photo-input"
                 type="file"
                 accept="image/*"
@@ -1195,13 +1179,6 @@ $(document).ready(function() {
       const durationInput = document.getElementById("duration");
       const descriptionInput = document.getElementById("description");
       const descriptionCount = document.getElementById("descriptionCount");
-
-      const photoInput = document.getElementById("photos");
-      const photoButton = document.getElementById("photoButton");
-      const photoPreview = document.getElementById("photoPreview");
-      const photoCounter = document.getElementById("photoCounter");
-      const photoDrop = document.getElementById("photoDrop");
-      const maxPhotos = 8;
 
       const form = document.getElementById("tour-form");
       const toast = document.getElementById("toast");
@@ -1421,46 +1398,103 @@ $(document).ready(function() {
         updateSummary();
       });
 
-      // Accessibility chips
-      accessibilityChips.addEventListener("click", function (e) {
-        const chip = e.target.closest(".chip");
-        if (!chip) return;
-        chip.classList.toggle("active");
-        const checkbox = chip.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-          checkbox.checked = chip.classList.contains("active");
+      // Accessibility chips - handle label clicks
+      const chipLabels = accessibilityChips.querySelectorAll('.chip');
+      chipLabels.forEach(function (label) {
+        label.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Toggle the active class on the label
+          this.classList.toggle("active");
+          
+          // Update the checkbox state
+          const checkbox = this.querySelector('input[type="checkbox"]');
+          if (checkbox) {
+            checkbox.checked = this.classList.contains("active");
+          }
+          
+          updateSummary();
+        });
+      });
+
+      // ===== ITINERARY FILE UPLOAD =====
+      const itineraryButton = document.getElementById("itineraryButton");
+      const itineraryInput = document.getElementById("itineraryFile");
+      const itineraryDrop = document.getElementById("itineraryDrop");
+      const itineraryPreview = document.getElementById("itineraryPreview");
+
+      itineraryButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        itineraryInput.click();
+      });
+
+      itineraryInput.addEventListener("change", function () {
+        if (this.files && this.files.length) {
+          handleItineraryFile(this.files[0]);
         }
-        updateSummary();
       });
 
-      // Photos: open file dialog
-      photoButton.addEventListener("click", function () {
-        photoInput.click();
-      });
-
-      // Drag & drop area
       ["dragenter", "dragover"].forEach(function (evtName) {
-        photoDrop.addEventListener(
-          evtName,
-          function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            photoDrop.style.background = "#eef2ff";
-          },
-          false
-        );
+        itineraryDrop.addEventListener(evtName, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          itineraryDrop.style.background = "#eef2ff";
+        }, false);
       });
 
       ["dragleave", "drop"].forEach(function (evtName) {
-        photoDrop.addEventListener(
-          evtName,
-          function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            photoDrop.style.background = "#f9fafb";
-          },
-          false
-        );
+        itineraryDrop.addEventListener(evtName, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          itineraryDrop.style.background = "#f9fafb";
+        }, false);
+      });
+
+      itineraryDrop.addEventListener("drop", function (e) {
+        const dtFiles = e.dataTransfer?.files;
+        if (dtFiles && dtFiles.length) {
+          itineraryInput.files = dtFiles;
+          handleItineraryFile(dtFiles[0]);
+        }
+      });
+
+      function handleItineraryFile(file) {
+        if (!file.name.endsWith('.pdf')) {
+          showToast("Please upload a PDF file.");
+          return;
+        }
+        itineraryPreview.innerHTML = '<div style="padding: 8px; background: #ecfdf3; color: #166534; border-radius: 8px; font-size: 12px;">✓ ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)</div>';
+        clearError("itinerary");
+      }
+
+      // ===== PHOTOS UPLOAD =====
+      const photoButton = document.getElementById("photoButton");
+      const photoInput = document.getElementById("photos");
+      const photoDrop = document.getElementById("photoDrop");
+      const photoPreview = document.getElementById("photoPreview");
+      const photoCounter = document.getElementById("photoCounter");
+      const maxPhotos = 8;
+
+      photoButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        photoInput.click();
+      });
+
+      ["dragenter", "dragover"].forEach(function (evtName) {
+        photoDrop.addEventListener(evtName, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          photoDrop.style.background = "#eef2ff";
+        }, false);
+      });
+
+      ["dragleave", "drop"].forEach(function (evtName) {
+        photoDrop.addEventListener(evtName, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          photoDrop.style.background = "#f9fafb";
+        }, false);
       });
 
       photoDrop.addEventListener("drop", function (e) {
@@ -1470,10 +1504,9 @@ $(document).ready(function() {
         }
       });
 
-      // File input change
       photoInput.addEventListener("change", function () {
-        if (photoInput.files && photoInput.files.length) {
-          handleFiles(photoInput.files);
+        if (this.files && this.files.length) {
+          handleFiles(this.files);
         }
       });
 
@@ -1604,13 +1637,68 @@ $(document).ready(function() {
           return;
         }
 
-        showToast("Tour saved successfully (front‑end demo).");
-        statusBadge.textContent = "Ready";
-        summaryStatusText.textContent = "Ready to publish";
+        // Collect accessibility values
+        const selectedAccessibilities = [];
+        const accessibilityCheckboxes = document.querySelectorAll(
+          '#accessibilityChips input[type="checkbox"]:checked'
+        );
+        accessibilityCheckboxes.forEach(function (checkbox) {
+          selectedAccessibilities.push(checkbox.value);
+        });
 
-        // Here you would typically submit via fetch/AJAX.
-        // Example:
-        // fetch('/api/tours', { method: 'POST', body: new FormData(form) })
+        // Create FormData
+        const formData = new FormData();
+        formData.append('tour_name', tourNameInput.value);
+        formData.append('location', locationSelect.value);
+        formData.append('description', descriptionInput.value);
+        formData.append('price', priceInput.value);
+        formData.append('duration', durationInput.value);
+        formData.append('max_persons', maxPersonsInput.value);
+
+        // Add accessibility values
+        selectedAccessibilities.forEach(function (val) {
+          formData.append('accessibility', val);
+        });
+
+        // Add itinerary file
+        const itineraryInput = document.getElementById('itineraryFile');
+        if (itineraryInput && itineraryInput.files.length > 0) {
+          formData.append('itinerary', itineraryInput.files[0]);
+        }
+
+        // Add images
+        const photoInputElement = document.querySelector('input[name="tour_images"]');
+        if (photoInputElement.files.length > 0) {
+          Array.from(photoInputElement.files).forEach(function (file) {
+            formData.append('tour_images', file);
+          });
+        }
+
+        // Submit via fetch
+        fetch('{% url "tour_regn_insert" %}', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(function (response) {
+          if (response.ok || response.status === 302) {
+            showToast('Tour registered successfully');
+            statusBadge.textContent = "Ready";
+            summaryStatusText.textContent = "Ready to publish";
+            // Redirect after success
+            setTimeout(function () {
+              window.location.href = '{% url "tour_regn_view" %}';
+            }, 1500);
+          } else {
+            showToast('Error registering tour');
+          }
+        })
+        .catch(function (error) {
+          console.error('Error:', error);
+          showToast('Error submitting tour');
+        })
       });
 
       // Initial summary

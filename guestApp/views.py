@@ -4,8 +4,9 @@ from django.contrib.auth.hashers import make_password
 from .models import login
 from userApp.models import TravellerProfile
 from adminApp.models import District
-from operatorApp.models import Operator
+
 # Create your views here.
+
 def guestHome(request):
     return render(request, 'guest/index.html')
 def regn_select(request):
