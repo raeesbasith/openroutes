@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+
+{% load static %}
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -653,7 +655,63 @@
       box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
       background: #fef2f2;
     }
+    .itinerary {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #374151;
+
+    }
   </style>
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script>
+
+$(document).ready(function() {
+
+    $.ajaxSetup({
+        headers: {"X-CSRFToken": '{{csrf_token}}'}
+    });
+
+    $('#districtid').change(function() {
+
+        var districtid = $(this).val();
+
+        if(districtid == '') {
+            $('#locations').empty();
+            $('#locations').append('<option value="">Select location</option>');
+            return;
+        }
+
+        $.ajax({
+
+            type: "POST",
+            url: '{% url "filllocations" %}',
+            data: {did: districtid},
+            dataType: "json",
+            success: function (data) {
+      // alert('location');
+                $('#locations').empty();
+                $('#locations').append('<option value="">Select location</option>');
+                
+                if(data.length === 0) {
+                    return;
+                }
+                
+                $.each(data, function (key, val) {
+
+                    var option = '<option value="' + val.location_id + '">' + val.name + '</option>';
+                    $('#locations').append(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText);
+                $('#locations').empty();
+                $('#locations').append('<option value="">Select location</option>');
+            }
+        });
+    });
+});
+</script>
 </head>
 <body>
   <!-- Top bar -->
@@ -716,18 +774,12 @@
               <label class="form-label">
                 District<span class="required">*</span>
               </label>
-              <select
-                id="district"
-                name="district"
-                class="select"
-                required
-              >
-                <option value="">Select district</option>
-                <option value="colombo">Colombo</option>
-                <option value="galle">Galle</option>
-                <option value="kandy">Kandy</option>
-                <option value="nuwara-eliya">Nuwara Eliya</option>
-              </select>
+              <select name="districtid" id="districtid" class="select">
+                                        <option value="">Select District</option>
+                                        {% for d in districts %}
+                                            <option value="{{ d.district_id }}">{{ d.name }}</option>
+                                        {% endfor %}
+                                    </select>
               <div class="helper-text">Used to group tours by region.</div>
               <div class="error-text" data-error-for="district">
                 Please choose a district.
@@ -740,8 +792,8 @@
                 <span class="form-label-note">Changes with district</span>
               </label>
               <select
-                id="location"
-                name="location"
+                id="locations"
+                name="locations"
                 class="select"
                 required
               >
@@ -870,7 +922,6 @@
               Please add a short description (min 40 characters).
             </div>
           </div>
-
           <!-- Accessibility -->
           <div class="form-control">
             <label class="form-label">
@@ -913,7 +964,53 @@
               Accessibility info appears as icons on the customer‑facing page.
             </div>
           </div>
-
+          <!-- itinerary -->
+          <div class="form-control">
+            <label class="form-label">
+              Tour itinerary<span class="required">*</span>
+              <span class="form-label-note">
+                Upload itinerary document
+              </span>
+            </label>
+            <div class="photo-drop" id="photoDrop">
+              <div class="photo-drop-header">
+                <div class="photo-icon">📁</div>
+                <div style="flex:1;min-width:180px;">
+                  <div class="photo-text-main">
+                    Upload pdf file
+                  </div>
+                  <div class="photo-text-sub">
+                    PDF format only.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="photoButton"
+                  class="photo-btn"
+                  style="white-space:nowrap;"
+                >
+                  <span>+ Add file</span>
+                </button>
+              </div>
+              <input
+                id="photos"
+                name="photos"
+                class="photo-input"
+                type="file"
+                accept="application/pdf*"
+                multiple
+              />
+              <div
+                id="photoPreview"
+                class="photo-preview-grid"
+                aria-live="polite"
+              ></div>
+            </div>
+            <div class="error-text" data-error-for="photos">
+              Please add at least one photo.
+            </div>
+          </div>
+          
           <!-- Photos -->
           <div class="form-control">
             <label class="form-label">
@@ -1088,7 +1185,7 @@
   </div>
 
   <!-- Inline JS -->
-  <!-- <script>
+  <script>
     (function () {
       const districtSelect = document.getElementById("district");
       const locationSelect = document.getElementById("location");
@@ -1519,6 +1616,6 @@
       // Initial summary
       updateSummary();
     })();
-  </script> -->
+  </script>
 </body>
 </html>

@@ -23,6 +23,7 @@ class Tour(models.Model):
     price = models.FloatField()
     duration_days = models.IntegerField()
     max_persons = models.IntegerField()
+    tour_itinerary = models.FileField(upload_to='tour_itineraries/', validators=[v], null=True)
     status = models.CharField(max_length=20, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
 
