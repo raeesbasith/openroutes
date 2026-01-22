@@ -367,25 +367,26 @@
     }
 
     .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 12px;
-      background: #f3f4ff;
-      color: var(--primary);
-      cursor: pointer;
-      user-select: none;
-      border: 1px solid transparent;
-      transition: all 0.15s ease;
-      padding: 8px 14px;
-    }
-    .chip.active {
-      background: #0f172a;
-      border-color: #020617;
-      color: #f9fafb;
-    }
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f3f4ff;
+  color: #0c2d57;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.chip input:checked + span {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
     .chip:hover {
       border-color: #bfdbfe;
     }
@@ -776,7 +777,8 @@ $(document).ready(function() {
           <span class="badge-soft">Step 1 of 1</span>
         </div>
 
-        <form id="tour-form" autocomplete="off">
+        <form id="tour-form" autocomplete="off" method="POST" enctype="multipart/form-data" action="{% url 'tour_regn_insert' %}">
+          {% csrf_token %}
           <!-- District & Location -->
           <div class="field-group">
             <div class="form-control">
@@ -940,7 +942,7 @@ $(document).ready(function() {
             <div class="chip-row" id="accessibilityChips">
               {% for a in accessibilities %}
                 <label class="chip">
-                  <input type="checkbox" name="accessibility" value="{{ a.Accessibility_id }}">
+                  <input type="checkbox" name="accessibility" value="{{ a.accessibility_id }}">
                   <span>{{ a.accessibility_feature }}</span>
                 </label>
               {% endfor %}
@@ -1200,34 +1202,6 @@ $(document).ready(function() {
       );
       const statusBadge = document.getElementById("statusBadge");
 
-      // Mock location data mapped by district
-      const locationsByDistrict = {
-        colombo: [
-          "Colombo City",
-          "Mount Lavinia",
-          "Negombo Beach",
-          "Kelaniya Temple",
-        ],
-        galle: [
-          "Galle Fort",
-          "Unawatuna",
-          "Jungle Beach",
-          "Hikkaduwa",
-        ],
-        kandy: [
-          "Kandy City",
-          "Temple of the Tooth",
-          "Peradeniya Gardens",
-          "Knuckles Range",
-        ],
-        "nuwara-eliya": [
-          "Nuwara Eliya Town",
-          "Horton Plains",
-          "Ella",
-          "Gregory Lake",
-        ],
-      };
-
       // Helpers
       function setError(fieldId, message) {
         const field = document.getElementById(fieldId);
@@ -1386,6 +1360,8 @@ $(document).ready(function() {
       );
 
       // Description counter
+      // COMMENTED OUT: Backend should enforce description length limits, not frontend JS
+      /*
       descriptionInput.addEventListener("input", function () {
         const text = this.value || "";
         descriptionCount.textContent = String(
@@ -1397,26 +1373,7 @@ $(document).ready(function() {
         clearError("description");
         updateSummary();
       });
-
-      // Accessibility chips - handle label clicks
-      const chipLabels = accessibilityChips.querySelectorAll('.chip');
-      chipLabels.forEach(function (label) {
-        label.addEventListener("click", function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          // Toggle the active class on the label
-          this.classList.toggle("active");
-          
-          // Update the checkbox state
-          const checkbox = this.querySelector('input[type="checkbox"]');
-          if (checkbox) {
-            checkbox.checked = this.classList.contains("active");
-          }
-          
-          updateSummary();
-        });
-      });
+      */
 
       // ===== ITINERARY FILE UPLOAD =====
       const itineraryButton = document.getElementById("itineraryButton");
@@ -1460,10 +1417,11 @@ $(document).ready(function() {
       });
 
       function handleItineraryFile(file) {
-        if (!file.name.endsWith('.pdf')) {
-          showToast("Please upload a PDF file.");
-          return;
-        }
+        // COMMENTED OUT: Backend should validate PDF MIME-type, not extension
+        // if (!file.name.endsWith('.pdf')) {
+        //   showToast("Please upload a PDF file.");
+        //   return;
+        // }
         itineraryPreview.innerHTML = '<div style="padding: 8px; background: #ecfdf3; color: #166534; border-radius: 8px; font-size: 12px;">✓ ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)</div>';
         clearError("itinerary");
       }
@@ -1511,19 +1469,21 @@ $(document).ready(function() {
       });
 
       function handleFiles(fileList) {
-        const currentCount = photoPreview.querySelectorAll(
-          ".photo-thumb"
-        ).length;
-        let availableSlots = maxPhotos - currentCount;
-        if (availableSlots <= 0) {
-          showToast("You can upload up to " + maxPhotos + " photos.");
-          return;
-        }
+        // COMMENTED OUT: Backend should enforce max 8 photos limit and image MIME-type validation
+        // const currentCount = photoPreview.querySelectorAll(
+        //   ".photo-thumb"
+        // ).length;
+        // let availableSlots = maxPhotos - currentCount;
+        // if (availableSlots <= 0) {
+        //   showToast("You can upload up to " + maxPhotos + " photos.");
+        //   return;
+        // }
 
         Array.prototype.forEach.call(fileList, function (file) {
-          if (!file.type.startsWith("image/")) return;
-          if (availableSlots <= 0) return;
-          availableSlots--;
+          // COMMENTED OUT: Backend should validate image MIME-type
+          // if (!file.type.startsWith("image/")) return;
+          // if (availableSlots <= 0) return;
+          // availableSlots--;
 
           const reader = new FileReader();
           reader.onload = function (event) {
@@ -1578,6 +1538,9 @@ $(document).ready(function() {
         }
       }
 
+      // COMMENTED OUT: Backend view (tour_regn_insert) should handle all validation
+      // Frontend validation conflicts with backend and allows JS-bypass vulnerabilities
+      /*
       // Validate form before "saving"
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -1666,44 +1629,22 @@ $(document).ready(function() {
           formData.append('itinerary', itineraryInput.files[0]);
         }
 
-        // Add images
-        const photoInputElement = document.querySelector('input[name="tour_images"]');
-        if (photoInputElement.files.length > 0) {
-          Array.from(photoInputElement.files).forEach(function (file) {
-            formData.append('tour_images', file);
-          });
-        }
+      // Add images
+      const photoInputElement = document.querySelector('input[name="tour_images"]');
+      if (photoInputElement.files.length > 0) {
+        Array.from(photoInputElement.files).forEach(function (file) {
+          formData.append('tour_images', file);
+        });
+      }
 
-        // Submit via fetch
-        fetch('{% url "tour_regn_insert" %}', {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-          }
-        })
-        .then(function (response) {
-          if (response.ok || response.status === 302) {
-            showToast('Tour registered successfully');
-            statusBadge.textContent = "Ready";
-            summaryStatusText.textContent = "Ready to publish";
-            // Redirect after success
-            setTimeout(function () {
-              window.location.href = '{% url "tour_regn_view" %}';
-            }, 1500);
-          } else {
-            showToast('Error registering tour');
-          }
-        })
-        .catch(function (error) {
-          console.error('Error:', error);
-          showToast('Error submitting tour');
-        })
-      });
+      // Submit the form
+      this.submit();
+    });
+    */
 
-      // Initial summary
-      updateSummary();
-    })();
-  </script>
+    // Initial summary
+    updateSummary();
+  })();
+  </script> 
 </body>
 </html>

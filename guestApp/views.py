@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
-from .models import login
+from .models import login, Operator
 from userApp.models import TravellerProfile
 from adminApp.models import District
 
@@ -102,7 +102,6 @@ def operator_regn(request):
         lob.password = password
         lob.role = 'operator'
         lob.status = 'requested'
-        lob.save()
 
         district = District.objects.get(district_id=district_id)
 
@@ -114,6 +113,8 @@ def operator_regn(request):
         oob.district = district
         oob.status = 'requested'
         oob.license = license_file
+        oob.login = lob
+        lob.save()
         oob.save()
 
         return HttpResponse('<script>alert("Registration request submitted! Your account is under review."); window.location.href="/guest/";</script>')

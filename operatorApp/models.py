@@ -12,7 +12,7 @@ class Tour(models.Model):
     tour_name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.FloatField()
-    duration_days = models.IntegerField()
+    duration_days = models.CharField(max_length=10)
     max_persons = models.IntegerField()
     tour_itinerary = models.FileField(upload_to='tour_itineraries/', null=True)
     status = models.CharField(max_length=20, default='available')
