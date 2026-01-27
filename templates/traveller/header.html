@@ -23,6 +23,13 @@
 
         <!-- Template Stylesheet -->
         <link href="{% static 'guest/css/style.css'%}" rel="stylesheet">
+        <style>
+            /* Ensure navbar brand and its icon are white for contrast */
+            .navbar .navbar-brand h1,
+            .navbar .navbar-brand h1 i {
+                color: #fff !important;
+            }
+        </style>
     </head>
 
     <body>

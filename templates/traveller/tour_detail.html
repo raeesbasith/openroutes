@@ -1,0 +1,106 @@
+{% include 'traveller/header.html' %}
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-7">
+                <h1 class="display-4 mb-4">{{ tour.tour_name }}</h1>
+                <p class="mb-4">{{ tour.description }}</p>
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-map-marker-alt fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Location</h5>
+                                <p class="mb-0">{{ tour.location.name }}, {{ tour.location.district.name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-clock fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Duration</h5>
+                                <p class="mb-0">{{ tour.duration_days }} Days</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-users fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Max Persons</h5>
+                                <p class="mb-0">{{ tour.max_persons }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-rupee-sign fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Price</h5>
+                                <p class="mb-0">₹{{ tour.price }} / person</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                {% if tour.tourimages_set.all %}
+                <div id="tourCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in tour.tourimages_set.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="d-block w-100 rounded" alt="Tour Image"
+                                style="height: 400px; object-fit: cover;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if tour.tourimages_set.all|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#tourCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#tourCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 400px;">
+                    <span class="text-muted">No images available</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h3>Accessibility Features</h3>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                {% for acc in tour.touraccessibility_set.all %}
+                <span class="btn btn-outline-primary btn-sm rounded-pill">{{ acc.accessibility.accessibility_feature
+                    }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if tour.tour_itinerary %}
+        <div class="mt-5">
+            <h3>Tour Itinerary</h3>
+            <a href="{{ tour.tour_itinerary.url }}" class="btn btn-primary mt-3" target="_blank">Download Itinerary
+                PDF</a>
+        </div>
+        {% endif %}
+
+        <div class="mt-5 text-center">
+            <a href="#" class="btn btn-success btn-lg px-5">Book This Tour</a>
+        </div>
+    </div>
+</div>
+
+{% include 'traveller/footer.html' %}
