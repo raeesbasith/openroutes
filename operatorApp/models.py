@@ -22,7 +22,7 @@ class TourAccessibility(models.Model):
     tour_acc_id = models.AutoField(primary_key=True)
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     accessibility = models.ForeignKey(Accessibility, on_delete=models.CASCADE)
-    extra_cost_per_person = models.FloatField(default=0.0)
+    extra_cost_per_acc = models.FloatField(default=0.0)
 
 class TourImages(models.Model):
     tour_image_id = models.AutoField(primary_key=True)

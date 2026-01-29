@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
 from .models import login, Operator
-from userApp.models import TravellerProfile
+from .models import TravellerProfile
 from adminApp.models import District
 
 # Create your views here.
