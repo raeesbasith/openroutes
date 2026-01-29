@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking | {{ tour.tour_name }}</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --bg-light: #f8fafc;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-light);
+            font-family: "Inter", "Segoe UI", sans-serif;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .booking-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            background: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+        }
+
+        input[readonly] {
+            background: #f9fafb;
+            cursor: not-allowed;
+        }
+
+        .accessibility-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .accessibility-item {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .accessibility-item:hover {
+            border-color: var(--primary);
+            background: #f0f5ff;
+        }
+
+        .summary-card {
+            position: sticky;
+            top: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .summary-row.muted {
+            color: var(--text-muted);
+        }
+
+        .summary-total {
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+            margin-top: 14px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .confirm-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Professional Tour Info Styles */
+        .tour-info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .tour-main-details h2 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .tour-main-details p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .price-display-wrapper {
+            text-align: right;
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .price-value-large {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .price-unit {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="page-title">Complete Your Booking</div>
+    <div class="page-subtitle">
+        Review your details and confirm your tour reservation
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="booking-layout">
+
+            <!-- LEFT: FORM -->
+            <div class="card">
+
+                <!-- Tour Info Display -->
+                <div class="tour-info-card">
+                    <div class="tour-main-details">
+                        <h2>{{ tour.tour_name }}</h2>
+                        <p>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+                            {{ tour.location.name }} • {{ tour.duration_days }} Days
+                        </p>
+                    </div>
+                    <div class="price-display-wrapper">
+                        <span class="price-label">Price per person</span>
+                        <div class="price-value-large">
+                            ₹{{ tour.price }}<span class="price-unit">/person</span>
+                        </div>
+                        <input type="hidden" id="pricePerPerson" value="{{ tour.price }}">
+                    </div>
+                </div>
+
+                <!-- Booking Details -->
+                <div class="section">
+                    <div class="section-title">Traveller Details</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tour Date</label>
+                            <input type="date" name="tour_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Persons</label>
+                            <input type="number" name="total_persons" id="persons" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Persons Needing Accessibility</label>
+                            <input type="number" name="persons_needing_accessibility" id="accessPersons" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Caregiver Gender Preference</label>
+                            <select name="caregiver_gender_preference">
+                                <option value="">No Preference</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accessibility -->
+                <div class="section">
+                    <div class="section-title">Accessibility Support</div>
+                    <div class="accessibility-list">
+                        {% for acc in tour.touraccessibility_set.all %}
+                        <label class="accessibility-item">
+                            <input type="checkbox" name="accessibility" value="{{ acc.accessibility.accessibility_id }}">
+                            {{ acc.accessibility.name }}
+                        </label>
+                        {% empty %}
+                        <p class="note">No accessibility services available for this tour.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: SUMMARY -->
+            <div class="card summary-card">
+                <div class="section-title">Booking Summary</div>
+
+                <div class="summary-row muted">
+                    <span>Base Amount</span>
+                    <span id="baseAmount">₹0</span>
+                </div>
+
+                <div class="summary-row muted">
+                    <span>Accessibility Charges</span>
+                    <span id="accessAmount">₹0</span>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>Total Payable</span>
+                    <span id="totalAmount">₹0</span>
+                </div>
+
+                <button type="submit" class="confirm-btn">
+                    Confirm & Proceed
+                </button>
+
+                <div class="note">
+                    Secure booking • No payment charged now
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+
+<!-- UI JS (Design & UX only) -->
+<script>
+    const personsInput = document.getElementById("persons");
+    const accessInput = document.getElementById("accessPersons");
+
+    const pricePerPerson = parseFloat(document.getElementById("pricePerPerson").value) || 0;
+
+    const baseAmountEl = document.getElementById("baseAmount");
+    const accessAmountEl = document.getElementById("accessAmount");
+    const totalAmountEl = document.getElementById("totalAmount");
+
+    function updateSummary() {
+        const persons = parseInt(personsInput.value || 0);
+        const accessPersons = parseInt(accessInput.value || 0);
+
+        const baseAmount = persons * pricePerPerson;
+        const accessAmount = accessPersons * 500; // UI demo value
+        const total = baseAmount + accessAmount;
+
+        baseAmountEl.textContent = `₹${baseAmount.toLocaleString()}`;
+        accessAmountEl.textContent = `₹${accessAmount.toLocaleString()}`;
+        totalAmountEl.textContent = `₹${total.toLocaleString()}`;
+    }
+
+    personsInput.addEventListener("input", updateSummary);
+    accessInput.addEventListener("input", updateSummary);
+</script>
+
+</body>
+</html>

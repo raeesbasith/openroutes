@@ -49,3 +49,7 @@ def filllocation(request):
 def tour_detail(request, tour_id):
     tour = get_object_or_404(Tour, tour_id=tour_id)
     return render(request, 'traveller/tour_detail.html', {'tour': tour})
+
+def booking(request, tour_id):
+    tour = get_object_or_404(Tour, tour_id=tour_id)
+    return render(request, 'traveller/booking.html', {'tour': tour})

@@ -8,4 +8,5 @@ urlpatterns = [
     path('tour-packages/', views.tour_packages_view, name='tour_packages'),
     path('filllocation/', views.filllocation, name='filllocation'),
     path('tour-detail/<int:tour_id>/', views.tour_detail, name='tour_detail'),
+    path('booking/<int:tour_id>/', views.booking, name='booking'),
 ]

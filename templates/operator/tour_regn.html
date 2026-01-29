@@ -755,7 +755,43 @@
     }
   </style>
 <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: {"X-CSRFToken": '{{csrf_token}}'}
+    });
 
+    $('#districtid').change(function() {
+        var districtid = $(this).val();
+
+        if(districtid == '') {
+            $('#locations').empty().append('<option value="">Select location</option>');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '{% url "filllocation" %}',
+            data: {did: districtid},
+            dataType: "json",
+            success: function (data) {
+                $('#locations').empty().append('<option value="">Select location</option>');
+                if(data.length === 0) {
+                    return;
+                }
+                $.each(data, function (key, val) {
+                    $('#locations').append('<option value="' + val.location_id + '">' + val.name + '</option>');
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText);
+                $('#locations').empty().append('<option value="">Error loading locations</option>');
+            }
+        });
+    });
+});
+</script>
 </head>
 <body>
   <!-- Top bar -->
@@ -819,7 +855,7 @@
               <label class="form-label">
                 District<span class="required">*</span>
               </label>
-              <select name="district" id="district" class="select">
+              <select name="district" id="districtid" class="select">
                                         <option value="">Select District</option>
                                         {% for d in districts %}
                                             <option value="{{ d.district_id }}">{{ d.name }}</option>
@@ -837,7 +873,7 @@
                 <span class="form-label-note">Changes with district</span>
               </label>
               <select
-                id="location"
+                id="locations"
                 name="location"
                 class="select"
                 required
@@ -1367,6 +1403,7 @@
       }
 
       // District -> location options
+      /*
       districtSelect.addEventListener("change", function () {
         clearError("district");
         const value = this.value;
@@ -1388,6 +1425,7 @@
         clearError("location");
         updateSummary();
       });
+      */
 
       // Accessibility toggles
       accessibilityList.addEventListener("change", function (e) {
