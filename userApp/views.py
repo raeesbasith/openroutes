@@ -11,7 +11,7 @@ def tour_packages_view(request):
     Districts = District.objects.all()
     accessibilities = Accessibility.objects.all()
     # Base queryset
-    Tour_list = Tour.objects.all().order_by('-tour_id')
+    Tour_list = Tour.objects.all().order_by('price')
 
     # Apply filters from GET params
     district = request.GET.get('district')
@@ -39,12 +39,13 @@ def tour_packages_view(request):
         'Tour': page_obj
     })
 
+# Removed duplicate view `tour_details` to avoid confusion; use `tour_detail` below.
 
 def filllocation(request):
     did = request.POST.get('did')
     locations = Location.objects.filter(district_id=did).values('location_id', 'name')
     return JsonResponse(list(locations), safe=False)
 
-def tour_detail(request, tid):
-    tour = get_object_or_404(Tour, tour_id=tid)
+def tour_detail(request, tour_id):
+    tour = get_object_or_404(Tour, tour_id=tour_id)
     return render(request, 'traveller/tour_detail.html', {'tour': tour})

@@ -1,105 +1,282 @@
+{% load static %}
 {% include 'traveller/header.html' %}
+</div>
 
-<div class="container-fluid py-5">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-7">
-                <h1 class="display-4 mb-4">{{ tour.tour_name }}</h1>
-                <p class="mb-4">{{ tour.description }}</p>
-                <div class="row g-4 mb-4">
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fa fa-map-marker-alt fa-2x text-primary me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Location</h5>
-                                <p class="mb-0">{{ tour.location.name }}, {{ tour.location.district.name }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fa fa-clock fa-2x text-primary me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Duration</h5>
-                                <p class="mb-0">{{ tour.duration_days }} Days</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row g-4 mb-4">
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fa fa-users fa-2x text-primary me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Max Persons</h5>
-                                <p class="mb-0">{{ tour.max_persons }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <i class="fa fa-rupee-sign fa-2x text-primary me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Price</h5>
-                                <p class="mb-0">₹{{ tour.price }} / person</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<style>
+  body {
+    background: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .navbar {
+    position: relative;
+    background: var(--bs-primary);
+  }
+
+  .tour-container {
+    max-width: 1200px;
+    margin: 10px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* Professional image container */
+.carousel-image-wrapper {
+    width: 100%;
+    aspect-ratio: 21 / 9;        /* balanced, not too wide */
+    background: #0f172a;         /* dark neutral background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Image fits naturally without distortion */
+.carousel-image-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;         /* THIS is the key */
+}
+
+
+  .tour-container .status-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .tour-container .status-available { background: #28a745; }
+  .tour-container .status-full { background: #dc3545; }
+  .tour-container .status-limited { background: #ffc107; color: #000; }
+
+  .tour-container .tour-content {
+    padding: 40px;
+  }
+
+  .tour-container .tour-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .tour-container .tour-location {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .tour-container .tour-price {
+    font-size: 34px;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+
+  .tour-container .tour-price span {
+    font-size: 15px;
+    color: #666;
+    font-weight: 400;
+  }
+
+  .tour-container .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+  }
+
+  .tour-container .info-box {
+    background: #f1f5f9;
+    padding: 18px;
+    border-radius: 8px;
+  }
+
+  .tour-container .info-box strong {
+    display: block;
+    color: #1e3a5f;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .tour-container .description {
+    margin-top: 30px;
+  }
+
+  .tour-container .description h4 {
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .tour-container .accessibility-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .tour-container .accessibility-tag {
+    background: #e8f0f8;
+    color: #1e3a5f;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .tour-container .actions {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: fit-content(100%);
+    grid-template-rows: auto auto;
+    gap: 20px;
+  }
+
+  .tour-container .btn-primary {
+    background: #1e63b8;
+    border: none;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+  }
+
+  .tour-container .btn-primary:hover {
+    background: #154a8f;
+  }
+
+  .tour-container .btn-outline {
+    border: 2px solid #1e63b8;
+    color: #1e63b8;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    background: transparent;
+  }
+
+  .tour-container .btn-outline:hover {
+    background: #1e63b8;
+    color: #fff;
+  }
+
+  .tour-container .booking-action .btn {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .tour-container .tour-content {
+      padding: 25px;
+    }
+
+    .tour-container .tour-title {
+      font-size: 28px;
+    }
+  }
+ 
+</style>
+
+<div class="tour-container">
+    <!-- IMAGE CAROUSEL -->
+    <div id="tourCarousel" class="carousel slide position-relative" data-bs-ride="carousel">
+
+        <span class="status-badge status-{{ tour.status|lower }}">{{ tour.status }}</span>
+
+        <div class="carousel-inner">
+            {% for img in tour.tourimages_set.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <div class="carousel-image-wrapper">
+                <img src="{{ img.image.url }}" alt="Tour Image">
+              </div>
             </div>
-            <div class="col-lg-5">
-                {% if tour.tourimages_set.all %}
-                <div id="tourCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        {% for image in tour.tourimages_set.all %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <img src="{{ image.image.url }}" class="d-block w-100 rounded" alt="Tour Image"
-                                style="height: 400px; object-fit: cover;">
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% if tour.tourimages_set.all|length > 1 %}
-                    <button class="carousel-control-prev" type="button" data-bs-target="#tourCarousel"
-                        data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#tourCarousel"
-                        data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                    {% endif %}
-                </div>
-                {% else %}
-                <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 400px;">
-                    <span class="text-muted">No images available</span>
-                </div>
-                {% endif %}
-            </div>
+            {% endfor %}
         </div>
 
-        <div class="mt-5">
-            <h3>Accessibility Features</h3>
-            <div class="d-flex flex-wrap gap-2 mt-3">
+        {% if tour.tourimages_set.count > 1 %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#tourCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#tourCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- CONTENT -->
+    <div class="tour-content">
+
+        <h1 class="tour-title">{{ tour.tour_name }}</h1>
+        <p class="tour-location">
+            {{ tour.location.name }}, {{ tour.location.district.name }}
+        </p>
+
+        <div class="tour-price">
+            ₹{{ tour.price }} <span>/ person</span>
+        </div>
+
+        <!-- INFO GRID -->
+        <div class="info-grid">
+            <div class="info-box">
+                <strong>Duration</strong>
+                {{ tour.duration_days }} days
+            </div>
+            <div class="info-box">
+                <strong>Maximum Persons</strong>
+                {{ tour.max_persons }}
+            </div>
+            <div class="info-box">
+                <strong>Status</strong>
+                {{ tour.status|title }}
+            </div>
+            
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="description">
+            <h4>Tour Description</h4>
+            <p>{{ tour.description }}</p>
+        </div>
+
+        <!-- ACCESSIBILITY -->
+        <div class="description">
+            <h4>Accessibility Features</h4>
+            <div class="accessibility-tags">
                 {% for acc in tour.touraccessibility_set.all %}
-                <span class="btn btn-outline-primary btn-sm rounded-pill">{{ acc.accessibility.accessibility_feature
-                    }}</span>
+                <span class="accessibility-tag">
+                    {{ acc.accessibility.accessibility_feature }}
+                </span>
+                {% empty %}
+                <span class="text-muted">No accessibility features specified</span>
                 {% endfor %}
             </div>
         </div>
 
-        {% if tour.tour_itinerary %}
-        <div class="mt-5">
-            <h3>Tour Itinerary</h3>
-            <a href="{{ tour.tour_itinerary.url }}" class="btn btn-primary mt-3" target="_blank">Download Itinerary
-                PDF</a>
-        </div>
-        {% endif %}
+        <!-- ACTIONS -->
+        <div class="actions">
+        <h4>Itinerary</h4>
+            {% if tour.tour_itinerary %}
+            <div class="itinerary-actions">
+        <a href="{{ tour.tour_itinerary.url }}" target="_blank" class="btn btn-outline">
+            👁 View itinerary
+        </a>
 
-        <div class="mt-5 text-center">
-            <a href="#" class="btn btn-success btn-lg px-5">Book This Tour</a>
+        <a href="{{ tour.tour_itinerary.url }}" download class="btn btn-outline">
+            ⬇ Download (PDF)
+        </a>
+    </div>
+            {% endif %}
+
+            <div class="booking-action">
+        <a href="#" class="btn btn-primary">
+            Book This Tour
+        </a>
+    </div>
         </div>
+
     </div>
 </div>
 
