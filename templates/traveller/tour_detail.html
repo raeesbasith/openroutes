@@ -12,6 +12,10 @@
     background: var(--bs-primary);
   }
 
+  .navbar-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
   .tour-container {
     max-width: 1200px;
     margin: 10px auto;
@@ -37,6 +41,46 @@
     max-height: 100%;
     object-fit: contain;         /* THIS is the key */
 }
+
+  /* Custom Dots style for Carousel Indicators */
+  .carousel-indicators {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin-right: 15%;
+    margin-bottom: 1rem;
+    margin-left: 15%;
+    list-style: none;
+  }
+
+  .carousel-indicators [data-bs-target] {
+    box-sizing: content-box;
+    flex: 0 1 auto;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    margin-right: 5px;
+    margin-left: 5px;
+    text-indent: -999px;
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    opacity: .5;
+    transition: opacity .6s ease;
+    border-radius: 50%; /* Make them dots */
+  }
+
+  .carousel-indicators .active {
+    opacity: 1;
+  }
 
 
   .tour-container .status-badge {
@@ -137,31 +181,42 @@
   }
 
   .tour-container .btn-primary {
-    background: #1e63b8;
-    border: none;
+    background: #1e63b8 !important;
+    color: #fff !important;
+    border: none !important;
     padding: 14px 30px;
     font-size: 16px;
     font-weight: 600;
     border-radius: 6px;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease !important;
   }
 
   .tour-container .btn-primary:hover {
-    background: #154a8f;
+    background: #154a8f !important;
+    color: #fff !important;
+    box-shadow: none !important;
+    transform: translateY(-2px);
   }
 
   .tour-container .btn-outline {
-    border: 2px solid #1e63b8;
-    color: #1e63b8;
+    border: 2px solid #1e63b8 !important;
+    color: #1e63b8 !important;
     padding: 14px 30px;
     font-size: 16px;
     font-weight: 600;
     border-radius: 6px;
-    background: transparent;
+    background: transparent !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease !important;
   }
 
   .tour-container .btn-outline:hover {
-    background: #1e63b8;
-    color: #fff;
+    background: #1e63b8 !important;
+    color: #fff !important;
+    box-shadow: none !important;
   }
 
   .tour-container .booking-action .btn {
@@ -182,9 +237,17 @@
 
 <div class="tour-container">
     <!-- IMAGE CAROUSEL -->
-    <div id="tourCarousel" class="carousel slide position-relative" data-bs-ride="carousel">
+    <div id="tourCarousel" class="carousel slide position-relative" data-bs-ride="carousel" data-bs-interval="4000">
 
         <span class="status-badge status-{{ tour.status|lower }}">{{ tour.status }}</span>
+
+        {% if tour.tourimages_set.count > 1 %}
+        <div class="carousel-indicators">
+            {% for img in tour.tourimages_set.all %}
+            <button type="button" data-bs-target="#tourCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <div class="carousel-inner">
             {% for img in tour.tourimages_set.all %}
