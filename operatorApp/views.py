@@ -31,6 +31,7 @@ def tour_regn_insert(request):
         max_persons = request.POST.get("max_persons")
         tour_acc_list = request.POST.getlist("accessibility")
         tour_image_files = request.FILES.getlist("tour_images")
+        extra_cost = request.POST.get("extra_cost")
 
         login_id = request.session.get('login_id')
 
@@ -64,6 +65,9 @@ def tour_regn_insert(request):
             tour_acc = TourAccessibility()
             tour_acc.accessibility = Accessibility.objects.get(accessibility_id=acc)
             tour_acc.tour = tour
+            extra_cost = request.POST.get("extra_cost_" + str(acc))
+            if extra_cost:
+                tour_acc.extra_cost_per_acc = float(extra_cost)
             tour_acc.save()
         
         return HttpResponse("<script>alert('Tour registered successfully');window.location.href='/operator-home/tour-regn-view/';</script>")

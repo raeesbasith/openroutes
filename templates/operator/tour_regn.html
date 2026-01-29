@@ -366,6 +366,88 @@
       margin-top: 6px;
     }
 
+    .accessibility-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .accessibility-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .accessibility-item:hover {
+      border-color: #cbd5f5;
+      background: #f3f4ff;
+    }
+
+    .accessibility-item.active {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .accessibility-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .accessibility-info input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .accessibility-cost {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .cost-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .input-cost {
+      width: 100px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: #ffffff;
+    }
+
+    .input-cost:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(12, 45, 87, 0.1);
+    }
+
     .chip {
   display: inline-flex;
   align-items: center;
@@ -888,19 +970,25 @@
           <!-- Accessibility -->
           <div class="form-control">
             <label class="form-label">
-              Accessibility features
-              <span class="form-label-note">Select all that apply</span>
+              Accessibility features & extra costs
+              <span class="form-label-note">Select features and specify additional costs (if any)</span>
             </label>
-            <div class="chip-row" id="accessibilityChips">
+            <div class="accessibility-list" id="accessibilityList">
               {% for a in accessibilities %}
-                <label class="chip">
-                  <input type="checkbox" name="accessibility" value="{{ a.accessibility_id }}">
-                  <span>{{ a.accessibility_feature }}</span>
-                </label>
+                <div class="accessibility-item">
+                  <label class="accessibility-info">
+                    <input type="checkbox" name="accessibility" value="{{ a.accessibility_id }}" class="acc-checkbox">
+                    <span>{{ a.accessibility_feature }}</span>
+                  </label>
+                  <div class="accessibility-cost" style="display: none;">
+                    <span class="cost-label">+ INR</span>
+                    <input type="number" name="extra_cost_{{ a.accessibility_id }}" step="0.01" min="0" placeholder="0.00" class="input-cost">
+                  </div>
+                </div>
               {% endfor %}
             </div>
             <div class="helper-text">
-              Accessibility info appears as icons on the customer‑facing page.
+              Selecting a feature allows you to specify a per-person surcharge for that accessibility option.
             </div>
           </div>
           <!-- itinerary -->
@@ -1149,8 +1237,8 @@
       const summaryStatusText =
         document.getElementById("summaryStatusText");
 
-      const accessibilityChips = document.getElementById(
-        "accessibilityChips"
+      const accessibilityList = document.getElementById(
+        "accessibilityList"
       );
       const statusBadge = document.getElementById("statusBadge");
 
@@ -1239,17 +1327,17 @@
         }
 
         // Accessibility
-        const selectedChips =
-          accessibilityChips.querySelectorAll(".chip.active");
-        if (selectedChips.length === 0) {
+        const selectedItems =
+          accessibilityList.querySelectorAll(".accessibility-item.active");
+        if (selectedItems.length === 0) {
           summaryAccessibility.textContent = "No features selected";
         } else {
           const labels = Array.prototype.map.call(
-            selectedChips,
-            function (chip) {
-              return chip
-                .textContent.trim()
-                .replace(/\s+/g, " ");
+            selectedItems,
+            function (item) {
+              const name = item.querySelector(".accessibility-info span").textContent.trim();
+              const cost = item.querySelector(".input-cost").value;
+              return name + (cost ? " (+LKR " + Number(cost).toLocaleString() + ")" : "");
             }
           );
           summaryAccessibility.textContent =
@@ -1299,6 +1387,34 @@
       locationSelect.addEventListener("change", function () {
         clearError("location");
         updateSummary();
+      });
+
+      // Accessibility toggles
+      accessibilityList.addEventListener("change", function (e) {
+        if (e.target.classList.contains("acc-checkbox")) {
+          const item = e.target.closest(".accessibility-item");
+          const costDiv = item.querySelector(".accessibility-cost");
+          const costInput = item.querySelector(".input-cost");
+
+          if (e.target.checked) {
+            item.classList.add("active");
+            costDiv.style.display = "flex";
+            // costInput.required = true;
+          } else {
+            item.classList.remove("active");
+            costDiv.style.display = "none";
+            // costInput.required = false;
+            costInput.value = "";
+          }
+          updateSummary();
+        }
+      });
+
+      // Cost input event
+      accessibilityList.addEventListener("input", function (e) {
+        if (e.target.classList.contains("input-cost")) {
+          updateSummary();
+        }
       });
 
       // Live bindings

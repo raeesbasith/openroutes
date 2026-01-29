@@ -311,6 +311,11 @@
                 {% for acc in tour.touraccessibility_set.all %}
                 <span class="accessibility-tag">
                     {{ acc.accessibility.accessibility_feature }}
+                    {% if acc.extra_cost_per_acc > 0 %}
+                    <small style="opacity: 0.8; font-weight: 400; font-size: 11px; margin-left: 4px;">
+                        (+₹{{ acc.extra_cost_per_acc|floatformat:2 }})
+                    </small>
+                    {% endif %}
                 </span>
                 {% empty %}
                 <span class="text-muted">No accessibility features specified</span>
