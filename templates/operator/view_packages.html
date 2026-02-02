@@ -1,0 +1,133 @@
+{% load static %}
+{% include 'operator/header.html' %}
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2 class="section-title">
+            <i class="bi bi-box-seam me-2"></i>My Tour Packages
+        </h2>
+        <p class="text-muted">Manage and monitor all your listed tour packages</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <a href="{% url 'tour_regn_view' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Add New Package
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="px-4 py-3 border-0">Package Name</th>
+                        <th class="px-4 py-3 border-0">Location</th>
+                        <th class="px-4 py-3 border-0">Price</th>
+                        <th class="px-4 py-3 border-0">Duration</th>
+                        <th class="px-4 py-3 border-0">Status</th>
+                        <th class="px-4 py-3 border-0 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tour in tours %}
+                    <tr>
+                        <td class="px-4 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-3 bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-image text-muted"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ tour.tour_name }}</h6>
+                                    <small class="text-muted">ID: #{{ tour.tour_id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <i class="bi bi-geo-alt text-danger me-1"></i>
+                            {{ tour.location.name }}, {{ tour.location.district.name }}
+                        </td>
+                        <td class="px-4 py-3 fw-bold text-primary">
+                            ₹{{ tour.price|floatformat:0 }}
+                        </td>
+                        <td class="px-4 py-3">
+                            {{ tour.duration_days }}
+                        </td>
+                        <td class="px-4 py-3">
+                            {% if tour.status == 'available' %}
+                                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Available</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">{{ tour.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this package?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
+                                <h5 class="text-muted">No Packages Found</h5>
+                                <p class="text-muted mb-3">You haven't added any tour packages yet.</p>
+                                <a href="{% url 'tour_regn_view' %}" class="btn btn-primary btn-sm">
+                                    Create Your First Package
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white border-0 py-3 px-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <small class="text-muted">Showing {{ tours|length }} packages</small>
+            <!-- Pagination can be added here if needed -->
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+    }
+    .badge {
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
+    .bg-success-subtle {
+        background-color: #d1e7dd !important;
+    }
+    .text-success {
+        color: #0f5132 !important;
+    }
+    .bg-secondary-subtle {
+        background-color: #e2e3e5 !important;
+    }
+    .text-secondary {
+        color: #41464b !important;
+    }
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    .table > :not(caption) > * > * {
+        vertical-align: middle;
+    }
+</style>
+
+{% include 'operator/footer.html' %}

@@ -1,10 +1,11 @@
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from adminApp.models import District, Location, Accessibility
 from operatorApp.models import Tour, TourAccessibility
 from userApp.models import *
 from guestApp.models import *
+import uuid
 # Create your views here.
 def traveller_home(request):
     return render(request, 'traveller/traveller_home.html')
@@ -122,4 +123,45 @@ def booking_confirm(request, tour_id):
                 booking_acc.booking = booking
                 booking_acc.accessibility = Accessibility.objects.get(accessibility_id=acc)
                 booking_acc.save()
-        return HttpResponse("<script>alert('Booking confirmed successfully!');window.location.href='/tour-packages/';</script>")    
+        
+        # Redirect to payment page instead of showing success
+        return redirect('payment', booking_id=booking.booking_id)
+
+def payment(request, booking_id):
+    """Display the payment page for a booking"""
+    try:
+        booking = Booking.objects.get(booking_id=booking_id)
+    except Booking.DoesNotExist:
+        return HttpResponse("<script>alert('Booking not found.');window.location.href='/tour-packages/';</script>")
+    
+    return render(request, 'traveller/payment.html', {'booking': booking})
+
+def process_payment(request, booking_id):
+    """Process the payment for a booking"""
+    if request.method == 'POST':
+        try:
+            booking = Booking.objects.get(booking_id=booking_id)
+        except Booking.DoesNotExist:
+            return HttpResponse("<script>alert('Booking not found.');window.location.href='/tour-packages/';</script>")
+        
+        payment_method = request.POST.get('payment_method')
+        
+        # Create Payment record
+
+        transaction_id = str(uuid.uuid4())
+        
+        payment = Payment.objects.create(
+            booking=booking,
+            payment_method=payment_method,
+            transaction_id=transaction_id,
+            amount=booking.total_amount,
+            payment_status='success'
+        )
+
+        # Update booking status to confirmed/paid
+        booking.booking_status = 'confirmed'
+        booking.save()
+        
+        return HttpResponse("<script>alert('Payment successful! Your booking is confirmed.');window.location.href='/tour-packages/';</script>")
+    
+    return HttpResponse("<script>alert('Invalid request.');window.location.href='/tour-packages/';</script>")    

@@ -22,3 +22,12 @@ class BookingAccessibility(models.Model):
     booking_acc_id = models.AutoField(primary_key=True)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     accessibility = models.ForeignKey(Accessibility, on_delete=models.CASCADE)
+
+class Payment(models.Model):
+    payment_id = models.AutoField(primary_key=True)
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
+    payment_method = models.CharField(max_length=50) 
+    transaction_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    amount = models.FloatField()
+    payment_date = models.DateTimeField(auto_now_add=True)
+    payment_status = models.CharField(max_length=20, default='success')

@@ -8,6 +8,31 @@ from .models import Tour, TourAccessibility, TourImages
 # Create your views here.
 def operator_home(request):
     return render(request, 'operator/operator_home.html')
+
+def tour_view(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('/login/')
+        
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        tours = Tour.objects.filter(operator=operator).order_by('-created_at')
+        return render(request, 'operator/view_packages.html', {'tours': tours})
+    except Operator.DoesNotExist:
+        return redirect('/login/')
+
+def delete_package(request, tour_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('/login/')
+        
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        tour = Tour.objects.get(tour_id=tour_id, operator=operator)
+        tour.delete()
+        return HttpResponse("<script>alert('Package deleted successfully');window.location.href='/operator-home/tour-view/';</script>")
+    except (Operator.DoesNotExist, Tour.DoesNotExist):
+        return HttpResponse("<script>alert('Error: Could not delete package.');window.location.href='/operator-home/tour-view/';</script>")
     
 def tour_regn_view(request):
     districts = District.objects.all()

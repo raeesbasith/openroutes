@@ -1,0 +1,1217 @@
+{% load static %}
+{% include 'traveller/header.html' %}
+
+<style>
+    .navbar {
+        position: relative;
+        background: var(--bs-primary);
+    }
+    .navbar-nav .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #3b82f6;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg-light: #f8fafc;
+        --success: #16a34a;
+        --success-light: #22c55e;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+        font-family: "Inter", "Segoe UI", sans-serif;
+        color: var(--text-main);
+        min-height: 100vh;
+    }
+
+    .payment-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 16px;
+        color: var(--text-muted);
+    }
+
+    .payment-layout {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 30px;
+        align-items: start;
+    }
+
+    @media (max-width: 900px) {
+        .payment-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+    }
+
+    .section-title::before,
+    .section-title::after {
+        display: none !important;
+        content: none !important; 
+        border: none !important;
+    }
+
+    .section-title i {
+        color: var(--primary);
+        font-size: 20px;
+    }
+
+    /* Booking Summary Card */
+    .booking-summary-card {
+        background: var(--bs-primary);
+        color: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .tour-name {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .tour-location {
+        font-size: 14px;
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .booking-meta {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .meta-label {
+        font-size: 12px;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .meta-value {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    /* Price Breakdown */
+    .price-breakdown {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        font-size: 14px;
+    }
+
+    .price-row:not(:last-child) {
+        border-bottom: 1px dashed var(--border);
+    }
+
+    .price-row.total {
+        border-top: 2px solid var(--primary);
+        margin-top: 10px;
+        padding-top: 16px;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .price-label {
+        color: var(--text-muted);
+    }
+
+    .price-value {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .payment-method {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .payment-method:hover {
+        border-color: var(--primary-light);
+        background: #f8fafc;
+    }
+
+    .payment-method.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    .payment-method input[type="radio"] {
+        display: none;
+    }
+
+    .payment-radio {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .payment-method.selected .payment-radio {
+        border-color: var(--primary);
+        background: var(--primary);
+    }
+
+    .payment-radio::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .payment-method.selected .payment-radio::after {
+        opacity: 1;
+    }
+
+    .payment-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: var(--primary);
+    }
+
+    .payment-info {
+        flex: 1;
+    }
+
+    .payment-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 2px;
+    }
+
+    .payment-desc {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    /* Card Details Form */
+    .card-details {
+        display: none;
+        margin-top: 20px;
+        padding: 24px;
+        background: #f8fafc;
+        border-radius: 12px;
+        animation: slideDown 0.3s ease;
+    }
+
+    .card-details.visible {
+        display: block;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .form-group input {
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group input::placeholder {
+        color: #9ca3af;
+    }
+
+    .card-icons {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .card-icons i {
+        font-size: 28px;
+        color: var(--text-muted);
+        opacity: 0.6;
+    }
+
+    /* UPI Section */
+    .upi-section {
+        display: none;
+        margin-top: 20px;
+        padding: 24px;
+        background: #f8fafc;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .upi-section.visible {
+        display: block;
+    }
+
+    .upi-id-input {
+        margin-top: 16px;
+    }
+
+    .upi-apps {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 16px;
+    }
+
+    .upi-app {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        padding: 12px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .upi-app:hover {
+        background: #e2e8f0;
+    }
+
+    .upi-app-icon {
+        width: 48px;
+        height: 48px;
+        background: #fff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .upi-app-name {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* Net Banking */
+    .netbanking-section {
+        display: none;
+        margin-top: 20px;
+        padding: 24px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+
+    .netbanking-section.visible {
+        display: block;
+    }
+
+    .bank-select {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 15px;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .bank-select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .popular-banks {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .bank-option {
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .bank-option:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+    }
+
+    .bank-option.selected {
+        border-color: var(--primary);
+        background: #dbeafe;
+    }
+
+    .bank-option i {
+        font-size: 24px;
+        color: var(--primary);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .bank-option span {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    /* Wallet Section */
+    .wallet-section {
+        display: none;
+        margin-top: 20px;
+        padding: 24px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+
+    .wallet-section.visible {
+        display: block;
+    }
+
+    .wallet-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .wallet-option {
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .wallet-option:hover {
+        border-color: var(--primary);
+    }
+
+    .wallet-option.selected {
+        border-color: var(--primary);
+        background: #dbeafe;
+    }
+
+    .wallet-option i {
+        font-size: 28px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .wallet-option span {
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Pay Button */
+    .pay-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+    .pay-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
+    }
+
+    .pay-btn:active {
+        transform: translateY(0);
+    }
+
+    .pay-btn i {
+        font-size: 18px;
+    }
+
+    /* Security Badge */
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+        padding: 12px;
+        background: #f0fdf4;
+        border-radius: 8px;
+        color: var(--success);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .security-badge i {
+        font-size: 16px;
+    }
+
+    /* Order Summary Sidebar */
+    .order-summary {
+        position: sticky;
+        top: 30px;
+    }
+
+    .summary-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .booking-id {
+        font-size: 13px;
+        color: var(--text-muted);
+        background: #f1f5f9;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .traveller-info {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .traveller-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        padding: 8px 0;
+    }
+
+    .traveller-row:not(:last-child) {
+        border-bottom: 1px dashed var(--border);
+    }
+
+    .traveller-label {
+        color: var(--text-muted);
+    }
+
+    .traveller-value {
+        font-weight: 500;
+        color: var(--text-main);
+    }
+
+    /* Accessibility Info */
+    .accessibility-info {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .accessibility-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #92400e;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .accessibility-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .accessibility-tag {
+        background: #fff;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #92400e;
+        font-weight: 500;
+    }
+
+    /* Timer */
+    .timer-section {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border-radius: 10px;
+        padding: 16px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .timer-label {
+        font-size: 13px;
+        color: #991b1b;
+        margin-bottom: 6px;
+    }
+
+    .timer-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--danger);
+        font-family: monospace;
+    }
+
+    /* Offers Section */
+    .offers-section {
+        margin-top: 20px;
+    }
+
+    .offer-input-wrapper {
+        display: flex;
+        gap: 10px;
+    }
+
+    .offer-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+    .offer-input:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .apply-btn {
+        padding: 12px 20px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .apply-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Trust Badges */
+    .trust-badges {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+    }
+
+    .trust-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .trust-badge i {
+        font-size: 24px;
+        color: var(--primary);
+    }
+
+    .trust-badge span {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-align: center;
+    }
+</style>
+
+<div class="payment-container">
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-lock" style="color: var(--success); margin-right: 10px;"></i>
+            Secure Payment
+        </h1>
+        <p class="page-subtitle">Complete your booking by selecting a payment method</p>
+    </div>
+
+    <form method="post" action="{% url 'process_payment' booking.booking_id %}" id="paymentForm">
+        {% csrf_token %}
+
+        <div class="payment-layout">
+            <!-- LEFT: Payment Methods -->
+            <div class="card">
+                <div class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    Select Payment Method
+                </div>
+
+                <div class="payment-methods">
+                    <!-- Credit/Debit Card -->
+                    <label class="payment-method selected" data-method="card">
+                        <input type="radio" name="payment_method" value="card" checked>
+                        <span class="payment-radio"></span>
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-info">
+                            <div class="payment-name">Credit / Debit Card</div>
+                            <div class="payment-desc">Visa, Mastercard, Rupay, Amex</div>
+                        </div>
+                    </label>
+
+                    <!-- UPI -->
+                    <label class="payment-method" data-method="upi">
+                        <input type="radio" name="payment_method" value="upi">
+                        <span class="payment-radio"></span>
+                        <div class="payment-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="payment-info">
+                            <div class="payment-name">UPI</div>
+                            <div class="payment-desc">Google Pay, PhonePe, Paytm & more</div>
+                        </div>
+                    </label>
+
+                    <!-- Net Banking -->
+                    <label class="payment-method" data-method="netbanking">
+                        <input type="radio" name="payment_method" value="netbanking">
+                        <span class="payment-radio"></span>
+                        <div class="payment-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="payment-info">
+                            <div class="payment-name">Net Banking</div>
+                            <div class="payment-desc">All major banks supported</div>
+                        </div>
+                    </label>
+
+                    <!-- Wallet -->
+                    <label class="payment-method" data-method="wallet">
+                        <input type="radio" name="payment_method" value="wallet">
+                        <span class="payment-radio"></span>
+                        <div class="payment-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="payment-info">
+                            <div class="payment-name">Wallets</div>
+                            <div class="payment-desc">Paytm, Amazon Pay, PhonePe Wallet</div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Card Details Section -->
+                <div class="card-details visible" id="cardDetails">
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNumber">
+                            <div class="card-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-amex"></i>
+                                <i class="fab fa-cc-discover"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Cardholder Name</label>
+                            <input type="text" name="card_name" placeholder="Name as on card">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" name="card_expiry" placeholder="MM/YY" maxlength="5" id="cardExpiry">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="password" name="card_cvv" placeholder="•••" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPI Section -->
+                <div class="upi-section" id="upiSection">
+                    <div class="form-group upi-id-input">
+                        <label>Enter UPI ID</label>
+                        <input type="text" name="upi_id" placeholder="yourname@upi">
+                    </div>
+                    <p style="margin: 16px 0 8px; color: var(--text-muted); font-size: 13px;">Or pay using UPI apps</p>
+                    <div class="upi-apps">
+                        <div class="upi-app">
+                            <div class="upi-app-icon" style="color: #5f6368;">
+                                <i class="fab fa-google-pay"></i>
+                            </div>
+                            <span class="upi-app-name">Google Pay</span>
+                        </div>
+                        <div class="upi-app">
+                            <div class="upi-app-icon" style="color: #5f259f;">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <span class="upi-app-name">PhonePe</span>
+                        </div>
+                        <div class="upi-app">
+                            <div class="upi-app-icon" style="color: #00baf2;">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <span class="upi-app-name">Paytm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Banking Section -->
+                <div class="netbanking-section" id="netbankingSection">
+                    <div class="form-group">
+                        <label>Select Your Bank</label>
+                        <select class="bank-select" name="bank">
+                            <option value="">Choose a bank...</option>
+                            <option value="sbi">State Bank of India</option>
+                            <option value="hdfc">HDFC Bank</option>
+                            <option value="icici">ICICI Bank</option>
+                            <option value="axis">Axis Bank</option>
+                            <option value="kotak">Kotak Mahindra Bank</option>
+                            <option value="pnb">Punjab National Bank</option>
+                            <option value="bob">Bank of Baroda</option>
+                            <option value="canara">Canara Bank</option>
+                        </select>
+                    </div>
+                    <p style="margin: 16px 0 8px; color: var(--text-muted); font-size: 13px;">Popular Banks</p>
+                    <div class="popular-banks">
+                        <div class="bank-option" data-bank="sbi">
+                            <i class="fas fa-university"></i>
+                            <span>SBI</span>
+                        </div>
+                        <div class="bank-option" data-bank="hdfc">
+                            <i class="fas fa-university"></i>
+                            <span>HDFC</span>
+                        </div>
+                        <div class="bank-option" data-bank="icici">
+                            <i class="fas fa-university"></i>
+                            <span>ICICI</span>
+                        </div>
+                        <div class="bank-option" data-bank="axis">
+                            <i class="fas fa-university"></i>
+                            <span>Axis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallet Section -->
+                <div class="wallet-section" id="walletSection">
+                    <div class="wallet-options">
+                        <div class="wallet-option" data-wallet="paytm">
+                            <i class="fas fa-wallet" style="color: #00baf2;"></i>
+                            <span>Paytm</span>
+                        </div>
+                        <div class="wallet-option" data-wallet="amazonpay">
+                            <i class="fab fa-amazon" style="color: #ff9900;"></i>
+                            <span>Amazon Pay</span>
+                        </div>
+                        <div class="wallet-option" data-wallet="phonepe">
+                            <i class="fas fa-mobile-alt" style="color: #5f259f;"></i>
+                            <span>PhonePe</span>
+                        </div>
+                    </div>
+                    <input type="hidden" name="wallet_provider" id="walletProvider">
+                </div>
+
+                <button type="submit" class="pay-btn">
+                    <i class="fas fa-lock"></i>
+                    Pay ₹{{ booking.total_amount|floatformat:0 }} Securely
+                </button>
+
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Your payment is secured with 256-bit SSL encryption
+                </div>
+
+                <div class="trust-badges">
+                    <div class="trust-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>100% Secure<br>Payment</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-undo"></i>
+                        <span>Easy<br>Refunds</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-headset"></i>
+                        <span>24/7<br>Support</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Verified<br>Operators</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Order Summary -->
+            <div class="card order-summary">
+                <div class="summary-header">
+                    <div class="section-title" style="margin-bottom: 0;">
+                        <i class="fas fa-receipt"></i>
+                        Order Summary
+                    </div>
+                    <span class="booking-id">#{{ booking.booking_id }}</span>
+                </div>
+
+                <!-- Tour Summary -->
+                <div class="booking-summary-card">
+                    <div class="tour-name">{{ booking.tour.tour_name }}</div>
+                    <div class="tour-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ booking.tour.location.name }}
+                    </div>
+                    <div class="booking-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Tour Date</span>
+                            <span class="meta-value">{{ booking.tour_date|date:"d M, Y" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Duration</span>
+                            <span class="meta-value">{{ booking.tour.duration_days }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Total Persons</span>
+                            <span class="meta-value">{{ booking.total_persons }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Booked On</span>
+                            <span class="meta-value">{{ booking.booking_date|date:"d M" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Traveller Info -->
+                <div class="traveller-info">
+                    <div class="traveller-row">
+                        <span class="traveller-label">Traveller</span>
+                        <span class="traveller-value">{{ booking.traveller.name }}</span>
+                    </div>
+                    <div class="traveller-row">
+                        <span class="traveller-label">Contact</span>
+                        <span class="traveller-value">{{ booking.traveller.phone }}</span>
+                    </div>
+                    {% if booking.persons_needing_accessibility > 0 %}
+                    <div class="traveller-row">
+                        <span class="traveller-label">Accessibility Persons</span>
+                        <span class="traveller-value">{{ booking.persons_needing_accessibility }}</span>
+                    </div>
+                    {% endif %}
+                    {% if booking.caregiver_gender_preference %}
+                    <div class="traveller-row">
+                        <span class="traveller-label">Caregiver Preference</span>
+                        <span class="traveller-value">{{ booking.caregiver_gender_preference|capfirst }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Accessibility Info (if applicable) -->
+                {% if booking.bookingaccessibility_set.all %}
+                <div class="accessibility-info">
+                    <div class="accessibility-title">
+                        <i class="fas fa-wheelchair"></i>
+                        Accessibility Features
+                    </div>
+                    <div class="accessibility-list">
+                        {% for ba in booking.bookingaccessibility_set.all %}
+                        <span class="accessibility-tag">{{ ba.accessibility.accessibility_feature }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Timer -->
+                <div class="timer-section">
+                    <div class="timer-label">Complete payment within</div>
+                    <div class="timer-value" id="paymentTimer">14:59</div>
+                </div>
+
+                <!-- Price Breakdown -->
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span class="price-label">Base Amount ({{ booking.total_persons }} × ₹{{ booking.tour.price|floatformat:0 }})</span>
+                        <span class="price-value">₹{{ booking.base_amount|floatformat:0 }}</span>
+                    </div>
+                    {% if booking.accessibility_amount > 0 %}
+                    <div class="price-row">
+                        <span class="price-label">Accessibility Charges</span>
+                        <span class="price-value">₹{{ booking.accessibility_amount|floatformat:0 }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="price-row">
+                        <span class="price-label">Taxes & Fees</span>
+                        <span class="price-value">Included</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total Payable</span>
+                        <span>₹{{ booking.total_amount|floatformat:0 }}</span>
+                    </div>
+                </div>
+
+                <!-- Promo Code -->
+                <div class="offers-section">
+                    <label style="font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; display: block;">Have a promo code?</label>
+                    <div class="offer-input-wrapper">
+                        <input type="text" class="offer-input" name="promo_code" placeholder="Enter code">
+                        <button type="button" class="apply-btn">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Payment method selection
+    const paymentMethods = document.querySelectorAll('.payment-method');
+    const cardDetails = document.getElementById('cardDetails');
+    const upiSection = document.getElementById('upiSection');
+    const netbankingSection = document.getElementById('netbankingSection');
+    const walletSection = document.getElementById('walletSection');
+
+    function hideAllSections() {
+        cardDetails.classList.remove('visible');
+        upiSection.classList.remove('visible');
+        netbankingSection.classList.remove('visible');
+        walletSection.classList.remove('visible');
+    }
+
+    paymentMethods.forEach(method => {
+        method.addEventListener('click', function() {
+            paymentMethods.forEach(m => m.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+
+            const methodType = this.dataset.method;
+            hideAllSections();
+
+            if (methodType === 'card') {
+                cardDetails.classList.add('visible');
+            } else if (methodType === 'upi') {
+                upiSection.classList.add('visible');
+            } else if (methodType === 'netbanking') {
+                netbankingSection.classList.add('visible');
+            } else if (methodType === 'wallet') {
+                walletSection.classList.add('visible');
+            }
+        });
+    });
+
+    // Card number formatting
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+            let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formatted;
+        });
+    }
+
+    // Expiry date formatting
+    const cardExpiryInput = document.getElementById('cardExpiry');
+    if (cardExpiryInput) {
+        cardExpiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Bank option selection
+    const bankOptions = document.querySelectorAll('.bank-option');
+    const bankSelect = document.querySelector('.bank-select');
+
+    bankOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            bankOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            const bankValue = this.dataset.bank;
+            bankSelect.value = bankValue;
+        });
+    });
+
+    // Wallet option selection
+    const walletOptions = document.querySelectorAll('.wallet-option');
+    const walletProvider = document.getElementById('walletProvider');
+
+    walletOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            walletOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            walletProvider.value = this.dataset.wallet;
+        });
+    });
+
+    // Payment timer
+    let timeLeft = 15 * 60; // 15 minutes in seconds
+    const timerElement = document.getElementById('paymentTimer');
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            timerElement.textContent = '00:00';
+            alert('Payment session expired. Please try again.');
+            window.location.href = '/tour-packages/';
+        } else {
+            timeLeft--;
+        }
+    }
+
+    setInterval(updateTimer, 1000);
+</script>
+
+{% include 'traveller/footer.html' %}
+</body>
+</html>
