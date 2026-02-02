@@ -1,0 +1,59 @@
+<style>
+    .operator-footer {
+        margin-top: auto; /* Push to bottom if flex container */
+        padding: 24px 32px;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #6b7280;
+        font-size: 13px;
+        width: 100%;
+    }
+    
+    .operator-footer-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .operator-footer a {
+        color: #6b7280;
+        text-decoration: none;
+        margin-left: 24px;
+        transition: color 0.15s ease;
+    }
+    
+    .operator-footer a:hover {
+        color: #0c2d57; /* Primary Dark */
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 640px) {
+        .operator-footer {
+            flex-direction: column;
+            gap: 16px;
+            padding: 24px 20px;
+            text-align: center;
+        }
+        .operator-footer-links {
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .operator-footer a {
+            margin: 0 8px;
+        }
+    }
+</style>
+
+<footer class="operator-footer">
+    <div>
+        &copy; {% now "Y" %} OpenRoutes. All rights reserved.
+    </div>
+    <div class="operator-footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Partner Support</a>
+    </div>
+</footer>

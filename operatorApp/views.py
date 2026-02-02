@@ -7,7 +7,16 @@ from .models import Tour, TourAccessibility, TourImages
 
 # Create your views here.
 def operator_home(request):
-    return render(request, 'operator/operator_home.html')
+    login_id = request.session.get('login_id')
+    context = {}
+    if login_id:
+        try:
+            operator = Operator.objects.get(login_id=login_id)
+            context['operator'] = operator
+        except Operator.DoesNotExist:
+            pass
+            
+    return render(request, 'operator/operator_home.html', context)
 
 def tour_view(request):
     login_id = request.session.get('login_id')
@@ -97,3 +106,98 @@ def tour_regn_insert(request):
         
         return HttpResponse("<script>alert('Tour registered successfully');window.location.href='/operator-home/tour-regn-view/';</script>")
     return redirect('/operator-home/tour-regn-view/')
+
+def edit_package(request, tour_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('/login/')
+    
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        tour = Tour.objects.get(tour_id=tour_id, operator=operator)
+    except (Operator.DoesNotExist, Tour.DoesNotExist):
+        return redirect('/operator-home/tour-view/')
+
+    if request.method == "POST":
+        tour.tour_name = request.POST.get("tour_name")
+        location_id = request.POST.get("location")
+        if location_id:
+            tour.location = Location.objects.get(location_id=location_id)
+        tour.description = request.POST.get("description")
+        tour.price = float(request.POST.get("price"))
+        tour.duration_days = request.POST.get("duration")
+        tour.max_persons = int(request.POST.get("max_persons"))
+        
+        itinerary = request.FILES.get("itinerary")
+        if itinerary:
+            tour.tour_itinerary = itinerary
+            
+        tour.save()
+
+        # Handle Images (Append new ones)
+        tour_image_files = request.FILES.getlist("tour_images")
+        for image in tour_image_files:
+            tour_images = TourImages(image=image, tour=tour)
+            tour_images.save()
+            
+        # Handle Accessibility
+        selected_acc_ids = request.POST.getlist("accessibility")
+        TourAccessibility.objects.filter(tour=tour).delete()
+        
+        for acc_id in selected_acc_ids:
+            acc = Accessibility.objects.get(accessibility_id=acc_id)
+            extra_cost = request.POST.get(f"extra_cost_{acc_id}")
+            tour_acc = TourAccessibility(tour=tour, accessibility=acc)
+            if extra_cost:
+                tour_acc.extra_cost_per_acc = float(extra_cost)
+            tour_acc.save()
+            
+        return HttpResponse("<script>alert('Package updated successfully');window.location.href='/operator-home/tour-view/';</script>")
+
+    # GET request
+    districts = District.objects.all()
+    current_district_id = tour.location.district.district_id
+    locations = Location.objects.filter(district_id=current_district_id).order_by('name')
+    accessibilities = Accessibility.objects.all()
+    
+    existing_accs = TourAccessibility.objects.filter(tour=tour)
+    
+    # Map {acc_id: cost}
+    existing_map = {acc.accessibility.accessibility_id: acc.extra_cost_per_acc for acc in existing_accs}
+
+    acc_list = []
+    for acc in accessibilities:
+        is_checked = acc.accessibility_id in existing_map
+        cost = existing_map.get(acc.accessibility_id, "")
+        acc_list.append({
+            'accessibility_id': acc.accessibility_id,
+            'accessibility_name': acc.accessibility_feature,
+            'is_checked': is_checked,
+            'cost': cost
+        })
+
+    return render(request, 'operator/package_edit.html', {
+        'tour': tour,
+        'districts': districts,
+        'locations': locations, 
+        'acc_list': acc_list,
+        'current_district_id': current_district_id,
+        'existing_images': TourImages.objects.filter(tour=tour)
+    })
+
+def delete_tour_image(request, image_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return JsonResponse({'status': 'error', 'message': 'Not logged in'})
+    
+    try:
+        img = TourImages.objects.get(tour_image_id=image_id)
+        # Check ownership logic if necessary, here we assume getting by ID is safe enough or adding extra checks
+        # Ideally check if img.tour.operator.login_id == login_id
+        if img.tour.operator.login_id == login_id:
+            img.delete()
+            return JsonResponse({'status': 'success'})
+        else:
+             return JsonResponse({'status': 'error', 'message': 'Unauthorized'})
+    except TourImages.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Image not found'})

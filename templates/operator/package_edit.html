@@ -1,0 +1,723 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Operator | Edit Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #0c2d57;
+      --primary-dark: #081b37;
+      --accent: #ff4b5c;
+      --accent-soft: #ffe2e5;
+      --bg: #f4f6fb;
+      --card-bg: #ffffff;
+      --text-main: #1b1f3b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    /* Top navbar (matches your screenshot, without sidebar) */
+    .topbar {
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #6ee7b7, #0c2d57);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .topbar-pill {
+      background: #f3f4ff;
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: default;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: #0c2d57;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .user-role {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Page container */
+    .page {
+      max-width: 1120px;
+      margin: 28px auto 40px auto;
+      padding: 0 24px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--text-main);
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 9px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border-color: #cbd5f5;
+    }
+
+    .btn-outline:hover {
+      background: #eef2ff;
+    }
+    
+    .btn-danger-outline {
+      background: #fff;
+      color: var(--accent);
+      border-color: #ffcbd1;
+    }
+    .btn-danger-outline:hover {
+        background: #fff0f1;
+    }
+
+
+    /* Layout cards */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 960px) {
+      .layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+      padding: 20px 20px 18px 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .card-caption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Form styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .field-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 16px;
+    }
+
+    @media (max-width: 720px) {
+      .field-group {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .form-label span.required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #f9fafb;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background-color 0.15s ease;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
+      background: #ffffff;
+    }
+
+    .textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .input-addon {
+      display: flex;
+      align-items: stretch;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: #f9fafb;
+    }
+
+    .input-addon span {
+      min-width: 40px;
+      background: #f3f4ff;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      border-right: 1px solid var(--border);
+    }
+
+    .input-addon input {
+      border: none;
+      flex: 1;
+      padding: 9px 10px;
+      font-size: 14px;
+      background: transparent;
+    }
+
+    .input-addon input:focus {
+      outline: none;
+      background: #ffffff;
+    }
+
+    /* Accessibility */
+    .accessibility-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .accessibility-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .accessibility-item:hover {
+      border-color: #cbd5f5;
+      background: #f3f4ff;
+    }
+
+    .accessibility-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .accessibility-info input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .input-cost {
+      width: 100px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: #ffffff;
+    }
+
+    /* Photo upload */
+    .photo-drop {
+      border-radius: 12px;
+      border: 1px dashed #cbd5f5;
+      padding: 20px;
+      text-align: center;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .photo-drop:hover {
+      border-color: var(--primary);
+      background: #f3f4ff;
+    }
+    
+    .existing-images-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .image-preview-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        aspect-ratio: 16 / 9;
+    }
+    
+    .image-preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .delete-img-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 0, 0, 0.8);
+        color: white;
+        border: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 6px;
+    }
+    
+  </style>
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: {"X-CSRFToken": '{{csrf_token}}'}
+    });
+
+    $('#districtid').change(function() {
+        var districtid = $(this).val();
+
+        if(districtid == '') {
+            $('#locations').empty().append('<option value="">Select location</option>');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '{% url "filllocations" %}',
+            data: {did: districtid},
+            dataType: "json",
+            success: function (data) {
+                $('#locations').empty().append('<option value="">Select location</option>');
+                if(data.length === 0) {
+                    return;
+                }
+                $.each(data, function (key, val) {
+                    $('#locations').append('<option value="' + val.location_id + '">' + val.name + '</option>');
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+                $('#locations').empty().append('<option value="">Error loading locations</option>');
+            }
+        });
+    });
+    
+    // Toggle cost input for Accessibility
+    $('.accessibility-info input[type="checkbox"]').change(function() {
+        var costInput = $(this).closest('.accessibility-item').find('.input-cost');
+        if($(this).is(':checked')) {
+            costInput.prop('disabled', false).focus();
+        } else {
+            costInput.prop('disabled', true).val('');
+        }
+    });
+
+    // Handle Image Deletion
+    $('.delete-img-btn').click(function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var imgId = btn.data('id');
+        
+        if(confirm('Are you sure you want to remove this image?')) {
+            $.ajax({
+                url: '/operator-home/delete-tour-image/' + imgId + '/', 
+                type: 'GET',
+                success: function(response) {
+                    if(response.status === 'success') {
+                        btn.closest('.image-preview-item').fadeOut(300, function() { $(this).remove(); });
+                    } else {
+                        alert('Error deleting image: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Server error while deleting image.');
+                }
+            });
+        }
+    });
+});
+</script>
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo" style="font-size:18px;">TA</div>
+      <div class="topbar-title">Operator Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-pill">Verified Partner</div>
+      <div class="user-chip">
+        <div class="user-avatar">OP</div>
+        <div>
+          <div class="user-name">Welcome User</div>
+          <div class="user-role">Tour Operator</div>
+        </div>
+      </div>
+      <a href="/logout/" class="btn btn-outline" style="padding: 6px 14px; font-size:13px;">Logout</a>
+    </div>
+  </header>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Edit Tour Package</h1>
+        <div class="page-subtitle">Update your tour statistics and details</div>
+      </div>
+      <div class="page-actions">
+        <a href="{% url 'tour_view' %}" class="btn btn-outline">Cancel</a>
+        <!-- Save button triggers form submit -->
+        <button type="submit" form="editForm" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- MAIN FORM -->
+    <form id="editForm" action="{% url 'edit_package' tour.tour_id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+      <div class="layout-grid">
+        <!-- LEFT COLUMN -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          
+          <!-- Basic Info Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Basic Information</h3>
+            </div>
+            
+            <div class="field-group">
+                <div class="form-control">
+                  <label class="form-label">Tour Name <span class="required">*</span></label>
+                  <input type="text" name="tour_name" value="{{ tour.tour_name }}" class="input" required />
+                </div>
+                
+                <div class="form-control">
+                  <label class="form-label">Duration (Days) <span class="required">*</span></label>
+                  <input type="text" name="duration" value="{{ tour.duration_days }}" class="input" placeholder="e.g. 3 Days, 2 Nights" required />
+                </div>
+            </div>
+
+            <div class="field-group" style="margin-top:14px;">
+                <div class="form-control">
+                    <label class="form-label">District <span class="required">*</span></label>
+                    <select name="district" id="districtid" class="select" required>
+                        <option value="">Select District</option>
+                        {% for d in districts %}
+                         <option value="{{d.district_id}}" {% if d.district_id == current_district_id %}selected{% endif %}>{{d.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label class="form-label">Location <span class="required">*</span></label>
+                    <select name="location" id="locations" class="select" required>
+                        <option value="">Select Location</option>
+                        {% for l in locations %}
+                         <option value="{{l.location_id}}" {% if l.location_id == tour.location.location_id %}selected{% endif %}>{{l.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-control" style="margin-top:14px;">
+              <label class="form-label">Description <span class="required">*</span></label>
+              <textarea name="description" class="textarea" required>{{ tour.description }}</textarea>
+            </div>
+          </div>
+
+          <!-- Pricing & Capacity -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Pricing & Capacity</h3>
+            </div>
+            <div class="field-group">
+               <div class="form-control">
+                 <label class="form-label">Price per Person <span class="required">*</span></label>
+                 <div class="input-addon">
+                   <span>₹</span>
+                   <input type="number" name="price" value="{{ tour.price }}" step="0.01" required />
+                 </div>
+               </div>
+               
+               <div class="form-control">
+                 <label class="form-label">Max Persons <span class="required">*</span></label>
+                 <input type="number" name="max_persons" value="{{ tour.max_persons }}" class="input" required />
+               </div>
+            </div>
+          </div>
+          
+           <!-- Itinerary File -->
+           <div class="card">
+             <div class="card-header">
+               <h3 class="card-title">Itinerary</h3>
+             </div>
+             <div class="form-control">
+               <label class="form-label">Upload New Itinerary (PDF/Doc)</label>
+               <input type="file" name="itinerary" class="input" />
+               {% if tour.tour_itinerary %}
+                 <small class="helper-text">Current: <a href="{{ tour.tour_itinerary.url }}" target="_blank">View Itinerary</a></small>
+               {% endif %}
+             </div>
+           </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+            
+           <!-- Photos -->
+           <div class="card">
+             <div class="card-header">
+               <div style="flex:1;">
+                   <h3 class="card-title">Tour Gallery</h3>
+                   <div class="card-caption">Manage tour images</div>
+               </div>
+             </div>
+             
+             <div class="existing-images-grid">
+               {% for img in existing_images %}
+                 <div class="image-preview-item">
+                     <img src="{{ img.image.url }}" alt="Tour Image" />
+                     <button type="button" class="delete-img-btn" data-id="{{ img.tour_image_id }}">X</button>
+                 </div>
+               {% endfor %}
+             </div>
+             
+             <div class="form-control" style="margin-top:15px;">
+                <label class="form-label">Add New Images</label>
+                <div class="photo-drop" onclick="document.getElementById('imgInput').click()">
+                    <span style="color:var(--primary); font-weight:500;">Click to upload</span>
+                </div>
+                <input type="file" id="imgInput" name="tour_images" multiple style="display:none;" onchange="this.previousElementSibling.querySelector('span').innerText = this.files.length + ' files selected';" />
+             </div>
+           </div>
+
+          <!-- Accessibility -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Accessibility Features</h3>
+            </div>
+            <div class="accessibility-list">
+              {% for acc in acc_list %}
+                <div class="accessibility-item">
+                   <label class="accessibility-info">
+                     <input type="checkbox" name="accessibility" value="{{ acc.accessibility_id }}" 
+                        {% if acc.is_checked %}checked{% endif %} />
+                     {{ acc.accessibility_name }}
+                   </label>
+                   
+                    <div class="accessibility-cost">
+                        <span class="cost-label">+ Cost</span>
+                        <input type="number" name="extra_cost_{{ acc.accessibility_id }}" class="input-cost" placeholder="0.00" step="0.01" 
+                            value="{{ acc.cost }}"
+                            {% if not acc.is_checked %}disabled{% endif %} />
+                    </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+      <div class="footer-actions">
+           <!-- Mobile Action buttons if needed -->
+      </div>
+    </form>
+  </div>
+  
+  {% include 'operator/footer.html' %}
+</body>
+</html>
