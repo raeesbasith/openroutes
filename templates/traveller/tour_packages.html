@@ -687,7 +687,7 @@
                                 </div>
                             </div>
                             <div class="package-price">
-                                ₹{{ package.price }} <span>/person</span>
+                                ₹{{ package.price|floatformat:0 }} <span>/person</span>
                             </div>
                             <div class="accessibility-tags">
                                 {% for acc in package.touraccessibility_set.all %}

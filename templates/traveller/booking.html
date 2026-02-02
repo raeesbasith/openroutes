@@ -1,11 +1,15 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Booking | {{ tour.tour_name }}</title>
+{% include 'traveller/header.html' %}
+
 
     <style>
+               .navbar {
+    position: relative;
+    background: var(--bs-primary);
+        }
+         .navbar-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
         :root {
             --primary: #2563eb;
             --primary-dark: #1e40af;
@@ -77,6 +81,11 @@
             padding-left: 10px;
         }
 
+        .section-title::before,
+        .section-title::after {
+            display: none;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -116,24 +125,80 @@
 
         .accessibility-list {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 14px;
         }
 
         .accessibility-item {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accessibility-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.05) 0%, rgba(33, 150, 243, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .accessibility-item:hover {
-            border-color: var(--primary);
-            background: #f0f5ff;
+            border-color: #2196f3;
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .accessibility-item:hover::before {
+            opacity: 1;
+        }
+
+        .accessibility-item input[type="checkbox"]:checked + .accessibility-feature {
+            color: #1565c0;
+            font-weight: 600;
+        }
+
+        .accessibility-item input[type="checkbox"]:checked ~ .extra-cost {
+            color: #d32f2f;
+        }
+
+        .accessibility-item input[type="checkbox"] {
+            margin: 0;
+            width: 20px;
+            height: 20px;
+            accent-color: #2196f3;
+            border-radius: 4px;
+        }
+
+        .accessibility-feature {
+            font-weight: 500;
+            color: #424242;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .extra-cost {
+            color: #ff6b6b;
+            font-weight: 600;
+            font-size: 14px;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
         }
 
         .summary-card {
@@ -241,8 +306,7 @@
         }
 
     </style>
-</head>
-<body>
+
 
 <div class="container">
 
@@ -251,7 +315,7 @@
         Review your details and confirm your tour reservation
     </div>
 
-    <form method="post">
+    <form method="post" action="{% url 'booking_confirm' tour.tour_id %}">
         {% csrf_token %}
 
         <div class="booking-layout">
@@ -265,15 +329,15 @@
                         <h2>{{ tour.tour_name }}</h2>
                         <p>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
-                            {{ tour.location.name }} • {{ tour.duration_days }} Days
+                            {{ tour.location.name }} • {{ tour.duration_days }}
                         </p>
                     </div>
                     <div class="price-display-wrapper">
                         <span class="price-label">Price per person</span>
                         <div class="price-value-large">
-                            ₹{{ tour.price }}<span class="price-unit">/person</span>
+                            ₹{{ tour.price|floatformat:0 }}<span class="price-unit">/person</span>
                         </div>
-                        <input type="hidden" id="pricePerPerson" value="{{ tour.price }}">
+                        <input type="hidden" id="pricePerPerson" value="{{ tour.price|floatformat:0 }}">
                     </div>
                 </div>
 
@@ -304,19 +368,39 @@
                     </div>
                 </div>
 
-                <!-- Accessibility -->
+                <!-- Accessibility (per person) -->
                 <div class="section">
                     <div class="section-title">Accessibility Support</div>
-                    <div class="accessibility-list">
-                        {% for acc in tour.touraccessibility_set.all %}
-                        <label class="accessibility-item">
-                            <input type="checkbox" name="accessibility" value="{{ acc.accessibility.accessibility_id }}">
-                            {{ acc.accessibility.name }}
-                        </label>
-                        {% empty %}
-                        <p class="note">No accessibility services available for this tour.</p>
-                        {% endfor %}
+                    <p class="note" style="margin-bottom: 16px;">
+                        Enter the number of persons needing accessibility above, then
+                        select the required accessibility options for each person below.
+                    </p>
+
+                    <!-- Template for a single person's accessibility selection; cloned via JavaScript -->
+                    <div id="accessibility-person-template" style="display: none;">
+                        <div class="person-accessibility-section">
+                            <div class="section-title">Person INDEX - Accessibility</div>
+                            <div class="accessibility-list">
+                                {% for acc in tour.touraccessibility_set.all %}
+                                <label class="accessibility-item">
+                                    <input type="checkbox"
+                                           name="accessibilities_person_INDEX"
+                                           value="{{ acc.accessibility.accessibility_id }}"
+                                           data-extra-cost="{{ acc.extra_cost_per_acc|floatformat:0 }}">
+                                    <span class="accessibility-feature">{{ acc.accessibility.accessibility_feature }}</span>
+                                    {% if acc.extra_cost_per_acc > 0 %}
+                                    <span class="extra-cost">(+₹{{ acc.extra_cost_per_acc|floatformat:0 }})</span>
+                                    {% endif %}
+                                </label>
+                                {% empty %}
+                                <p class="note">No accessibility features available for this tour.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Generated per-person accessibility sections will appear here -->
+                    <div id="personsAccessContainer"></div>
                 </div>
 
             </div>
@@ -324,7 +408,6 @@
             <!-- RIGHT: SUMMARY -->
             <div class="card summary-card">
                 <div class="section-title">Booking Summary</div>
-
                 <div class="summary-row muted">
                     <span>Base Amount</span>
                     <span id="baseAmount">₹0</span>
@@ -358,6 +441,8 @@
 <script>
     const personsInput = document.getElementById("persons");
     const accessInput = document.getElementById("accessPersons");
+    const personsAccessContainer = document.getElementById("personsAccessContainer");
+    const templateWrapper = document.getElementById("accessibility-person-template");
 
     const pricePerPerson = parseFloat(document.getElementById("pricePerPerson").value) || 0;
 
@@ -365,21 +450,70 @@
     const accessAmountEl = document.getElementById("accessAmount");
     const totalAmountEl = document.getElementById("totalAmount");
 
+    function calculateAccessibilityAmount() {
+        let total = 0;
+        if (!personsAccessContainer) return total;
+
+        const checked = personsAccessContainer.querySelectorAll('input[type="checkbox"]:checked');
+        checked.forEach(cb => {
+            const cost = parseFloat(cb.getAttribute('data-extra-cost')) || 0;
+            total += cost;
+        });
+        return total;
+    }
+
     function updateSummary() {
         const persons = parseInt(personsInput.value || 0);
-        const accessPersons = parseInt(accessInput.value || 0);
 
         const baseAmount = persons * pricePerPerson;
-        const accessAmount = accessPersons * 500; // UI demo value
+        const accessAmount = calculateAccessibilityAmount();
         const total = baseAmount + accessAmount;
 
-        baseAmountEl.textContent = `₹${baseAmount.toLocaleString()}`;
-        accessAmountEl.textContent = `₹${accessAmount.toLocaleString()}`;
-        totalAmountEl.textContent = `₹${total.toLocaleString()}`;
+        baseAmountEl.textContent = `₹${Math.round(baseAmount).toLocaleString('en-IN')}`;
+        accessAmountEl.textContent = `₹${Math.round(accessAmount).toLocaleString('en-IN')}`;
+        totalAmountEl.textContent = `₹${Math.round(total).toLocaleString('en-IN')}`;
+    }
+
+    function renderPersonAccessibilitySections() {
+        if (!templateWrapper || !personsAccessContainer) return;
+
+        const count = parseInt(accessInput.value || 0);
+        personsAccessContainer.innerHTML = '';
+
+        if (!count || count <= 0) {
+            updateSummary();
+            return;
+        }
+
+        const templateHtml = templateWrapper.innerHTML;
+
+        for (let i = 1; i <= count; i++) {
+            const sectionHtml = templateHtml.replace(/INDEX/g, i);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = sectionHtml.trim();
+            const sectionEl = tempDiv.firstElementChild;
+            if (sectionEl) {
+                personsAccessContainer.appendChild(sectionEl);
+            }
+        }
+
+        updateSummary();
     }
 
     personsInput.addEventListener("input", updateSummary);
-    accessInput.addEventListener("input", updateSummary);
+    accessInput.addEventListener("input", renderPersonAccessibilitySections);
+    accessInput.addEventListener("change", renderPersonAccessibilitySections);
+
+    if (personsAccessContainer) {
+        personsAccessContainer.addEventListener('change', function (event) {
+            if (event.target && event.target.matches('input[type="checkbox"]')) {
+                updateSummary();
+            }
+        });
+    }
+
+    // Initial summary
+    updateSummary();
 </script>
 
 </body>

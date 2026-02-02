@@ -940,7 +940,7 @@ $(document).ready(function() {
                   name="price"
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="1"
                   placeholder="25000"
                   required
                 />
@@ -1018,7 +1018,7 @@ $(document).ready(function() {
                   </label>
                   <div class="accessibility-cost" style="display: none;">
                     <span class="cost-label">+ INR</span>
-                    <input type="number" name="extra_cost_{{ a.accessibility_id }}" step="0.01" min="0" placeholder="0.00" class="input-cost">
+                    <input type="number" name="extra_cost_{{ a.accessibility_id }}" step="1" min="0" placeholder="0" class="input-cost">
                   </div>
                 </div>
               {% endfor %}
@@ -1330,7 +1330,7 @@ $(document).ready(function() {
       function updateSummary() {
         // Price / capacity / duration
         const priceValue = priceInput.value
-          ? Number(priceInput.value).toLocaleString("en-LK")
+          ? Math.round(Number(priceInput.value)).toLocaleString("en-LK")
           : "0";
         summaryPrice.textContent = "LKR " + priceValue;
 

@@ -9,4 +9,5 @@ urlpatterns = [
     path('filllocation/', views.filllocation, name='filllocation'),
     path('tour-detail/<int:tour_id>/', views.tour_detail, name='tour_detail'),
     path('booking/<int:tour_id>/', views.booking, name='booking'),
+    path('booking-confirm/<int:tour_id>/', views.booking_confirm, name='booking_confirm'),
 ]

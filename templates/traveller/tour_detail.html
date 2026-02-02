@@ -278,7 +278,7 @@
         </p>
 
         <div class="tour-price">
-            ₹{{ tour.price }} <span>/ person</span>
+            ₹{{ tour.price|floatformat:0 }} <span>/ person</span>
         </div>
 
         <!-- INFO GRID -->
@@ -313,7 +313,7 @@
                     {{ acc.accessibility.accessibility_feature }}
                     {% if acc.extra_cost_per_acc > 0 %}
                     <small style="opacity: 0.8; font-weight: 400; font-size: 11px; margin-left: 4px;">
-                        (+₹{{ acc.extra_cost_per_acc|floatformat:2 }})
+                        (+₹{{ acc.extra_cost_per_acc|floatformat:0 }})
                     </small>
                     {% endif %}
                 </span>
