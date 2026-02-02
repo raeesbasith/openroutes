@@ -4,117 +4,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Travel Agency Management System - Manage your tours and bookings">
-    <title>OpenRoutes</title>
+    <title>OpenRoutes Operator Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'operator/css/styles.css' %}">
+
+    <style>
+        :root {
+            --sidebar-bg: #0c2d57;
+            --sidebar-text: #e2e8f0;
+            --sidebar-hover: #1e3a8a;
+            --primary-color: #0c2d57;
+            --bg-light: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0f172a 100%);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .brand-text h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        
+        .brand-text span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
+
+        .user-profile {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-info .name {
+            display: block;
+            font-weight: 500;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .user-info .role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border-left: 3px solid #60a5fa;
+            background-clip: padding-box;
+        }
+        
+        .nav-link:hover i, .nav-link.active i {
+            opacity: 1;
+            color: #60a5fa;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding-bottom: 60px;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            background: #fff;
+            height: 70px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .toggle-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--primary-color);
+            border: none;
+            background: none;
+            display: none; /* Hidden on desktop */
+        }
+        
+        .top-nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notification-btn {
+            position: relative;
+            color: #64748b;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .toggle-btn {
+                display: block;
+            }
+        }
+        
+        .content-container {
+            padding: 30px;
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-        <!-- <div class="sidebar-header">
-            <h3><i class="bi bi-geo-alt-fill me-2"></i>OpenRoutes</h3>
-            <p class="text-muted small">Travel Agency Admin</p>
-        </div> -->
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
+            <div class="brand-logo">
+                <i class="bi bi-compass-fill"></i>
+            </div>
+            <div class="brand-text">
+                <h4>OpenRoutes</h4>
+                <span>Operator Panel</span>
+            </div>
+        </div>
+
+        <div class="user-profile">
             <div class="user-avatar">
-                    <i class="bi bi-person-circle"></i>
-                </div>
-        <div class="user-details">
-            <strong>Admin User</strong>
-            <small class="text-muted">admin@openroutes.com</small>
+                {{ user.username|slice:":1"|default:"O"|upper }}
+            </div>
+            <div class="user-info">
+                <span class="name">{{ operator.operator_name|default:"Partner" }}</span>
+                <span class="role">Verified Operator</span>
+            </div>
         </div>
-        </div>
+
         <nav class="sidebar-nav">
-            <ul class="nav-menu">
-                <li class="nav-item active">
-                    <a href="#dashboard" class="nav-link" data-section="dashboard">
-                        <i class="bi bi-speedometer2"></i>
+            <ul class="nav p-0 m-0 d-block">
+                <li class="nav-item">
+                    <a href="{% url 'operator_home' %}" class="nav-link {% if request.resolver_match.url_name == 'operator_home' %}active{% endif %}">
+                        <i class="bi bi-grid-1x2"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'tour_view' %}" class="nav-link" data-section="tours">
-                        <i class="bi bi-map"></i>
-                        <span>Tours</span>
+                    <a href="{% url 'tour_view' %}" class="nav-link {% if 'tour-view' in request.path %}active{% endif %}">
+                        <i class="bi bi-box-seam"></i>
+                        <span>My Tours</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#add-tour" class="nav-link" data-section="add-tour">
+                    <a href="{% url 'tour_regn_view' %}" class="nav-link {% if 'tour-regn-view' in request.path %}active{% endif %}">
                         <i class="bi bi-plus-circle"></i>
                         <span>Add New Tour</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#bookings" class="nav-link" data-section="bookings">
+                    <a href="#" class="nav-link">
                         <i class="bi bi-calendar-check"></i>
                         <span>Bookings</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#customers" class="nav-link" data-section="customers">
-                        <i class="bi bi-people"></i>
-                        <span>Customers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#reports" class="nav-link" data-section="reports">
+                    <a href="#" class="nav-link">
                         <i class="bi bi-graph-up"></i>
                         <span>Reports</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#settings" class="nav-link" data-section="settings">
-                        <i class="bi bi-gear"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="btn btn-sm btn-outline-light w-100 mt-3">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </a>
-                </li>
             </ul>
         </nav>
-        <!-- <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="bi bi-person-circle"></i>
-                </div>
+        
+        <div style="padding: 20px;">
+            <a href="/logout/" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2" style="border-color: rgba(255,255,255,0.2);">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </div>
+    </aside>
 
-            </div> -->
-        </div> 
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="main-content" id="mainContent">
-        <!-- Top Bar -->
+    <!-- Main Content Wrapper -->
+    <div class="main-content">
+        <!-- Topbar -->
         <header class="topbar">
-            <button class="btn btn-link sidebar-toggle" id="sidebarToggle">
+            <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('show')">
                 <i class="bi bi-list"></i>
             </button>
-            <div class="topbar-right">
-                <div class="notifications">
-                    <button class="btn btn-link position-relative">
-                        <i class="bi bi-bell"></i>
-                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">3</span>
-                    </button>
+            
+            <h5 class="m-0 d-none d-md-block text-secondary" style="font-weight: 500;">
+                {% if request.resolver_match.url_name == 'operator_home' %}Dashboard Overview
+                {% elif 'tour-view' in request.path %}Package Management
+                {% elif 'tour-regn' in request.path %}New Package Registration
+                {% else %}Operator Portal{% endif %}
+            </h5>
+
+            <div class="top-nav-items">
+                <div class="notification-btn">
+                    <i class="bi bi-bell"></i>
+                    <span class="notification-badge">3</span>
                 </div>
-                <div class="user-dropdown">
-                    <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> Admin
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                    </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle text-secondary" style="font-size: 24px;"></i>
                 </div>
             </div>
         </header>
+
+        <!-- Page Content -->
+        <div class="content-container">

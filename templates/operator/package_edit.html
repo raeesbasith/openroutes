@@ -1,158 +1,31 @@
 
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Operator | Edit Tour</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --primary: #0c2d57;
-      --primary-dark: #081b37;
-      --accent: #ff4b5c;
-      --accent-soft: #ffe2e5;
-      --bg: #f4f6fb;
-      --card-bg: #ffffff;
-      --text-main: #1b1f3b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --success: #16a34a;
-    }
+{% include "operator/header.html" %}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-    }
+<style>
+ /* Minimal styles override for content */
+ .page {
+    max-width: 100% !important; 
+    margin: 0 !important;
+    padding: 0 !important;
+ }
+ .layout-grid {
+    margin-top: 10px;
+ }
+</style>
 
-    body {
-      background: var(--bg);
-      color: var(--text-main);
-    }
-
-    /* Top navbar (matches your screenshot, without sidebar) */
-    .topbar {
-      height: 64px;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .topbar-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #6ee7b7, #0c2d57);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .topbar-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .topbar-pill {
-      background: #f3f4ff;
-      color: var(--primary);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .user-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: default;
-    }
-
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: #0c2d57;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .user-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .user-role {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Page container */
-    .page {
-      max-width: 1120px;
-      margin: 28px auto 40px auto;
-      padding: 0 24px;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      color: var(--text-main);
-    }
-
-    .page-subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .page-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <h1 class="h3 fw-bold text-primary">Edit Tour Package</h1>
+        <div class="text-muted small">Update your tour statistics and details</div>
+      </div>
+      <div class="page-actions">
+        <a href="{% url 'tour_view' %}" class="btn btn-outline-secondary">Cancel</a>
+        <!-- Save button triggers form submit -->
+        <button type="submit" form="editForm" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
 
     .btn {
       display: inline-flex;
@@ -718,6 +591,11 @@ $(document).ready(function() {
     </form>
   </div>
   
+  </div> <!-- Close content-container -->
+  </div> <!-- Close main-wrapper -->
+  
   {% include 'operator/footer.html' %}
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
