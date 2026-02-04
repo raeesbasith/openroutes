@@ -1,0 +1,261 @@
+{% load static %}
+{% include 'operator/header.html' %}
+
+<style>
+    :root {
+      --primary: #0c2d57;
+      --primary-dark: #081b37;
+      --accent: #ff4b5c;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    .page-container {
+        padding: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 9999px;
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+    
+    .status-available { background: #dcfce7; color: #166534; }
+    .status-unavailable { background: #fee2e2; color: #991b1b; }
+    
+    .detail-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    
+    .detail-section {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .detail-section:last-child { border-bottom: none; }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .info-item {
+        margin-bottom: 16px;
+    }
+    
+    .info-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+    
+    .info-value {
+        font-size: 15px;
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    .img-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+    }
+    
+    .img-item {
+        aspect-ratio: 16/9;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+    
+    .img-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    .img-item:hover img { transform: scale(1.05); }
+
+    .acc-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'tour_view' %}" class="btn btn-outline-secondary btn-sm p-1 rounded-circle" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="h3 fw-bold text-primary m-0">Package Details</h1>
+            </div>
+        </div>
+        <div>
+            <a href="{% url 'edit_package' tour.tour_id %}" class="btn btn-primary">
+                <i class="bi bi-pencil me-2"></i>Edit Package
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Overview -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="detail-card">
+                <div class="detail-section">
+                     <div class="d-flex justify-content-between align-items-start">
+                         <div>
+                             <h2 class="h4 fw-bold mb-2">{{ tour.tour_name }}</h2>
+                             <div class="text-muted d-flex align-items-center gap-2">
+                                 <i class="bi bi-geo-alt-fill text-danger"></i>
+                                 {{ tour.location.name }}, {{ tour.location.district.name }}
+                             </div>
+                         </div>
+                         <div class="text-end">
+                            <span class="status-badge {% if tour.status == 'available' %}status-available{% else %}status-unavailable{% endif %}">
+                                {{ tour.status|title }}
+                            </span>
+                            <div class="mt-2 text-muted small">ID: #{{ tour.tour_id }}</div>
+                         </div>
+                     </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h5 class="section-title"><i class="bi bi-info-circle"></i> Description</h5>
+                    <p class="text-muted" style="white-space: pre-line;">{{ tour.description }}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h5 class="section-title"><i class="bi bi-grid-3x3"></i> Key Details</h5>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Duration</div>
+                            <div class="info-value">{{ tour.duration_days }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Max Capacity</div>
+                            <div class="info-value">{{ tour.max_persons }} Persons</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Standard Price</div>
+                            <div class="info-value text-primary fs-5">₹{{ tour.price|floatformat:2 }}</div>
+                        </div>
+                         <div class="info-item">
+                            <div class="info-label">Itinerary Document</div>
+                            <div class="info-value">
+                                {% if tour.tour_itinerary %}
+                                    <a href="{{ tour.tour_itinerary.url }}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-file-earmark-pdf text-danger"></i> View PDF
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No itinerary uploaded</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gallery -->
+            <div class="detail-card">
+                 <div class="detail-section">
+                     <h5 class="section-title"><i class="bi bi-images"></i> Photo Gallery</h5>
+                     {% if images %}
+                        <div class="img-grid">
+                            {% for img in images %}
+                            <div class="img-item">
+                                <img src="{{ img.image.url }}" alt="Tour Image" loading="lazy">
+                            </div>
+                            {% endfor %}
+                        </div>
+                     {% else %}
+                        <div class="text-center py-4 text-muted border rounded bg-light">
+                            <i class="bi bi-image" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">No images uploaded for this tour.</p>
+                        </div>
+                     {% endif %}
+                 </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="detail-card">
+                <div class="detail-section">
+                    <h5 class="section-title"><i class="bi bi-universal-access"></i> Accessibility</h5>
+                    <div class="d-flex flex-column gap-2">
+                        {% for acc in accessibility_features %}
+                            <div class="acc-item">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <span>{{ acc.accessibility.accessibility_name }}</span>
+                                </div>
+                                {% if acc.extra_cost_per_acc > 0 %}
+                                    <small class="badge bg-light text-dark border">+ ₹{{ acc.extra_cost_per_acc }}</small>
+                                {% else %}
+                                    <small class="badge bg-success-subtle text-success">Included</small>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                             <div class="text-muted text-center py-3">
+                                 No accessibility features specified.
+                             </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+             <div class="detail-card">
+                <div class="detail-section">
+                    <h5 class="section-title"><i class="bi bi-calendar-check"></i> Recent Activity</h5>
+                    <p class="text-muted small">Registered on {{ tour.created_at|date:"F d, Y" }}</p>
+                    <div class="alert alert-light border mt-3 mb-0">
+                         <small><i class="bi bi-lightbulb"></i> Tip: Keep your itinerary updated to attract more travellers.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'operator/footer.html' %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

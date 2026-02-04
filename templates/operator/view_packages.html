@@ -62,7 +62,7 @@
                         </td>
                         <td class="px-4 py-3 text-end">
                             <div class="btn-group">
-                                <a href="#" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <a href="{% url 'package_single_view' tour.tour_id %}" class="btn btn-sm btn-outline-primary" title="View Details">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="{% url 'edit_package' tour.tour_id %}" class="btn btn-sm btn-outline-secondary" title="Edit">

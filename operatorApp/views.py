@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
 from adminApp.models import District, Location, Accessibility
 from guestApp.models import Operator
+from userApp.models import Booking
 from .models import Tour, TourAccessibility, TourImages
 
 # Create your views here.
@@ -201,3 +202,56 @@ def delete_tour_image(request, image_id):
              return JsonResponse({'status': 'error', 'message': 'Unauthorized'})
     except TourImages.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Image not found'})
+
+def package_single_view(request, tour_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+        
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        tour = Tour.objects.get(tour_id=tour_id, operator=operator)
+        images = TourImages.objects.filter(tour=tour)
+        accessibility_features = TourAccessibility.objects.filter(tour=tour).select_related('accessibility')
+        
+        context = {
+            'tour': tour,
+            'images': images,
+            'accessibility_features': accessibility_features
+        }
+        return render(request, 'operator/package_singleView.html', context)
+    except (Operator.DoesNotExist, Tour.DoesNotExist):
+        return redirect('tour_view')
+
+def booking_view(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+    
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        # Fetch bookings for tours created by this operator
+        bookings = Booking.objects.filter(tour__operator=operator).select_related('traveller', 'tour').order_by('-booking_date')
+        
+        return render(request, 'operator/booking_view.html', {'bookings': bookings})
+    except Operator.DoesNotExist:
+        return redirect('login')
+
+def update_booking_status(request, booking_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return JsonResponse({'status': 'error', 'message': 'Not logged in'})
+        
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        try:
+            operator = Operator.objects.get(login_id=login_id)
+            booking = Booking.objects.get(booking_id=booking_id, tour__operator=operator)
+            booking.booking_status = new_status
+            booking.save()
+            return JsonResponse({'status': 'success'})
+        except (Operator.DoesNotExist, Booking.DoesNotExist):
+            return JsonResponse({'status': 'error', 'message': 'Booking not found or unauthorized'})
+            
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+

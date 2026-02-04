@@ -3,30 +3,43 @@
 {% include "operator/header.html" %}
 
 <style>
+    :root {
+      --primary: #0c2d57;
+      --primary-dark: #081b37;
+      --accent: #ff4b5c;
+      --accent-soft: #ffe2e5;
+      --bg: #f4f6fb;
+      --card-bg: #ffffff;
+      --text-main: #1b1f3b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #16a34a;
+    }
  /* Minimal styles override for content */
  .page {
     max-width: 100% !important; 
     margin: 0 !important;
     padding: 0 !important;
  }
+ .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+ }
+ .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+ }
  .layout-grid {
     margin-top: 10px;
  }
 </style>
-
-  <div class="page">
-    <div class="page-header">
-      <div>
-        <h1 class="h3 fw-bold text-primary">Edit Tour Package</h1>
-        <div class="text-muted small">Update your tour statistics and details</div>
-      </div>
-      <div class="page-actions">
-        <a href="{% url 'tour_view' %}" class="btn btn-outline-secondary">Cancel</a>
-        <!-- Save button triggers form submit -->
-        <button type="submit" form="editForm" class="btn btn-primary">Save Changes</button>
-      </div>
-    </div>
-
+<style>
     .btn {
       display: inline-flex;
       align-items: center;
@@ -403,26 +416,6 @@ $(document).ready(function() {
     });
 });
 </script>
-</head>
-<body>
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-logo" style="font-size:18px;">TA</div>
-      <div class="topbar-title">Operator Dashboard</div>
-    </div>
-    <div class="topbar-right">
-      <div class="topbar-pill">Verified Partner</div>
-      <div class="user-chip">
-        <div class="user-avatar">OP</div>
-        <div>
-          <div class="user-name">Welcome User</div>
-          <div class="user-role">Tour Operator</div>
-        </div>
-      </div>
-      <a href="/logout/" class="btn btn-outline" style="padding: 6px 14px; font-size:13px;">Logout</a>
-    </div>
-  </header>
 
   <div class="page">
     <div class="page-header">
@@ -592,9 +585,10 @@ $(document).ready(function() {
   </div>
   
   </div> <!-- Close content-container -->
-  </div> <!-- Close main-wrapper -->
-  
+
   {% include 'operator/footer.html' %}
+
+  </div> <!-- Close main-wrapper -->
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
