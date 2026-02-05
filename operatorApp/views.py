@@ -255,3 +255,15 @@ def update_booking_status(request, booking_id):
             
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
+
+def profile_view(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+    
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        return render(request, 'operator/profile_view.html', {'operator': operator})
+    except Operator.DoesNotExist:
+        return redirect('login')
+

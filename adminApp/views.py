@@ -51,7 +51,7 @@ def locationInsert(request):
         lname = request.POST.get("lname")
         lob = Location()
         lob.name = lname
-        lob.district_id = District.objects.get(district_id=district_id)
+        lob.district = District.objects.get(district_id=district_id)
         if Location.objects.filter(name=lname, district_id=district_id).exists():
             return HttpResponse("<script>alert('Already Exists..');window.location='locationRegn/';</script>")
         else:

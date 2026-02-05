@@ -1,0 +1,270 @@
+{% load static %}
+{% include 'operator/header.html' %}
+
+<style>
+    :root {
+      --primary: #0c2d57;
+      --primary-dark: #081b37;
+      --accent: #ff4b5c;
+      --border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --success: #16a34a;
+    }
+
+    body {
+        background-color: #f8fafc;
+    }
+
+    .page-container {
+        padding: 40px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    /* Card Styling */
+    .profile-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Header Content (Avatar + Name) */
+    .profile-header-content {
+        padding: 40px 40px 0;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .profile-actions {
+        padding-bottom: 0;
+    }
+
+    .profile-name-section {
+        margin-top: 15px;
+        padding: 0 40px;
+    }
+
+    .profile-name {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .profile-role {
+        color: var(--text-muted);
+        font-size: 16px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Content Grid */
+    .profile-body {
+        padding: 30px 40px 50px;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+    }
+
+    .section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .info-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .info-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .info-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    /* Status Badge logic */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+    
+    .status-approved { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-rejected { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-requested { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+    /* Right column box */
+    .stat-box {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid var(--border);
+    }
+    
+    .doc-preview {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-top: 10px;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .doc-preview:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .profile-body { grid-template-columns: 1fr; }
+        .profile-header-content { justify-content: flex-start; padding: 20px 20px 0; }
+        .profile-actions { margin-top: 0; }
+        .page-container { padding: 20px; }
+        .profile-name-section { padding: 0 20px; }
+    }
+</style>
+
+<div class="page-container">
+    
+    <div class="profile-card">
+        
+        <!-- Header: Avatar & Main Info -->
+        <div class="profile-header-content">
+             <div class="profile-actions">
+                <!-- <span class="status-badge {% if operator.status == 'approved' %}status-approved{% elif operator.status == 'rejected' %}status-rejected{% else %}status-requested{% endif %}">
+                    <i class="bi bi-shield-check"></i>
+                    {{ operator.status|default:"Pending" }}
+                </span> -->
+            </div>
+        </div>
+
+        <div class="profile-name-section">
+            <h1 class="profile-name">{{ operator.operator_name }}</h1>
+            <div class="profile-role">
+                <i class="bi bi-person-circle"></i> {{ operator.login.username }}
+                <span style="margin: 0 8px; color: #cbd5e1;">|</span>
+                 <i class="bi bi-geo-alt-fill text-danger"></i> {{ operator.district.name }}
+            </div>
+        </div>
+
+        <!-- Body Grid -->
+        <div class="profile-body">
+            <!-- Left Column: Details -->
+            <div>
+                <h3 class="section-title">Contact Information</h3>
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                        <div class="info-content">
+                            <span class="info-label">Email Address</span>
+                            <span class="info-value">{{ operator.email }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                        <div class="info-content">
+                            <span class="info-label">Phone Number</span>
+                            <span class="info-value">{{ operator.contact }}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-building"></i></div>
+                        <div class="info-content">
+                            <span class="info-label">Office Address</span>
+                            <span class="info-value">{{ operator.address }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Documents/Meta -->
+            <div>
+                 <h3 class="section-title">Legal & Documents</h3>
+                 <div class="stat-box">
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">License Status</div>
+                    <!-- Display license file -->
+                    {% if operator.license %}
+                        <a href="{{ operator.license.url }}" target="_blank" class="doc-preview">
+                            <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 24px;"></i>
+                            <div style="overflow: hidden;">
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Business License</div>
+                                <div style="font-size: 11px; color: var(--success);">Click to view</div>
+                            </div>
+                        </a>
+                    {% else %}
+                        <div class="doc-preview" style="background: #f1f5f9; border-style: dashed;">
+                             <i class="bi bi-exclamation-circle text-muted" style="font-size: 24px;"></i>
+                             <div>
+                                <div style="font-size: 13px; color: var(--text-muted);">No license uploaded</div>
+                             </div>
+                        </div>
+                    {% endif %}
+                 </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% include 'operator/footer.html' %}
