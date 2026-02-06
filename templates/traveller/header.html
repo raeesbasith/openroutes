@@ -24,10 +24,80 @@
         <!-- Template Stylesheet -->
         <link href="{% static 'guest/css/style.css'%}" rel="stylesheet">
         <style>
-            /* Ensure navbar brand and its icon are white for contrast */
-            .navbar .navbar-brand h1,
-            .navbar .navbar-brand h1 i {
+             :root {
+                --primary-color: #13357B;
+                --secondary-color: #23a6d5;
+                --light-color: #f8f9fa;
+            }
+
+            .navbar {
+                background: var(--primary-color) !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                padding: 15px 0;
+            }
+
+            .navbar-brand h1 {
+                font-size: 2.2rem;
+                font-weight: 800;
                 color: #fff !important;
+                letter-spacing: 1px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            }
+
+            .navbar-brand i {
+                color: var(--secondary-color) !important;
+            }
+
+            .navbar-nav .nav-link {
+                color: rgba(255,255,255,0.85) !important;
+                font-weight: 500;
+                padding: 10px 18px !important;
+                margin: 0 5px;
+                border-radius: 50px;
+                transition: all 0.3s ease;
+                font-family: 'Jost', sans-serif;
+                font-size: 1rem;
+                letter-spacing: 0.3px;
+            }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                color: #fff !important;
+                background: rgba(255,255,255,0.15);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+            .btn-logout {
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+                border: 1px solid rgba(255,255,255,0.4);
+                width: 42px;
+                height: 42px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(5px);
+                padding: 0;
+            }
+
+            .btn-logout:hover {
+                background: #fff;
+                color: var(--primary-color);
+                border-color: #fff;
+                transform: translateY(-2px) rotate(90deg);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            
+            /* Add active state indication in nav */
+            .navbar-toggler {
+                border-color: rgba(255,255,255,0.5);
+            }
+            .navbar-toggler span {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
             }
         </style>
     </head>
@@ -76,22 +146,22 @@
         <!-- Topbar End -->
 
         <!-- Navbar & Hero Start -->
-        <div class="container-fluid position-relative p-0">
-            <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
-                <a href="" class="navbar-brand p-0">
+        <!-- Removed position-relative p-0 container wrapper for cleaner sticky nav if needed, checking style -->
+        <div class="container-fluid p-0">
+            <nav class="navbar navbar-expand-lg sticky-top shadow-sm px-4 px-lg-5">
+                <a href="{% url 'traveller_home' %}" class="navbar-brand d-flex align-items-center p-0">
                     <h1 class="m-0"><i class="fa fa-map-marker-alt me-3"></i>OpenRoutes</h1>
-                    <!-- <img src="img/logo.png" alt="Logo"> -->
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="fa fa-bars"></span>
+                    <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="{% url 'traveller_home' %}" class="nav-item nav-link">Home</a>
-                        <a href="{% url 'tour_packages' %}" class="nav-item nav-link">Tour Packages</a>
-                        <a href="{% url 'my_bookings' %}" class="nav-item nav-link">My Bookings</a>
-                        <a href="{% url 'profile_view' %}" class="nav-item nav-link">Profile</a>
+                        <a href="{% url 'traveller_home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'traveller_home' %}active{% endif %}">Home</a>
+                        <a href="{% url 'tour_packages' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'tour_packages' or request.resolver_match.url_name == 'tour_detail' or request.resolver_match.url_name == 'booking' or request.resolver_match.url_name == 'booking_confirm' or request.resolver_match.url_name == 'payment' %}active{% endif %}">Browse Packages</a>
+                        <a href="{% url 'my_bookings' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'my_bookings' %}active{% endif %}">My Bookings</a>
+                        <a href="{% url 'profile_view' %}" class="nav-item nav-link {% if 'profile' in request.resolver_match.url_name or 'change_password' in request.resolver_match.url_name %}active{% endif %}">Profile</a>
                     </div>
-                    <a href="{% url 'logout' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Logout</a>
+                    <a href="{% url 'logout' %}" class="btn btn-logout ms-lg-4" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
                 </div>
             </nav>
