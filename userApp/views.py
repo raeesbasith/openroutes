@@ -210,3 +210,37 @@ def change_password(request):
              return HttpResponse("<script>alert('User not found.'); window.location.href='/login/';</script>")
 
     return render(request, 'traveller/change_password.html')
+
+def edit_profile(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return HttpResponse("<script>alert('Please login first.'); window.location.href='/login/';</script>")
+
+    try:
+        traveller = TravellerProfile.objects.get(login=login_id)
+    except TravellerProfile.DoesNotExist:
+        return HttpResponse("<script>alert('Profile not found.'); window.location.href='/login/';</script>")
+
+    if request.method == 'POST':
+        traveller.traveller_name = request.POST.get('name')
+        traveller.phone = request.POST.get('phone')
+        traveller.address = request.POST.get('address')
+        traveller.city = request.POST.get('city')
+        traveller.pincode = request.POST.get('pincode')
+        
+        district_id = request.POST.get('district')
+        if district_id:
+            traveller.district = District.objects.get(district_id=district_id)
+        
+        # Email update - check for uniqueness if changed
+        new_email = request.POST.get('email')
+        if new_email != traveller.email:
+            if TravellerProfile.objects.filter(email=new_email).exists():
+                return HttpResponse(f"<script>alert('Email {new_email} is already in use.'); window.history.back();</script>")
+            traveller.email = new_email
+
+        traveller.save()
+        return HttpResponse("<script>alert('Profile updated successfully!'); window.location.href='/profile/';</script>")
+
+    districts = District.objects.all()
+    return render(request, 'traveller/edit_profile.html', {'traveller': traveller, 'districts': districts})
