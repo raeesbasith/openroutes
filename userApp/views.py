@@ -165,3 +165,16 @@ def process_payment(request, booking_id):
         return HttpResponse("<script>alert('Payment successful! Your booking is confirmed.');window.location.href='/tour-packages/';</script>")
     
     return HttpResponse("<script>alert('Invalid request.');window.location.href='/tour-packages/';</script>")    
+
+def profile_view(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return HttpResponse("<script>alert('Please login to view your profile.'); window.location.href='/login/';</script>")
+    
+    try:
+        traveller = TravellerProfile.objects.get(login=login_id)
+    except TravellerProfile.DoesNotExist:
+        # Fallback or error handling
+        return HttpResponse("<script>alert('Profile not found.'); window.location.href='/login/';</script>")
+        
+    return render(request, 'traveller/profile_view.html', {'traveller': traveller})

@@ -1,0 +1,353 @@
+{% include 'traveller/header.html' %}
+{% load static %}
+
+<style>
+    /* Navigation Bar Adjustments */
+    .navbar {
+        position: relative;
+        background: var(--bs-primary) !important;
+    }
+    .navbar-nav .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Page Layout */
+    .profile-section {
+        background-color: #f3f6f9;
+        min-height: 85vh;
+        padding: 50px 0;
+        font-family: 'Jost', sans-serif;
+    }
+
+    /* Cards */
+    .profile-card {
+        background: #fff;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Soft shadow */
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    /* Left Sidebar Profile */
+    .profile-sidebar {
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .profile-avatar-box {
+        position: relative;
+        margin: 0 auto 20px;
+        width: 140px;
+        height: 140px;
+    }
+
+    .profile-avatar-box .avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background-color: #f8f9fa; /* Fallback */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #13357B;
+    }
+
+    .profile-user-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .profile-user-role {
+        display: inline-block;
+        background: rgba(19, 53, 123, 0.1);
+        color: #13357B;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+
+    .profile-stats-box {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    /* Right Main Content */
+    .profile-content {
+        padding: 40px;
+    }
+
+    .content-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #f1f2f6;
+        padding-bottom: 15px;
+    }
+
+    .content-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #13357B;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .content-title i {
+        margin-right: 12px;
+        color: #23a6d5;
+    }
+
+    /* Info Items Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #eef2f6;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        border-color: #23a6d5;
+        box-shadow: 0 5px 15px rgba(35, 166, 213, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .info-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #13357B 0%, #23a6d5 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .info-text {
+        flex-grow: 1;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #95a5a6;
+        font-weight: 600;
+        margin-bottom: 3px;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #2c3e50;
+        word-break: break-word;
+    }
+
+    /* Buttons */
+    .action-btn-group {
+        margin-top: 10px;
+    }
+
+    .btn-profile-primary {
+        background-color: #13357B;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 500;
+        width: 100%;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        display: block; /* Full width details */
+    }
+
+    .btn-profile-primary:hover {
+        background-color: #0d2558;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(19, 53, 123, 0.3);
+    }
+
+    .btn-profile-secondary {
+        background-color: white;
+        color: #7f8c8d;
+        border: 1px solid #dfe6e9;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 500;
+        width: 100%;
+        transition: all 0.3s;
+        display: block;
+    }
+
+    .btn-profile-secondary:hover {
+        background-color: #f8f9fa;
+        border-color: #b2bec3;
+        color: #2c3e50;
+    }
+
+    @media (max-width: 991.98px) {
+        .profile-content {
+            padding: 30px 20px;
+        }
+    }
+</style>
+
+<div class="profile-section">
+    <div class="container">
+        <div class="row gx-4">
+            
+            <!-- Left Column: User Overview -->
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="profile-card profile-sidebar h-100">
+                    <div class="profile-avatar-box">
+                        <div class="avatar-img">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <h3 class="profile-user-name">{{ traveller.traveller_name }}</h3>
+                    <div class="profile-user-role">Traveller</div>
+                    
+                    <p class="text-muted small mb-4">
+                        <i class="far fa-clock me-1 text-primary"></i> Joined {{ traveller.reg_date|date:"F d, Y" }}
+                    </p>
+
+                    <div class="action-btn-group">
+                        <a href="#" class="btn btn-profile-primary"><i class="fas fa-edit me-2"></i> Edit Profile</a>
+                        <a href="{% url 'traveller_home' %}" class="btn btn-profile-secondary"><i class="fas fa-arrow-left me-2"></i><i class="fas fa-home"></i> Back to Home</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Details -->
+            <div class="col-lg-8">
+                <div class="profile-card profile-content h-100">
+                    
+                    <!-- Section: Contact Info -->
+                    <div class="content-header">
+                        <h4 class="content-title"><i class="fas fa-id-card-alt"></i> Contact Information</h4>
+                    </div>
+
+                    <div class="info-grid">
+                        <!-- Username -->
+                        <div class="info-card">
+                            <div class="info-icon-wrapper">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Username</div>
+                                <div class="info-value">{{ traveller.login.username }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="info-card">
+                            <div class="info-icon-wrapper">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value">{{ traveller.email }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="info-card">
+                            <div class="info-icon-wrapper">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value">+91 {{ traveller.phone }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Address Info -->
+                    <div class="content-header mt-4">
+                        <h4 class="content-title"><i class="fas fa-map-marked-alt"></i> Address Details</h4>
+                    </div>
+
+                    <div class="info-grid">
+                        <!-- Address -->
+                        <div class="info-card" style="grid-column: 1 / -1;">
+                             <div class="info-icon-wrapper">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Permanent Address</div>
+                                <div class="info-value">{{ traveller.address }}</div>
+                            </div>
+                        </div>
+
+                        <!-- City -->
+                        <div class="info-card">
+                             <div class="info-icon-wrapper">
+                                <i class="fas fa-city"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">City</div>
+                                <div class="info-value">{{ traveller.city }}</div>
+                            </div>
+                        </div>
+
+                         <!-- Pincode -->
+                        <div class="info-card">
+                             <div class="info-icon-wrapper">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Pincode</div>
+                                <div class="info-value">{{ traveller.pincode }}</div>
+                            </div>
+                        </div>
+
+                        <!-- District -->
+                         <div class="info-card">
+                             <div class="info-icon-wrapper">
+                                <i class="fas fa-map"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">District</div>
+                                <div class="info-value">{{ traveller.district.name }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% include 'traveller/footer.html' %}
