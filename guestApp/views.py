@@ -120,3 +120,7 @@ def operator_regn(request):
         return HttpResponse('<script>alert("Registration request submitted! Your account is under review."); window.location.href="/guest/";</script>')
     districts = District.objects.all()    
     return render(request, 'guest/operator_regn.html', {'districts': districts})
+
+def logout_view(request):
+    request.session.flush()
+    return redirect('guest')

@@ -2,10 +2,11 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from adminApp.models import District, Location, Accessibility
-from operatorApp.models import Tour, TourAccessibility
+from operatorApp.models import Tour, TourAccessibility, TourImages
 from userApp.models import *
 from guestApp.models import *
 import uuid
+from django.db.models import Case, When, Value, IntegerField
 # Create your views here.
 def traveller_home(request):
     return render(request, 'traveller/traveller_home.html')
@@ -244,3 +245,32 @@ def edit_profile(request):
 
     districts = District.objects.all()
     return render(request, 'traveller/edit_profile.html', {'traveller': traveller, 'districts': districts})
+
+def my_bookings(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return HttpResponse("<script>alert('Please login first.'); window.location.href='/login/';</script>")
+    
+    try:
+        traveller = TravellerProfile.objects.get(login=login_id)
+        # Order by pending first, then by date descending
+        bookings = Booking.objects.filter(traveller=traveller).annotate(
+            status_priority=Case(
+                When(booking_status='pending', then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        ).order_by('status_priority', '-booking_date')
+        
+        # Attach first image for each booking's tour
+        for booking in bookings:
+            image_obj = TourImages.objects.filter(tour=booking.tour).first()
+            if image_obj:
+                booking.tour_image_url = image_obj.image.url
+            else:
+                booking.tour_image_url = None
+                
+    except TravellerProfile.DoesNotExist:
+         return HttpResponse("<script>alert('Profile not found.'); window.location.href='/login/';</script>")
+         
+    return render(request, 'traveller/bookings_view.html', {'bookings': bookings})

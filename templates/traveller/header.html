@@ -87,12 +87,11 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="index.html" class="nav-item nav-link active">Home</a>
-                        <a href="about.html" class="nav-item nav-link">About</a>
-                        <a href="services.html" class="nav-item nav-link">Services</a>
-                        <a href="blog.html" class="nav-item nav-link">Blog</a>
-                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+                        <a href="{% url 'traveller_home' %}" class="nav-item nav-link">Home</a>
+                        <a href="{% url 'tour_packages' %}" class="nav-item nav-link">Tour Packages</a>
+                        <a href="{% url 'my_bookings' %}" class="nav-item nav-link">My Bookings</a>
+                        <a href="{% url 'profile_view' %}" class="nav-item nav-link">Profile</a>
                     </div>
-                    <a href="https://htmlcodex.com/downloading/?item=3232" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Buy Pro Version</a>
+                    <a href="{% url 'logout' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Logout</a>
                 </div>
             </nav>

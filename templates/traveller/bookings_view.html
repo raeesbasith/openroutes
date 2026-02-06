@@ -1,0 +1,269 @@
+{% include 'traveller/header.html' %}
+{% load static %}
+
+<style>
+    .navbar {
+        position: relative;
+        background: var(--bs-primary) !important;
+    }
+    .navbar-nav .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    .bookings-section {
+        background-color: #f3f6f9;
+        min-height: 85vh;
+        padding: 50px 0;
+        font-family: 'Jost', sans-serif;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #13357B;
+    }
+
+    .booking-card {
+        background: #fff;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        transition: transform 0.3s ease;
+        overflow: hidden;
+    }
+
+    .booking-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .booking-header {
+        background: #fff;
+        padding: 20px 25px;
+        border-bottom: 1px solid #f1f2f6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .tour-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #13357B;
+        margin: 0;
+    }
+
+    .booking-id {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+
+    .booking-body {
+        padding: 25px;
+    }
+
+    .info-row {
+        margin-bottom: 15px;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #95a5a6;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .status-badge {
+        padding: 6px 15px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-confirmed, .status-success {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: #2ecc71;
+    }
+
+    .status-pending {
+        background-color: rgba(241, 196, 15, 0.15);
+        color: #f1c40f;
+    }
+
+    .status-cancelled {
+        background-color: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+    }
+
+    .price-tag {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #13357B;
+    }
+
+    .accessibility-tag {
+        display: inline-block;
+        background: #eef2f6;
+        color: #13357B;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .img-box {
+        width: 100%;
+        height: 150px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px;
+        background: white;
+        border-radius: 15px;
+    }
+
+    .btn-details {
+        background-color: #13357B;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-details:hover {
+        background-color: #0d2558;
+        color: white;
+    }
+</style>
+
+<div class="bookings-section">
+    <div class="container">
+        <div class="row page-header align-items-center">
+            <div class="col-md-6">
+                <h2 class="page-title"><i class="fas fa-ticket-alt me-2"></i> My Bookings</h2>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="{% url 'tour_packages' %}" class="btn btn-outline-primary rounded-pill"><i class="fas fa-plus me-1"></i> Book New Tour</a>
+            </div>
+        </div>
+
+        {% if bookings %}
+            <div class="row">
+                {% for booking in bookings %}
+                <div class="col-lg-12">
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <div>
+                                <h4 class="tour-name">{{ booking.tour.tour_name }}</h4>
+                            </div>
+                            <span class="status-badge status-{{ booking.booking_status|lower }}">
+                                {{ booking.booking_status|title }}
+                            </span>
+                        </div>
+                        <div class="booking-body">
+                            <div class="row align-items-center">
+                                <!-- Tour Image -->
+                                <div class="col-md-3 mb-3 mb-md-0">
+                                    <div class="img-box">
+                                        {% if booking.tour_image_url %}
+                                            <img src="{{ booking.tour_image_url }}" alt="{{ booking.tour.tour_name }}">
+                                        {% else %}
+                                            <img src="{% static 'guest/img/destination-1.jpg' %}" alt="Default Image">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Booking Details -->
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="row">
+                                        <div class="col-sm-6 info-row">
+                                            <div class="info-label">Tour Date</div>
+                                            <div class="info-value"><i class="far fa-calendar-alt text-primary me-1"></i> {{ booking.tour_date|date:"F d, Y" }}</div>
+                                        </div>
+                                        <div class="col-sm-6 info-row">
+                                            <div class="info-label">Travellers</div>
+                                            <div class="info-value"><i class="fas fa-users text-primary me-1"></i> {{ booking.total_persons }} Person(s)</div>
+                                        </div>
+                                        <div class="col-sm-6 info-row">
+                                            <div class="info-label">Booked On</div>
+                                            <div class="info-value">{{ booking.booking_date|date:"M d, Y" }}</div>
+                                        </div>
+                                        <div class="col-sm-6 info-row">
+                                            <div class="info-label">Location</div>
+                                            <div class="info-value">{{ booking.tour.location.name }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if booking.bookingaccessibility_set.exists %}
+                                    <div class="mt-2">
+                                        <div class="info-label mb-2">Requested Accessibility</div>
+                                        <div>
+                                            {% for acc in booking.bookingaccessibility_set.all %}
+                                                <span class="accessibility-tag">{{ acc.accessibility.accessibility_feature }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+
+                                <!-- Cost & Action -->
+                                <div class="col-md-3 text-md-end text-start border-start-md ps-md-4">
+                                    <div class="info-label">Total Amount</div>
+                                    <div class="price-tag mb-3">₹{{ booking.total_amount }}</div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <!-- Add buttons here if needed, e.g. View Receipt, Cancel -->
+                                        {% if booking.booking_status == 'pending' %}
+                                            <a href="{% url 'payment' booking.booking_id %}" class="btn btn-warning rounded-pill">Complete Payment</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="mb-4">
+                    <i class="fas fa-suitcase-rolling fa-5x text-muted"></i>
+                </div>
+                <h3>No Bookings Found</h3>
+                <p class="text-muted">You haven't made any tour bookings yet.</p>
+                <a href="{% url 'tour_packages' %}" class="btn btn-primary btn-lg rounded-pill mt-3">Explore Packages</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'traveller/footer.html' %}
