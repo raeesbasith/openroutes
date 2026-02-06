@@ -178,3 +178,35 @@ def profile_view(request):
         return HttpResponse("<script>alert('Profile not found.'); window.location.href='/login/';</script>")
         
     return render(request, 'traveller/profile_view.html', {'traveller': traveller})
+
+def change_password(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return HttpResponse("<script>alert('Please login first.'); window.location.href='/login/';</script>")
+
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        try:
+            user_login = login.objects.get(login_id=login_id)
+            
+            if user_login.password != current_password:
+                 return HttpResponse("<script>alert('Incorrect current password.'); window.history.back();</script>")
+            
+            if new_password != confirm_password:
+                return HttpResponse("<script>alert('New passwords do not match.'); window.history.back();</script>")
+                
+            if len(new_password) < 8:
+                 return HttpResponse("<script>alert('Password must be at least 8 characters long.'); window.history.back();</script>")
+
+            user_login.password = new_password
+            user_login.save()
+            
+            return HttpResponse("<script>alert('Password updated successfully!'); window.location.href='/profile/';</script>")
+            
+        except login.DoesNotExist:
+             return HttpResponse("<script>alert('User not found.'); window.location.href='/login/';</script>")
+
+    return render(request, 'traveller/change_password.html')
