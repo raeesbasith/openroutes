@@ -209,7 +209,9 @@
     }
     
     .status-pending { background: var(--warning-bg); color: var(--warning-text); }
-    .status-confirmed, .status-success { background: var(--success-bg); color: var(--success-text); }
+    .status-approved { background: #dbeafe; color: #1e40af; }
+    .status-confirmed, .status-success { background: #dbeafe; color: #1e40af; }
+    .status-paid { background: var(--success-bg); color: var(--success-text); }
     .status-completed { background: var(--info-bg); color: var(--info-text); }
     .status-cancelled { background: var(--danger-bg); color: var(--danger-text); }
     
@@ -373,6 +375,8 @@
                                 <span class="status-badge status-pending"><span class="status-dot"></span> Pending</span>
                             {% elif booking.booking_status == 'confirmed' %}
                                 <span class="status-badge status-confirmed"><span class="status-dot"></span> Confirmed</span>
+                            {% elif booking.booking_status == 'paid' %}
+                                <span class="status-badge status-paid"><span class="status-dot"></span> Paid</span>
                             {% elif booking.booking_status == 'completed' %}
                                 <span class="status-badge status-completed"><span class="status-dot"></span> Completed</span>
                             {% elif booking.booking_status == 'cancelled' %}

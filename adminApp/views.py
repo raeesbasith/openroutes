@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.cache import cache_control
 from .models import *
 from operatorApp.models import Operator
 from guestApp.models import login
 
 # Create your views here.
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def adminHome(request):
-    return render(request, 'adminT/index.html')
+    if 'login_id' in request.session:
+        return render(request, 'adminT/index.html')
+    else:
+        return redirect('/login/')
 def distRegn(request):
     return render(request, 'adminT/districtRegn.html')
 

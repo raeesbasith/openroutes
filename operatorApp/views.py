@@ -1,14 +1,20 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
+from django.views.decorators.cache import cache_control
 from adminApp.models import District, Location, Accessibility
 from guestApp.models import Operator
 from userApp.models import Booking
 from .models import Tour, TourAccessibility, TourImages
 
 # Create your views here.
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def operator_home(request):
     login_id = request.session.get('login_id')
+    
+    if not login_id:
+        return redirect('/login/')
+        
     context = {}
     if login_id:
         try:

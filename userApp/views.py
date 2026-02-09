@@ -1,17 +1,28 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_control
 from adminApp.models import District, Location, Accessibility
 from operatorApp.models import Tour, TourAccessibility, TourImages
 from userApp.models import *
 from guestApp.models import *
 import uuid
 from django.db.models import Case, When, Value, IntegerField
-# Create your views here.
-def traveller_home(request):
-    return render(request, 'traveller/traveller_home.html')
+import google.generativeai as genai
 
+# Create your views here.
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def traveller_home(request):
+    if 'login_id' in request.session:
+        return render(request, 'traveller/traveller_home.html')
+    else:
+        return redirect('/login/')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def tour_packages_view(request):
+    if 'login_id' not in request.session:
+        return redirect('/login/')
+
     Districts = District.objects.all()
     accessibilities = Accessibility.objects.all()
     # Base queryset
@@ -49,6 +60,61 @@ def filllocation(request):
     did = request.POST.get('did')
     locations = Location.objects.filter(district_id=did).values('location_id', 'name')
     return JsonResponse(list(locations), safe=False)
+
+def chatbot_api(request):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        user_message = data.get('message', '')
+        
+        # Integration with Google Gemini API (Free Tier available)
+        # To make this fully functional:
+        # 1. pip install google-generativeai
+        # 2. Get API key from https://aistudio.google.com/app/apikey
+        # 3. Add your API key below
+        
+        google_api_key = "AIzaSyCIcgQE4YX0a-cdCEI14NX4G40VgliOAHM" # 'YOUR_GOOGLE_GEMINI_API_KEY'
+        
+        if google_api_key:
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=google_api_key)
+                
+                # Function to try generation with a specific model
+                def generate(model_name):
+                    model = genai.GenerativeModel(model_name)
+                    # Context prompt
+                    context = "You are a helpful assistant for a travel agency website called OpenRoutes that specializes in accessible tourism for people with disabilities. Keep answers concise and helpful."
+                    full_prompt = f"{context}\n\nUser: {user_message}"
+                    return model.generate_content(full_prompt).text
+
+                try:
+                    # Try the fast, free model first
+                    ai_reply = generate('gemini-1.5-flash')
+                except Exception as e1:
+                    # If that fails (e.g. 404), try to find ANY supported model
+                    if "404" in str(e1) or "not found" in str(e1):
+                        found_model = None
+                        for m in genai.list_models():
+                            if 'generateContent' in m.supported_generation_methods:
+                                found_model = m.name
+                                break
+                        
+                        if found_model:
+                             ai_reply = generate(found_model)
+                        else:
+                             raise e1 # Re-raise if we couldn't find a fallback
+                    else:
+                        raise e1
+                
+            except Exception as e:
+                ai_reply = f"Error communicating with AI: {str(e)}"
+        else:
+            # Simulated response for demonstration without API Key
+            ai_reply = f"I am a friendly AI assistant for OpenRoutes (Powered by Gemini). You asked: '{user_message}'. I can help you find accessible tours. (Please configure the Google Gemini API key in userApp/views.py to get real AI answers)"
+
+        return JsonResponse({'reply': ai_reply})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def tour_detail(request, tour_id):
     tour = get_object_or_404(Tour, tour_id=tour_id)
@@ -125,8 +191,12 @@ def booking_confirm(request, tour_id):
                 booking_acc.accessibility = Accessibility.objects.get(accessibility_id=acc)
                 booking_acc.save()
         
-        # Redirect to payment page instead of showing success
-        return redirect('payment', booking_id=booking.booking_id)
+        # Redirect to booking success page
+        return redirect('booking_success', booking_id=booking.booking_id)
+
+def booking_success(request, booking_id):
+    """Display the booking success page"""
+    return render(request, 'traveller/booking_success.html')
 
 def payment(request, booking_id):
     """Display the payment page for a booking"""
@@ -160,7 +230,7 @@ def process_payment(request, booking_id):
         )
 
         # Update booking status to confirmed/paid
-        booking.booking_status = 'confirmed'
+        booking.booking_status = 'paid'
         booking.save()
         
         return HttpResponse("<script>alert('Payment successful! Your booking is confirmed.');window.location.href='/tour-packages/';</script>")

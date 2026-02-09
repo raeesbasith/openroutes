@@ -97,13 +97,23 @@
     }
 
     .status-confirmed, .status-success {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .status-paid {
         background-color: rgba(46, 204, 113, 0.15);
         color: #2ecc71;
     }
 
     .status-pending {
         background-color: rgba(241, 196, 15, 0.15);
-        color: #f1c40f;
+        color: #f39c12;
+    }
+
+    .status-approved {
+        background-color: rgba(52, 152, 219, 0.15);
+        color: #3498db;
     }
 
     .status-cancelled {
@@ -241,9 +251,19 @@
                                     <div class="price-tag mb-3">₹{{ booking.total_amount }}</div>
                                     
                                     <div class="d-grid gap-2">
-                                        <!-- Add buttons here if needed, e.g. View Receipt, Cancel -->
+                                        <!-- Action Buttons based on Status -->
                                         {% if booking.booking_status == 'pending' %}
-                                            <a href="{% url 'payment' booking.booking_id %}" class="btn btn-warning rounded-pill">Complete Payment</a>
+                                            <button class="btn btn-secondary rounded-pill" disabled style="background-color: #e9ecef; color: #6c757d; border-color: #dee2e6;">
+                                                <i class="fas fa-clock me-2"></i>Awaiting Confirmation
+                                            </button>
+                                        {% elif booking.booking_status == 'confirmed' %}
+                                            <a href="{% url 'payment' booking.booking_id %}" class="btn btn-primary rounded-pill">
+                                                <i class="fas fa-credit-card me-2"></i>Pay Now
+                                            </a>
+                                        {% elif booking.booking_status == 'paid' %}
+                                            <button class="btn btn-success rounded-pill" disabled style="background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; opacity: 1;">
+                                                <i class="fas fa-check-circle me-2"></i>Paid
+                                            </button>
                                         {% endif %}
                                     </div>
                                 </div>

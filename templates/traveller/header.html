@@ -68,7 +68,7 @@
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             }
 
-            .btn-logout {
+            .btn-nav-icon {
                 background: rgba(255,255,255,0.1);
                 color: #fff;
                 border: 1px solid rgba(255,255,255,0.4);
@@ -84,12 +84,16 @@
                 padding: 0;
             }
 
-            .btn-logout:hover {
+            .btn-nav-icon:hover {
                 background: #fff;
                 color: var(--primary-color);
                 border-color: #fff;
-                transform: translateY(-2px) rotate(90deg);
+                transform: translateY(-2px);
                 box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+
+            .btn-nav-icon.rotate-on-hover:hover {
+                transform: translateY(-2px) rotate(90deg);
             }
             
             /* Add active state indication in nav */
@@ -160,8 +164,8 @@
                         <a href="{% url 'traveller_home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'traveller_home' %}active{% endif %}">Home</a>
                         <a href="{% url 'tour_packages' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'tour_packages' or request.resolver_match.url_name == 'tour_detail' or request.resolver_match.url_name == 'booking' or request.resolver_match.url_name == 'booking_confirm' or request.resolver_match.url_name == 'payment' %}active{% endif %}">Browse Packages</a>
                         <a href="{% url 'my_bookings' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'my_bookings' %}active{% endif %}">My Bookings</a>
-                        <a href="{% url 'profile_view' %}" class="nav-item nav-link {% if 'profile' in request.resolver_match.url_name or 'change_password' in request.resolver_match.url_name %}active{% endif %}">Profile</a>
                     </div>
-                    <a href="{% url 'logout' %}" class="btn btn-logout ms-lg-4" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+                    <a href="{% url 'profile_view' %}" class="btn btn-nav-icon ms-lg-3" title="Profile" style="margin-left: 10px;"><i class="fas fa-user"></i></a>
+                    <a href="{% url 'logout' %}" class="btn btn-nav-icon rotate-on-hover ms-2" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
                 </div>
             </nav>
