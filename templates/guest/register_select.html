@@ -22,10 +22,27 @@
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            position: relative;
         }
 
         .register-container h2 {
             margin-bottom: 25px;
+            color: #333;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
             color: #333;
         }
 
@@ -69,6 +86,7 @@
 <body>
 
 <div class="register-container">
+    <a href="{% url 'guest' %}" class="close-btn">&times;</a>
     <h2>Register As</h2>
 
     <a href="{% url 'traveller_regn' %}">

@@ -387,6 +387,7 @@
                         </td>
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-2">
+
                                 <button class="action-btn" title="View Details" data-bs-toggle="modal" data-bs-target="#bookingModal{{ booking.booking_id }}">
                                     <i class="bi bi-eye"></i>
                                 </button>
@@ -397,6 +398,10 @@
                                 </button>
                                 <button class="action-btn reject" title="Cancel Booking" onclick="updateStatus('{{ booking.booking_id }}', 'cancelled')">
                                     <i class="bi bi-x-lg"></i>
+                                </button>
+                                {% elif booking.booking_status == 'paid' %}
+                                <button class="action-btn text-success border-success bg-white" title="Mark as Completed" onclick="updateStatus('{{ booking.booking_id }}', 'completed')">
+                                    <i class="bi bi-check-circle-fill"></i>
                                 </button>
                                 {% endif %}
                             </div>

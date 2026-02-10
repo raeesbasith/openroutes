@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+
     <title>Register - OpenRoutes</title>
     <style>
         * {
@@ -261,6 +263,21 @@
             display: block;
         }
 
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #1e3c72;
+        }
+
         /* Scrollbar styling */
         .modal-container::-webkit-scrollbar {
             width: 8px;
@@ -285,13 +302,11 @@
     <!-- Registration Modal Overlay -->
     <div class="overlay" id="overlay">
         <div class="modal-container">
-
+            <a href="{% url 'guest' %}" class="close-btn">&times;</a>
             
             <div class="logo">
-                <h1>
-                    OpenRoutes
-                    <span class="logo-icon">🌍</span>
-                </h1>
+                <h1 class="m-0"><i class="fa fa-map-marker-alt me-3"></i>OpenRoutes</h1>
+
             </div>
 
             <div class="header">

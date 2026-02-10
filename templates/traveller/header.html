@@ -164,8 +164,9 @@
                         <a href="{% url 'traveller_home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'traveller_home' %}active{% endif %}">Home</a>
                         <a href="{% url 'tour_packages' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'tour_packages' or request.resolver_match.url_name == 'tour_detail' or request.resolver_match.url_name == 'booking' or request.resolver_match.url_name == 'booking_confirm' or request.resolver_match.url_name == 'payment' %}active{% endif %}">Browse Packages</a>
                         <a href="{% url 'my_bookings' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'my_bookings' %}active{% endif %}">My Bookings</a>
+
                     </div>
-                    <a href="{% url 'profile_view' %}" class="btn btn-nav-icon ms-lg-3" title="Profile" style="margin-left: 10px;"><i class="fas fa-user"></i></a>
+                    <a href="{% url 'traveller_profile' %}" class="btn btn-nav-icon ms-lg-3" title="Profile" style="margin-left: 10px;"><i class="fas fa-user"></i></a>
                     <a href="{% url 'logout' %}" class="btn btn-nav-icon rotate-on-hover ms-2" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
                 </div>
             </nav>

@@ -1,557 +1,464 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Kaiadmin - Bootstrap 5 Admin Dashboard</title>
-    <meta
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-      name="viewport"
-    />
-    <link
-      rel="icon"
-      href="{% static 'assets/img/kaiadmin/favicon.ico' %}"
-      type="image/x-icon"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenRoutes Admin Panel</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <!-- Fonts and icons -->
-    <script src="{% static 'assets/js/plugin/webfont/webfont.min.js' %}"></script>
-    <script>
-      WebFont.load({
-        google: { families: ["Public Sans:300,400,500,600,700"] },
-        custom: {
-          families: [
-            "Font Awesome 5 Solid",
-            "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
-            "simple-line-icons",
-          ],
-          urls: ["assets/css/fonts.min.css"],
-        },
-        active: function () {
-          sessionStorage.fonts = true;
-        },
-      });
-    </script>
+    <style>
+        :root {
+            --sidebar-bg: #1572e8;
+            --sidebar-text: #e2e8f0;
+            --sidebar-hover: #0d5bb9;
+            --primary-color: #1572e8;
+            --bg-light: #f3f4f6;
+        }
 
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'assets/css/plugins.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'assets/css/kaiadmin.min.css' %}" />
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
 
-    <!-- CSS Just for demo purpose, don't include it in your project -->
-    <link rel="stylesheet" href="{% static 'assets/css/demo.css' %}" />
-  </head>
-  <body>
-    <div class="wrapper">
-      <!-- Sidebar -->
-      <div class="sidebar" data-background-color="dark">
-        <div class="sidebar-logo">
-          <!-- Logo Header -->
-          <div class="logo-header" data-background-color="dark">
-            <a href="{% url 'adminHome' %}" class="logo">
-              <img
-                src="{% static 'assets/img/kaiadmin/logo_light.svg' %}"
-                alt="navbar brand"
-                class="navbar-brand"
-                height="20"
-              />
-            </a>
-            <div class="nav-toggle">
-              <button class="btn btn-toggle toggle-sidebar">
-                <i class="gg-menu-right"></i>
-              </button>
-              <button class="btn btn-toggle sidenav-toggler">
-                <i class="gg-menu-left"></i>
-              </button>
+        /* Bootstrap Overrides */
+        .bg-primary { background-color: var(--primary-color) !important; }
+        .text-primary { color: var(--primary-color) !important; }
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: var(--sidebar-hover); border-color: var(--sidebar-hover); }
+
+        /* Dashboard Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+            background: #fff;
+        }
+        .card-stats .card-body {
+            padding: 15px 20px;
+        }
+        .card-stats .col-icon {
+            flex: 0 0 auto;
+        }
+        .card-stats .icon-big {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border-radius: 50%;
+        }
+        .card-stats .icon-primary { background: rgba(21, 114, 232, 0.15); color: var(--primary-color); }
+        .card-stats .icon-info { background: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
+        .card-stats .icon-success { background: rgba(25, 135, 84, 0.15); color: #198754; }
+        .card-stats .icon-secondary { background: rgba(108, 117, 125, 0.15); color: #6c757d; }
+        
+        .card-stats .numbers {
+            text-align: right;
+        }
+        .card-stats .card-category {
+            color: #6c757d;
+            font-size: 13px;
+            margin-bottom: 0;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .card-stats .card-title {
+            color: #1e293b;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 0;
+            line-height: 1.2;
+        }
+        
+        /* Utility */
+        .op-7 { opacity: 0.7; }
+        .fw-bold { font-weight: 600 !important; }
+        .bubble-shadow-small { box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0f172a 100%);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .brand-text h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        
+        .brand-text span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
+
+        .user-profile {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-info .name {
+            display: block;
+            font-weight: 500;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .user-info .role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-link i {
+            font-size: 18px;
+            opacity: 0.8;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border-left: 3px solid #60a5fa;
+            background-clip: padding-box;
+        }
+        
+        .nav-link:hover i, .nav-link.active i {
+            opacity: 1;
+            color: #60a5fa;
+        }
+        
+        /* Submenu */
+        .collapse-custom {
+            background: rgba(0,0,0,0.15);
+        }
+        
+        .sub-link {
+            padding-left: 56px;
+            font-size: 13px;
+        }
+        
+        .nav-link[data-bs-toggle="collapse"]::after {
+            content: "\f078";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .nav-link[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding-bottom: 60px;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            background: #fff;
+            height: 70px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .toggle-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--primary-color);
+            border: none;
+            background: none;
+            display: none; /* Hidden on desktop */
+        }
+        
+        .top-nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .toggle-btn {
+                display: block;
+            }
+        }
+        
+        .content-container {
+            padding: 30px;
+            flex: 1;
+        }
+        
+        /* Card Stats override for admin dashboard if needed */
+        .card-stats {
+            margin-bottom: 30px;
+            border: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">
+                <i class="bi bi-shield-lock-fill"></i>
             </div>
-            <button class="topbar-toggler more">
-              <i class="gg-more-vertical-alt"></i>
-            </button>
-          </div>
-          <!-- End Logo Header -->
+            <div class="brand-text">
+                <h4>OpenRoutes</h4>
+                <span>Admin Panel</span>
+            </div>
         </div>
-        <div class="sidebar-wrapper scrollbar scrollbar-inner">
-          <div class="sidebar-content">
-            <ul class="nav nav-secondary">
-              <li class="nav-item {% if request.resolver_match.url_name == 'adminHome' %}active{% endif %}">
-                <a href="{% url 'adminHome' %}">
-                  <i class="fas fa-home"></i>
-                  <p>Dashboard</p>
-                </a>
-              </li>
-              <li class="nav-section">
-                <span class="sidebar-mini-icon">
-                  <i class="fa fa-ellipsis-h"></i>
-                </span>
-                <h4 class="text-section">Master Data</h4>
-              </li>
-              
-              <!-- Location Management -->
-              <li class="nav-item {% if 'dist' in request.path or 'location' in request.path %}active submenu{% endif %}">
-                <a data-bs-toggle="collapse" href="#location">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <p>Location Management</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse {% if 'dist' in request.path or 'location' in request.path %}show{% endif %}" id="location">
-                  <ul class="nav nav-collapse">
-                    <li class="{% if 'distRegn' in request.path %}active{% endif %}">
-                      <a href="{% url 'distRegn' %}">
-                        <span class="sub-item">Add District</span>
-                      </a>
-                    </li>
-                    <li class="{% if 'distView' in request.path %}active{% endif %}">
-                      <a href="{% url 'distView' %}">
-                        <span class="sub-item">View Districts</span>
-                      </a>
-                    </li>
-                    <li class="{% if 'locationRegn' in request.path %}active{% endif %}">
-                      <a href="{% url 'locationRegn' %}">
-                        <span class="sub-item">Add Location</span>
-                      </a>
-                    </li>
-                    <li class="{% if 'locationView' in request.path %}active{% endif %}">
-                      <a href="{% url 'locationView' %}">
-                        <span class="sub-item">View Locations</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
 
-              <!-- Accessibility Management -->
-              <li class="nav-item {% if 'disability' in request.path or 'accessibility' in request.path %}active submenu{% endif %}">
-                <a data-bs-toggle="collapse" href="#accessibility">
-                  <i class="fas fa-wheelchair"></i>
-                  <p>Accessibility</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse {% if 'disability' in request.path or 'accessibility' in request.path %}show{% endif %}" id="accessibility">
-                  <ul class="nav nav-collapse">
-                    <li class="{% if 'disabilityRegn' in request.path %}active{% endif %}">
-                      <a href="{% url 'disabilityRegn' %}">
-                        <span class="sub-item">Add Disability Type</span>
-                      </a>
-                    </li>
-                    <li class="{% if 'disabilityView' in request.path %}active{% endif %}">
-                      <a href="{% url 'disabilityView' %}">
-                        <span class="sub-item">View Disabilities</span>
-                      </a>
-                    </li>
-                    <li class="{% if 'accessibilityRegn' in request.path %}active{% endif %}">
-                      <a href="{% url 'accessibilityRegn' %}">
-                        <span class="sub-item">Add Access Feature</span>
-                      </a>
-                    </li>
-                    <li class="{% if 'accessibilityView' in request.path %}active{% endif %}">
-                      <a href="{% url 'accessibilityView' %}">
-                        <span class="sub-item">View Access Features</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
+        <div class="user-profile">
+            <div class="user-avatar">
+                A
+            </div>
+            <div class="user-info">
+                <span class="name">Administrator</span>
+                <span class="role">System Admin</span>
+            </div>
+        </div>
 
-              <li class="nav-section">
-                <span class="sidebar-mini-icon">
-                  <i class="fa fa-ellipsis-h"></i>
-                </span>
-                <h4 class="text-section">Operations</h4>
-              </li>
+        <nav class="sidebar-nav">
+            <ul class="nav p-0 m-0 d-block">
+                <li class="nav-item">
+                    <a href="{% url 'adminHome' %}" class="nav-link {% if request.resolver_match.url_name == 'adminHome' %}active{% endif %}">
+                        <i class="bi bi-grid-1x2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <span class="text-uppercase text-muted ps-4 py-2 d-block" style="font-size: 11px; letter-spacing: 1px;">Master Data</span>
+                </li>
 
-              <!-- Verification -->
-              <li class="nav-item {% if 'operator-verification' in request.path %}active{% endif %}">
-                <a href="{% url 'operatorVerification' %}">
-                  <i class="fas fa-user-check"></i>
-                  <p>Operator Verification</p>
-                </a>
-              </li>
+                <!-- Location Management -->
+                <li class="nav-item">
+                    <a class="nav-link {% if 'dist' in request.path or 'location' in request.path %}active{% endif %}" data-bs-toggle="collapse" href="#locationSubmenu" role="button" aria-expanded="{% if 'dist' in request.path or 'location' in request.path %}true{% else %}false{% endif %}" aria-controls="locationSubmenu">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Location Mgmt</span>
+                    </a>
+                    <div class="collapse collapse-custom {% if 'dist' in request.path or 'location' in request.path %}show{% endif %}" id="locationSubmenu">
+                        <ul class="nav p-0 m-0 d-block">
+                            <li class="nav-item">
+                                <a href="{% url 'distRegn' %}" class="nav-link sub-link {% if 'distRegn' in request.path %}active{% endif %}">
+                                    <span>Add District</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'distView' %}" class="nav-link sub-link {% if 'distView' in request.path %}active{% endif %}">
+                                    <span>View Districts</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'locationRegn' %}" class="nav-link sub-link {% if 'locationRegn' in request.path %}active{% endif %}">
+                                    <span>Add Location</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'locationView' %}" class="nav-link sub-link {% if 'locationView' in request.path %}active{% endif %}">
+                                    <span>View Locations</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Accessibility Management -->
+                <li class="nav-item">
+                    <a class="nav-link {% if 'disability' in request.path or 'accessibility' in request.path %}active{% endif %}" data-bs-toggle="collapse" href="#accessSubmenu" role="button" aria-expanded="{% if 'disability' in request.path or 'accessibility' in request.path %}true{% else %}false{% endif %}" aria-controls="accessSubmenu">
+                        <i class="bi bi-universal-access"></i>
+                        <span>Accessibility</span>
+                    </a>
+                    <div class="collapse collapse-custom {% if 'disability' in request.path or 'accessibility' in request.path %}show{% endif %}" id="accessSubmenu">
+                        <ul class="nav p-0 m-0 d-block">
+                            <li class="nav-item">
+                                <a href="{% url 'disabilityRegn' %}" class="nav-link sub-link {% if 'disabilityRegn' in request.path %}active{% endif %}">
+                                    <span>Add Disability Type</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'disabilityView' %}" class="nav-link sub-link {% if 'disabilityView' in request.path %}active{% endif %}">
+                                    <span>View Disabilities</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'accessibilityRegn' %}" class="nav-link sub-link {% if 'accessibilityRegn' in request.path %}active{% endif %}">
+                                    <span>Add Access Feature</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'accessibilityView' %}" class="nav-link sub-link {% if 'accessibilityView' in request.path %}active{% endif %}">
+                                    <span>View Access Features</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <span class="text-uppercase text-muted ps-4 py-2 d-block" style="font-size: 11px; letter-spacing: 1px;">Operations</span>
+                </li>
+
+                <!-- Verification -->
+                <li class="nav-item">
+                    <a href="{% url 'operatorVerification' %}" class="nav-link {% if 'operator-verification' in request.path %}active{% endif %}">
+                        <i class="bi bi-person-check"></i>
+                        <span>Operator Verification</span>
+                    </a>
+                </li>
             </ul>
-          </div>
+        </nav>
+        
+        <div style="padding: 20px;">
+            <a href="/logout/" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2" style="border-color: rgba(255,255,255,0.2);">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
         </div>
-      </div>
-      <!-- End Sidebar -->
+    </aside>
 
-      <div class="main-panel">
-        <div class="main-header">
-          <div class="main-header-logo">
-            <!-- Logo Header -->
-            <div class="logo-header" data-background-color="dark">
-              <a href="index.html" class="logo">
-                <img
-                  src="assets/img/kaiadmin/logo_light.svg"
-                  alt="navbar brand"
-                  class="navbar-brand"
-                  height="20"
-                />
-              </a>
-              <div class="nav-toggle">
-                <button class="btn btn-toggle toggle-sidebar">
-                  <i class="gg-menu-right"></i>
-                </button>
-                <button class="btn btn-toggle sidenav-toggler">
-                  <i class="gg-menu-left"></i>
-                </button>
-              </div>
-              <button class="topbar-toggler more">
-                <i class="gg-more-vertical-alt"></i>
-              </button>
-            </div>
-            <!-- End Logo Header -->
-          </div>
-          <!-- Navbar Header -->
-          <nav
-            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-          >
-            <div class="container-fluid">
-              <nav
-                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <button type="submit" class="btn btn-search pe-1">
-                      <i class="fa fa-search search-icon"></i>
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search ..."
-                    class="form-control"
-                  />
+    <!-- Main Content Wrapper -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <h5 class="m-0 d-none d-md-block text-secondary" style="font-weight: 500;">
+                {% if request.resolver_match.url_name == 'adminHome' %}Admin Dashboard
+                {% elif 'dist' in request.path or 'location' in request.path %}Location Master
+                {% elif 'disability' in request.path or 'accessibility' in request.path %}Accessibility Master
+                {% elif 'operator-verification' in request.path %}Operator Management
+                {% else %}Admin Portal{% endif %}
+            </h5>
+
+            <div class="top-nav-items">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-none d-md-block text-end">
+                        <span class="d-block text-dark small fw-bold">Administrator</span>
+                        <span class="d-block text-muted small" style="font-size: 10px;">System Admin</span>
+                    </div>
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-person-circle text-primary" style="font-size: 24px;"></i>
+                    </div>
                 </div>
-              </nav>
-
-              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                <li
-                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
-                >
-                  <a
-                    class="nav-link dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    href="#"
-                    role="button"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                  >
-                    <i class="fa fa-search"></i>
-                  </a>
-                  <ul class="dropdown-menu dropdown-search animated fadeIn">
-                    <form class="navbar-left navbar-form nav-search">
-                      <div class="input-group">
-                        <input
-                          type="text"
-                          placeholder="Search ..."
-                          class="form-control"
-                        />
-                      </div>
-                    </form>
-                  </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="messageDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <i class="fa fa-envelope"></i>
-                  </a>
-                  <ul
-                    class="dropdown-menu messages-notif-box animated fadeIn"
-                    aria-labelledby="messageDropdown"
-                  >
-                    <li>
-                      <div
-                        class="dropdown-title d-flex justify-content-between align-items-center"
-                      >
-                        Messages
-                        <a href="#" class="small">Mark all as read</a>
-                      </div>
-                    </li>
-                    <li>
-                      <div class="message-notif-scroll scrollbar-outer">
-                        <div class="notif-center">
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="{% static 'assets/img/jm_denis.jpg' %}"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Jimmy Denis</span>
-                              <span class="block"> How are you ? </span>
-                              <span class="time">5 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="{% static 'assets/img/chadengle.jpg' %}"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Chad</span>
-                              <span class="block"> Ok, Thanks ! </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="{% static 'assets/img/mlane.jpg' %}"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Jhon Doe</span>
-                              <span class="block">
-                                Ready for the meeting today...
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="assets/img/talha.jpg"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Talha</span>
-                              <span class="block"> Hi, Apa Kabar ? </span>
-                              <span class="time">17 minutes ago</span>
-                            </div>
-                          </a>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <a class="see-all" href="javascript:void(0);"
-                        >See all messages<i class="fa fa-angle-right"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="notifDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <i class="fa fa-bell"></i>
-                    <span class="notification">4</span>
-                  </a>
-                  <ul
-                    class="dropdown-menu notif-box animated fadeIn"
-                    aria-labelledby="notifDropdown"
-                  >
-                    <li>
-                      <div class="dropdown-title">
-                        You have 4 new notification
-                      </div>
-                    </li>
-                    <li>
-                      <div class="notif-scroll scrollbar-outer">
-                        <div class="notif-center">
-                          <a href="#">
-                            <div class="notif-icon notif-primary">
-                              <i class="fa fa-user-plus"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block"> New user registered </span>
-                              <span class="time">5 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-icon notif-success">
-                              <i class="fa fa-comment"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block">
-                                Rahmad commented on Admin
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="{% static 'assets/img/profile2.jpg' %}"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="block">
-                                Reza send messages to you
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-icon notif-danger">
-                              <i class="fa fa-heart"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block"> Farrah liked Admin </span>
-                              <span class="time">17 minutes ago</span>
-                            </div>
-                          </a>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <a class="see-all" href="javascript:void(0);"
-                        >See all notifications<i class="fa fa-angle-right"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                  <a
-                    class="nav-link"
-                    data-bs-toggle="dropdown"
-                    href="#"
-                    aria-expanded="false"
-                  >
-                    <i class="fas fa-layer-group"></i>
-                  </a>
-                  <div class="dropdown-menu quick-actions animated fadeIn">
-                    <div class="quick-actions-header">
-                      <span class="title mb-1">Quick Actions</span>
-                      <span class="subtitle op-7">Shortcuts</span>
-                    </div>
-                    <div class="quick-actions-scroll scrollbar-outer">
-                      <div class="quick-actions-items">
-                        <div class="row m-0">
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div class="avatar-item bg-danger rounded-circle">
-                                <i class="far fa-calendar-alt"></i>
-                              </div>
-                              <span class="text">Calendar</span>
-                            </div>
-                          </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-warning rounded-circle"
-                              >
-                                <i class="fas fa-map"></i>
-                              </div>
-                              <span class="text">Maps</span>
-                            </div>
-                          </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div class="avatar-item bg-info rounded-circle">
-                                <i class="fas fa-file-excel"></i>
-                              </div>
-                              <span class="text">Reports</span>
-                            </div>
-                          </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-success rounded-circle"
-                              >
-                                <i class="fas fa-envelope"></i>
-                              </div>
-                              <span class="text">Emails</span>
-                            </div>
-                          </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-primary rounded-circle"
-                              >
-                                <i class="fas fa-file-invoice-dollar"></i>
-                              </div>
-                              <span class="text">Invoice</span>
-                            </div>
-                          </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-secondary rounded-circle"
-                              >
-                                <i class="fas fa-credit-card"></i>
-                              </div>
-                              <span class="text">Payments</span>
-                            </div>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-
-                <li class="nav-item topbar-user dropdown hidden-caret">
-                  <a
-                    class="dropdown-toggle profile-pic"
-                    data-bs-toggle="dropdown"
-                    href="#"
-                    aria-expanded="false"
-                  >
-                    <div class="avatar-sm">
-                      <img
-                        src="{% static 'assets/img/profile.jpg' %}"
-                        alt="..."
-                        class="avatar-img rounded-circle"
-                      />
-                    </div>
-                    <span class="profile-username">
-                      <span class="op-7">Hi,</span>
-                      <span class="fw-bold">Hizrian</span>
-                    </span>
-                  </a>
-                  <ul class="dropdown-menu dropdown-user animated fadeIn">
-                    <div class="dropdown-user-scroll scrollbar-outer">
-                      <li>
-                        <div class="user-box">
-                          <div class="avatar-lg">
-                            <img
-                              src="{% static 'assets/img/profile.jpg' %}"
-                              alt="image profile"
-                              class="avatar-img rounded"
-                            />
-                          </div>
-                          <div class="u-text">
-                            <h4>Hizrian</h4>
-                            <p class="text-muted">hello@example.com</p>
-                            <a
-                              href="profile.html"
-                              class="btn btn-xs btn-secondary btn-sm"
-                              >View Profile</a
-                            >
-                          </div>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">My Profile</a>
-                        <a class="dropdown-item" href="#">My Balance</a>
-                        <a class="dropdown-item" href="#">Inbox</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Account Setting</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
-                      </li>
-                    </div>
-                  </ul>
-                </li>
-              </ul>
             </div>
-          </nav>
-          <!-- End Navbar -->
-        </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="content-container">

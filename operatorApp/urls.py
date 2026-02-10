@@ -14,5 +14,5 @@ urlpatterns = [
     path('operator-home/delete-tour-image/<int:image_id>/', views.delete_tour_image, name='delete_tour_image'),
     path('operator-home/bookings/', views.booking_view, name='booking_view'),
     path('operator-home/update-booking-status/<int:booking_id>/', views.update_booking_status, name='update_booking_status'),
-    path('operator-home/profile/', views.profile_view, name='profile_view'),
+    path('operator-home/profile/', views.profile_view, name='operator_profile'),
 ]

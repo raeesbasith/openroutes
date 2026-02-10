@@ -13,15 +13,15 @@ import google.generativeai as genai
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def traveller_home(request):
-    if 'login_id' in request.session:
+    if request.session.get('login_id'):
         return render(request, 'traveller/traveller_home.html')
     else:
-        return redirect('/login/')
+        return redirect('login')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def tour_packages_view(request):
-    if 'login_id' not in request.session:
-        return redirect('/login/')
+    if not request.session.get('login_id'):
+        return redirect('login')
 
     Districts = District.objects.all()
     accessibilities = Accessibility.objects.all()
@@ -66,12 +66,7 @@ def chatbot_api(request):
         import json
         data = json.loads(request.body)
         user_message = data.get('message', '')
-        
-        # Integration with Google Gemini API (Free Tier available)
-        # To make this fully functional:
-        # 1. pip install google-generativeai
-        # 2. Get API key from https://aistudio.google.com/app/apikey
-        # 3. Add your API key below
+
         
         google_api_key = "AIzaSyCIcgQE4YX0a-cdCEI14NX4G40VgliOAHM" # 'YOUR_GOOGLE_GEMINI_API_KEY'
         
@@ -316,13 +311,14 @@ def edit_profile(request):
     districts = District.objects.all()
     return render(request, 'traveller/edit_profile.html', {'traveller': traveller, 'districts': districts})
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def my_bookings(request):
     login_id = request.session.get('login_id')
     if not login_id:
-        return HttpResponse("<script>alert('Please login first.'); window.location.href='/login/';</script>")
+        return redirect('login')
     
     try:
-        traveller = TravellerProfile.objects.get(login=login_id)
+        traveller = TravellerProfile.objects.get(login_id=login_id)
         # Order by pending first, then by date descending
         bookings = Booking.objects.filter(traveller=traveller).annotate(
             status_priority=Case(

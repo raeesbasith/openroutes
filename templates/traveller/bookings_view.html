@@ -121,6 +121,11 @@
         color: #e74c3c;
     }
 
+    .status-completed {
+        background-color: rgba(13, 202, 240, 0.15);
+        color: #0dcaf0;
+    }
+
     .price-tag {
         font-size: 1.5rem;
         font-weight: 700;
@@ -251,6 +256,7 @@
                                     <div class="price-tag mb-3">₹{{ booking.total_amount }}</div>
                                     
                                     <div class="d-grid gap-2">
+
                                         <!-- Action Buttons based on Status -->
                                         {% if booking.booking_status == 'pending' %}
                                             <button class="btn btn-secondary rounded-pill" disabled style="background-color: #e9ecef; color: #6c757d; border-color: #dee2e6;">
@@ -263,6 +269,10 @@
                                         {% elif booking.booking_status == 'paid' %}
                                             <button class="btn btn-success rounded-pill" disabled style="background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; opacity: 1;">
                                                 <i class="fas fa-check-circle me-2"></i>Paid
+                                            </button>
+                                        {% elif booking.booking_status == 'completed' %}
+                                            <button class="btn btn-info rounded-pill" disabled style="background-color: #cff4fc; color: #055160; border-color: #b6effb; opacity: 1;">
+                                                <i class="fas fa-flag-checkered me-2"></i>Completed
                                             </button>
                                         {% endif %}
                                     </div>
