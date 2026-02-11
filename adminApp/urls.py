@@ -36,4 +36,5 @@ urlpatterns = [
     path('traveller-profile/<int:id>/', views.travellerProfile, name='travellerProfile'),
     path('traveller-block/<int:id>/', views.travellerBlock, name='travellerBlock'),
     path('traveller-unblock/<int:id>/', views.travellerUnblock, name='travellerUnblock'),
+    path('bookings-view/', views.bookingsView, name='bookingsView'),
 ]

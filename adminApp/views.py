@@ -4,6 +4,7 @@ from django.views.decorators.cache import cache_control
 from .models import *
 from operatorApp.models import Operator
 from guestApp.models import login, TravellerProfile
+from userApp.models import Booking
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -218,5 +219,10 @@ def travellerUnblock(request, id):
     lob.status = 'active'
     lob.save()
     return HttpResponse("<script>alert('Traveller unblocked!!!'); window.location.href = '/travellers-view/';</script>")
+
+def bookingsView(request):
+    bookings = Booking.objects.all().order_by('-booking_date')
+    return render(request, 'adminT/bookings_view.html', {'bookings': bookings})
+
 
 

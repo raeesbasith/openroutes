@@ -527,6 +527,15 @@
                         <span>Travellers</span>
                     </a>
                 </li>
+
+                <!-- Booking Management -->
+                <li class="nav-item">
+                    <a href="{% url 'bookingsView' %}"
+                       class="nav-link {% if 'bookings' in request.path %}active{% endif %}">
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Bookings</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
@@ -553,6 +562,7 @@
                 {% elif 'disability' in request.path or 'accessibility' in request.path %}Accessibility Master
                 {% elif 'operator' in request.path %}Operator Management
                 {% elif 'traveller' in request.path %}Traveller Management
+                {% elif 'bookings' in request.path %}Booking Management
                 {% else %}Admin Portal{% endif %}
             </h5>
 
