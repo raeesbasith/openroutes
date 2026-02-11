@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_control
 from .models import *
 from operatorApp.models import Operator
-from guestApp.models import login
+from guestApp.models import login, TravellerProfile
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -198,3 +198,25 @@ def operatorUnblock(request, id):
 def operatorProfile(request, id):
     operator = Operator.objects.get(operator_id=id)
     return render(request, 'adminT/operator_profile.html', {'operator': operator})
+
+def travellersView(request):
+    travellers = TravellerProfile.objects.all().order_by('-reg_date')
+    return render(request, 'adminT/traveller_view.html', {'travellers': travellers})
+
+def travellerProfile(request, id):
+    traveller = TravellerProfile.objects.get(traveller_id=id)
+    return render(request, 'adminT/traveller_singleview.html', {'traveller': traveller})
+
+def travellerBlock(request, id):
+    lob = login.objects.get(login_id=id)
+    lob.status = 'blocked'
+    lob.save()
+    return HttpResponse("<script>alert('Traveller blocked!!!'); window.location.href = '/travellers-view/';</script>")
+
+def travellerUnblock(request, id):
+    lob = login.objects.get(login_id=id)
+    lob.status = 'active'
+    lob.save()
+    return HttpResponse("<script>alert('Traveller unblocked!!!'); window.location.href = '/travellers-view/';</script>")
+
+

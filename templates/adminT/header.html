@@ -1,14 +1,15 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenRoutes Admin Panel</title>
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -32,25 +33,41 @@
         }
 
         /* Bootstrap Overrides */
-        .bg-primary { background-color: var(--primary-color) !important; }
-        .text-primary { color: var(--primary-color) !important; }
-        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
-        .btn-primary:hover { background-color: var(--sidebar-hover); border-color: var(--sidebar-hover); }
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--sidebar-hover);
+            border-color: var(--sidebar-hover);
+        }
 
         /* Dashboard Cards */
         .card {
             border: none;
             border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
             margin-bottom: 30px;
             background: #fff;
         }
+
         .card-stats .card-body {
             padding: 15px 20px;
         }
+
         .card-stats .col-icon {
             flex: 0 0 auto;
         }
+
         .card-stats .icon-big {
             width: 50px;
             height: 50px;
@@ -60,14 +77,31 @@
             font-size: 22px;
             border-radius: 50%;
         }
-        .card-stats .icon-primary { background: rgba(21, 114, 232, 0.15); color: var(--primary-color); }
-        .card-stats .icon-info { background: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
-        .card-stats .icon-success { background: rgba(25, 135, 84, 0.15); color: #198754; }
-        .card-stats .icon-secondary { background: rgba(108, 117, 125, 0.15); color: #6c757d; }
-        
+
+        .card-stats .icon-primary {
+            background: rgba(21, 114, 232, 0.15);
+            color: var(--primary-color);
+        }
+
+        .card-stats .icon-info {
+            background: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+        }
+
+        .card-stats .icon-success {
+            background: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+
+        .card-stats .icon-secondary {
+            background: rgba(108, 117, 125, 0.15);
+            color: #6c757d;
+        }
+
         .card-stats .numbers {
             text-align: right;
         }
+
         .card-stats .card-category {
             color: #6c757d;
             font-size: 13px;
@@ -75,6 +109,7 @@
             text-transform: uppercase;
             font-weight: 600;
         }
+
         .card-stats .card-title {
             color: #1e293b;
             font-size: 24px;
@@ -82,11 +117,19 @@
             margin-bottom: 0;
             line-height: 1.2;
         }
-        
+
         /* Utility */
-        .op-7 { opacity: 0.7; }
-        .fw-bold { font-weight: 600 !important; }
-        .bubble-shadow-small { box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .op-7 {
+            opacity: 0.7;
+        }
+
+        .fw-bold {
+            font-weight: 600 !important;
+        }
+
+        .bubble-shadow-small {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
 
         /* Sidebar Styling */
         .sidebar {
@@ -101,7 +144,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar .text-muted {
@@ -110,7 +153,7 @@
 
         .sidebar-header {
             padding: 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -119,7 +162,7 @@
         .brand-logo {
             width: 36px;
             height: 36px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -135,7 +178,7 @@
             color: #fff;
             letter-spacing: -0.5px;
         }
-        
+
         .brand-text span {
             font-size: 11px;
             text-transform: uppercase;
@@ -148,7 +191,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(0,0,0,0.1);
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .user-avatar {
@@ -170,7 +213,7 @@
             font-size: 14px;
             color: #fff;
         }
-        
+
         .user-info .role {
             font-size: 12px;
             opacity: 0.7;
@@ -180,6 +223,14 @@
             padding: 20px 0;
             flex: 1;
             overflow-y: auto;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-item {
@@ -206,28 +257,30 @@
             text-align: center;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255,255,255,0.08);
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.08);
             color: #fff;
             border-left: 3px solid #60a5fa;
             background-clip: padding-box;
         }
-        
-        .nav-link:hover i, .nav-link.active i {
+
+        .nav-link:hover i,
+        .nav-link.active i {
             opacity: 1;
             color: #60a5fa;
         }
-        
+
         /* Submenu */
         .collapse-custom {
-            background: rgba(0,0,0,0.15);
+            background: rgba(0, 0, 0, 0.15);
         }
-        
+
         .sub-link {
             padding-left: 56px;
             font-size: 13px;
         }
-        
+
         .nav-link[data-bs-toggle="collapse"]::after {
             content: "\f078";
             font-family: "Font Awesome 5 Free";
@@ -236,7 +289,7 @@
             font-size: 10px;
             transition: transform 0.3s;
         }
-        
+
         .nav-link[aria-expanded="true"]::after {
             transform: rotate(180deg);
         }
@@ -259,56 +312,61 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
             z-index: 999;
         }
-        
+
         .toggle-btn {
             font-size: 24px;
             cursor: pointer;
             color: var(--primary-color);
             border: none;
             background: none;
-            display: none; /* Hidden on desktop */
+            display: none;
+            /* Hidden on desktop */
         }
-        
+
         .top-nav-items {
             display: flex;
             align-items: center;
             gap: 20px;
         }
-        
+
         /* Responsive */
         @media (max-width: 991px) {
             .sidebar {
                 transform: translateX(-100%);
             }
+
             .sidebar.show {
                 transform: translateX(0);
             }
+
             .main-content {
                 margin-left: 0;
             }
+
             .toggle-btn {
                 display: block;
             }
         }
-        
+
         .content-container {
             padding: 30px;
             flex: 1;
         }
-        
+
         /* Card Stats override for admin dashboard if needed */
         .card-stats {
             margin-bottom: 30px;
             border: none;
-            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
         }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -336,41 +394,51 @@
         <nav class="sidebar-nav">
             <ul class="nav p-0 m-0 d-block">
                 <li class="nav-item">
-                    <a href="{% url 'adminHome' %}" class="nav-link {% if request.resolver_match.url_name == 'adminHome' %}active{% endif %}">
+                    <a href="{% url 'adminHome' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'adminHome' %}active{% endif %}">
                         <i class="bi bi-grid-1x2"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
-                
+
                 <li class="nav-item">
-                    <span class="text-uppercase text-muted ps-4 py-2 d-block" style="font-size: 11px; letter-spacing: 1px;">Master Data</span>
+                    <span class="text-uppercase text-muted ps-4 py-2 d-block"
+                        style="font-size: 11px; letter-spacing: 1px;">Master Data</span>
                 </li>
 
                 <!-- Location Management -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'dist' in request.path or 'location' in request.path %}active{% endif %}" data-bs-toggle="collapse" href="#locationSubmenu" role="button" aria-expanded="{% if 'dist' in request.path or 'location' in request.path %}true{% else %}false{% endif %}" aria-controls="locationSubmenu">
+                    <a class="nav-link {% if 'dist' in request.path or 'location' in request.path %}active{% endif %}"
+                        data-bs-toggle="collapse" href="#locationSubmenu" role="button"
+                        aria-expanded="{% if 'dist' in request.path or 'location' in request.path %}true{% else %}false{% endif %}"
+                        aria-controls="locationSubmenu">
                         <i class="bi bi-geo-alt"></i>
                         <span>Location Mgmt</span>
                     </a>
-                    <div class="collapse collapse-custom {% if 'dist' in request.path or 'location' in request.path %}show{% endif %}" id="locationSubmenu">
+                    <div class="collapse collapse-custom {% if 'dist' in request.path or 'location' in request.path %}show{% endif %}"
+                        id="locationSubmenu">
                         <ul class="nav p-0 m-0 d-block">
                             <li class="nav-item">
-                                <a href="{% url 'distRegn' %}" class="nav-link sub-link {% if 'distRegn' in request.path %}active{% endif %}">
+                                <a href="{% url 'distRegn' %}"
+                                    class="nav-link sub-link {% if 'distRegn' in request.path %}active{% endif %}">
                                     <span>Add District</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'distView' %}" class="nav-link sub-link {% if 'distView' in request.path %}active{% endif %}">
+                                <a href="{% url 'distView' %}"
+                                    class="nav-link sub-link {% if 'distView' in request.path %}active{% endif %}">
                                     <span>View Districts</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'locationRegn' %}" class="nav-link sub-link {% if 'locationRegn' in request.path %}active{% endif %}">
+                                <a href="{% url 'locationRegn' %}"
+                                    class="nav-link sub-link {% if 'locationRegn' in request.path %}active{% endif %}">
                                     <span>Add Location</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'locationView' %}" class="nav-link sub-link {% if 'locationView' in request.path %}active{% endif %}">
+                                <a href="{% url 'locationView' %}"
+                                    class="nav-link sub-link {% if 'locationView' in request.path %}active{% endif %}">
                                     <span>View Locations</span>
                                 </a>
                             </li>
@@ -380,66 +448,92 @@
 
                 <!-- Accessibility Management -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'disability' in request.path or 'accessibility' in request.path %}active{% endif %}" data-bs-toggle="collapse" href="#accessSubmenu" role="button" aria-expanded="{% if 'disability' in request.path or 'accessibility' in request.path %}true{% else %}false{% endif %}" aria-controls="accessSubmenu">
+                    <a class="nav-link {% if 'disability' in request.path or 'accessibility' in request.path %}active{% endif %}"
+                        data-bs-toggle="collapse" href="#accessSubmenu" role="button"
+                        aria-expanded="{% if 'disability' in request.path or 'accessibility' in request.path %}true{% else %}false{% endif %}"
+                        aria-controls="accessSubmenu">
                         <i class="bi bi-universal-access"></i>
                         <span>Accessibility</span>
                     </a>
-                    <div class="collapse collapse-custom {% if 'disability' in request.path or 'accessibility' in request.path %}show{% endif %}" id="accessSubmenu">
+                    <div class="collapse collapse-custom {% if 'disability' in request.path or 'accessibility' in request.path %}show{% endif %}"
+                        id="accessSubmenu">
                         <ul class="nav p-0 m-0 d-block">
                             <li class="nav-item">
-                                <a href="{% url 'disabilityRegn' %}" class="nav-link sub-link {% if 'disabilityRegn' in request.path %}active{% endif %}">
+                                <a href="{% url 'disabilityRegn' %}"
+                                    class="nav-link sub-link {% if 'disabilityRegn' in request.path %}active{% endif %}">
                                     <span>Add Disability Type</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'disabilityView' %}" class="nav-link sub-link {% if 'disabilityView' in request.path %}active{% endif %}">
+                                <a href="{% url 'disabilityView' %}"
+                                    class="nav-link sub-link {% if 'disabilityView' in request.path %}active{% endif %}">
                                     <span>View Disabilities</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'accessibilityRegn' %}" class="nav-link sub-link {% if 'accessibilityRegn' in request.path %}active{% endif %}">
+                                <a href="{% url 'accessibilityRegn' %}"
+                                    class="nav-link sub-link {% if 'accessibilityRegn' in request.path %}active{% endif %}">
                                     <span>Add Access Feature</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'accessibilityView' %}" class="nav-link sub-link {% if 'accessibilityView' in request.path %}active{% endif %}">
+                                <a href="{% url 'accessibilityView' %}"
+                                    class="nav-link sub-link {% if 'accessibilityView' in request.path %}active{% endif %}">
                                     <span>View Access Features</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                
+
                 <li class="nav-item">
-                    <span class="text-uppercase text-muted ps-4 py-2 d-block" style="font-size: 11px; letter-spacing: 1px;">Operations</span>
+                    <span class="text-uppercase text-muted ps-4 py-2 d-block"
+                        style="font-size: 11px; letter-spacing: 1px;">Operations</span>
                 </li>
 
                 <!-- Verification -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'operator' in request.path %}active{% endif %}" data-bs-toggle="collapse" href="#opsSubmenu" role="button" aria-expanded="{% if 'operator' in request.path %}true{% else %}false{% endif %}" aria-controls="opsSubmenu">
+                    <a class="nav-link {% if 'operator' in request.path %}active{% endif %}" data-bs-toggle="collapse"
+                        href="#opsSubmenu" role="button"
+                        aria-expanded="{% if 'operator' in request.path %}true{% else %}false{% endif %}"
+                        aria-controls="opsSubmenu">
                         <i class="bi bi-person-badge"></i>
                         <span>Operator Mgmt</span>
                     </a>
-                    <div class="collapse collapse-custom {% if 'operator' in request.path %}show{% endif %}" id="opsSubmenu">
+                    <div class="collapse collapse-custom {% if 'operator' in request.path %}show{% endif %}"
+                        id="opsSubmenu">
                         <ul class="nav p-0 m-0 d-block">
                             <li class="nav-item">
-                                <a href="{% url 'operatorVerification' %}" class="nav-link sub-link {% if 'operator-verification' in request.path %}active{% endif %}">
+                                <a href="{% url 'operatorVerification' %}"
+                                    class="nav-link sub-link {% if 'operator-verification' in request.path %}active{% endif %}">
                                     <span>Verify Operators</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'operatorsView' %}" class="nav-link sub-link {% if 'operators-view' in request.path %}active{% endif %}">
+                                <a href="{% url 'operatorsView' %}"
+                                    class="nav-link sub-link {% if 'operators-view' in request.path %}active{% endif %}">
                                     <span>Verified Operators</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
+
+                <!-- Traveller Management -->
+                <li class="nav-item">
+                    <a href="{% url 'travellersView' %}"
+                       class="nav-link {% if 'traveller' in request.path %}active{% endif %}">
+                        <i class="bi bi-people"></i>
+                        <span>Travellers</span>
+                    </a>
+                </li>
             </ul>
         </nav>
-        
+
         <div style="padding: 20px;">
-            <a href="/logout/" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2" style="border-color: rgba(255,255,255,0.2);">
+            <a href="/logout/"
+                class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2"
+                style="border-color: rgba(255,255,255,0.2);">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </a>
         </div>
@@ -452,12 +546,13 @@
             <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('show')">
                 <i class="bi bi-list"></i>
             </button>
-            
+
             <h5 class="m-0 d-none d-md-block text-secondary" style="font-weight: 500;">
                 {% if request.resolver_match.url_name == 'adminHome' %}Admin Dashboard
                 {% elif 'dist' in request.path or 'location' in request.path %}Location Master
                 {% elif 'disability' in request.path or 'accessibility' in request.path %}Accessibility Master
                 {% elif 'operator' in request.path %}Operator Management
+                {% elif 'traveller' in request.path %}Traveller Management
                 {% else %}Admin Portal{% endif %}
             </h5>
 
@@ -467,7 +562,8 @@
                         <span class="d-block text-dark small fw-bold">Administrator</span>
                         <span class="d-block text-muted small" style="font-size: 10px;">System Admin</span>
                     </div>
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                        style="width: 40px; height: 40px;">
                         <i class="bi bi-person-circle text-primary" style="font-size: 24px;"></i>
                     </div>
                 </div>

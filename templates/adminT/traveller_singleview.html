@@ -1,0 +1,154 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div class="profile-view-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 30px">
+            <div class="col-lg-10">
+                <!-- Breadcrumb & Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'travellersView' %}" class="text-decoration-none">Travellers</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                        </ol>
+                    </nav>
+                    <a href="{% url 'travellersView' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="card border-0 shadow-lg overflow-hidden rounded-3">
+                    <div class="card-header border-0 p-4 d-flex align-items-center justify-content-between" style="background: linear-gradient(90deg, #1572e8 0%, #175ec2 100%); color: white;">
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="profile-avatar-large shadow-sm">
+                                {{ traveller.traveller_name|first|upper }}
+                            </div>
+                            <div>
+                                <h2 class="mb-1 text-white fw-bold">{{ traveller.traveller_name }}</h2>
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="badge bg-light text-primary">ID: #TR{{ traveller.traveller_id }}</span>
+                                    {% if traveller.login.status == 'active' %}
+                                        <span class="badge bg-success-subtle text-white border border-white"><i class="fas fa-check-circle me-1"></i>Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-white border border-white"><i class="fas fa-ban me-1"></i>Blocked</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            {% if traveller.login.status == 'blocked' %}
+                                <a href="{% url 'travellerUnblock' traveller.login.login_id %}" class="btn btn-light text-success fw-medium" onclick="return confirm('Unblock this traveller?');">
+                                    <i class="fas fa-unlock me-2"></i>Unblock Account
+                                </a>
+                            {% else %}
+                                <a href="{% url 'travellerBlock' traveller.login.login_id %}" class="btn btn-light text-danger fw-medium" onclick="return confirm('Block this traveller?');">
+                                    <i class="fas fa-ban me-2"></i>Block Account
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4 bg-white">
+                        <h5 class="custom-heading mb-4"><i class="fas fa-info-circle me-2 text-primary"></i>Traveller Information</h5>
+                        
+                        <div class="row g-4">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <label class="info-label text-muted small text-uppercase fw-bold mb-1">Email Address</label>
+                                    <div class="info-value d-flex align-items-center">
+                                        <i class="fas fa-envelope me-3 text-secondary opacity-50"></i>
+                                        <span class="fw-medium text-dark">{{ traveller.email }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <label class="info-label text-muted small text-uppercase fw-bold mb-1">Phone Number</label>
+                                    <div class="info-value d-flex align-items-center">
+                                        <i class="fas fa-phone me-3 text-secondary opacity-50"></i>
+                                        <span class="fw-medium text-dark">{{ traveller.phone }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12"><hr class="my-2 border-light"></div>
+                            
+                            <!-- Address Section -->
+                            <div class="col-12">
+                                <div class="info-group">
+                                    <label class="info-label text-muted small text-uppercase fw-bold mb-1">Full Address</label>
+                                    <div class="info-value d-flex align-items-start">
+                                        <i class="fas fa-map-marker-alt me-3 mt-1 text-secondary opacity-50"></i>
+                                        <div>
+                                            <p class="mb-1 fw-medium text-dark">{{ traveller.address }}</p>
+                                            <p class="mb-0 text-secondary">{{ traveller.city }}, {{ traveller.district.name }} - {{ traveller.pincode }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Login Info -->
+                         <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="bg-light rounded-3 p-4 border border-light-subtle">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">Account Joined</h6>
+                                            <p class="text-muted mb-0 small">Registration Since</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="d-block fw-bold text-dark fs-5">{{ traveller.reg_date|date:"F d, Y" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light p-3 text-center border-top">
+                         <span class="text-muted small">Registered Traveller Profile &bull; OpenRoutes Admin Panel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-view-wrapper {
+        min-height: calc(100vh - 100px);
+        padding-bottom: 50px;
+        background-color: #f7f9fc;
+    }
+    
+    .profile-avatar-large {
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        color: #1572e8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 32px;
+        border: 4px solid rgba(255,255,255,0.2);
+    }
+
+    .info-group {
+        padding: 10px;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+    }
+    
+    .info-group:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
+{% include 'adminT/footer.html' %}

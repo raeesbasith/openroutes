@@ -1,0 +1,166 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div class="operators-view-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="page-title">Travellers Management</h1>
+                    <div class="stats-badge">
+                        <span class="badge bg-primary">Total: {{ travellers|length }}</span>
+                    </div>
+                </div>
+
+                <div class="card custom-card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 custom-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th>Traveller Details</th>
+                                        <th>Contact Info</th>
+                                        <th>Address</th>
+                                        <th>Status</th>
+                                        <th>Joined Date</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if travellers %}
+                                        {% for traveller in travellers %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="avatar-circle">
+                                                        {{ traveller.traveller_name|first|upper }}
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold text-dark">{{ traveller.traveller_name }}</h6>
+                                                        <small class="text-muted">ID: #TR{{ traveller.traveller_id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="contact-info">
+                                                    <div class="mb-1"><i class="fas fa-envelope me-2 text-primary"></i>{{ traveller.email }}</div>
+                                                    <div><i class="fas fa-phone me-2 text-primary"></i>{{ traveller.phone }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="address-info">
+                                                    <div class="mb-1">{{ traveller.city }}, {{ traveller.pincode }}</div>
+                                                    <small class="text-muted">{{ traveller.district.name }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if traveller.login.status == 'active' %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">{{ traveller.login.status }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ traveller.reg_date|date:"M d, Y" }}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="action-buttons">
+                                                    {% if traveller.login.status == 'blocked' %}
+                                                        <a href="{% url 'travellerUnblock' traveller.login.login_id %}" class="btn btn-sm btn-success action-btn mb-1" title="Unblock Account" onclick="return confirm('Are you sure you want to unblock this traveller?');">
+                                                            <i class="fas fa-check-circle me-1"></i> Unblock
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'travellerBlock' traveller.login.login_id %}" class="btn btn-sm btn-danger action-btn mb-1" title="Block Account" onclick="return confirm('Are you sure you want to block this traveller?');">
+                                                            <i class="fas fa-ban me-1"></i> Block
+                                                        </a>
+                                                    {% endif %}
+                                                    <a href="{% url 'travellerProfile' traveller.traveller_id %}" class="btn btn-sm btn-primary action-btn text-white mb-1" title="View Profile">
+                                                        <i class="fas fa-eye me-1"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-5">
+                                                <div class="empty-state">
+                                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                                    <h5>No Travellers Found</h5>
+                                                    <p class="text-muted">There are no registered travellers in the system yet.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        background: white;
+    }
+
+    .table-header {
+        background-color: #1572e8 !important;
+    }
+
+    .table-header th {
+        background-color: #1572e8 !important;
+        color: white !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        padding: 16px;
+        border: none;
+    }
+    
+    .custom-table td {
+        padding: 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+        color: #4a5568;
+    }
+    
+    .avatar-circle {
+        background-color: #e2e8f0;
+        color: #1572e8;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        box-shadow: none;
+    }
+
+    .action-btn {
+        width: auto;
+        min-width: 90px;
+        border-radius: 6px;
+        margin: 0 4px;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+
+</style>
+
+{% include 'adminT/footer.html' %}

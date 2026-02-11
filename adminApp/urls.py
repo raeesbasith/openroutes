@@ -32,4 +32,8 @@ urlpatterns = [
     path('operator-block/<int:id>/', views.operatorBlock, name='operatorBlock'),
     path('operator-unblock/<int:id>/', views.operatorUnblock, name='operatorUnblock'),
     path('operator-profile/<int:id>/', views.operatorProfile, name='operatorProfile'),
+    path('travellers-view/', views.travellersView, name='travellersView'),
+    path('traveller-profile/<int:id>/', views.travellerProfile, name='travellerProfile'),
+    path('traveller-block/<int:id>/', views.travellerBlock, name='travellerBlock'),
+    path('traveller-unblock/<int:id>/', views.travellerUnblock, name='travellerUnblock'),
 ]
