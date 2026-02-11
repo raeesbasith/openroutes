@@ -1,0 +1,165 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div class="profile-view-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 30px">
+            <div class="col-lg-10">
+                <!-- Breadcrumb & Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'operatorsView' %}" class="text-decoration-none">Operators</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                        </ol>
+                    </nav>
+                    <a href="{% url 'operatorsView' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="card border-0 shadow-lg overflow-hidden rounded-3">
+                    <div class="card-header border-0 p-4 d-flex align-items-center justify-content-between" style="background: linear-gradient(90deg, #1572e8 0%, #175ec2 100%); color: white;">
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="profile-avatar-large shadow-sm">
+                                {{ operator.operator_name|first|upper }}
+                            </div>
+                            <div>
+                                <h2 class="mb-1 text-white fw-bold">{{ operator.operator_name }}</h2>
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="badge bg-light text-primary">ID: #OP{{ operator.operator_id }}</span>
+                                    {% if operator.login.status == 'active' %}
+                                        <span class="badge bg-success-subtle text-white border border-white"><i class="fas fa-check-circle me-1"></i>Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-white border border-white"><i class="fas fa-ban me-1"></i>Blocked</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            {% if operator.login.status == 'blocked' %}
+                                <a href="{% url 'operatorUnblock' operator.login.login_id %}" class="btn btn-light text-success fw-medium" onclick="return confirm('Unblock this operator?');">
+                                    <i class="fas fa-unlock me-2"></i>Unblock Account
+                                </a>
+                            {% else %}
+                                <a href="{% url 'operatorBlock' operator.login.login_id %}" class="btn btn-light text-danger fw-medium" onclick="return confirm('Block this operator?');">
+                                    <i class="fas fa-ban me-2"></i>Block Account
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 bg-white">
+                        <div class="row g-4">
+                            <!-- Contact Information -->
+                            <div class="col-md-6 border-end">
+                                <h5 class="text-primary mb-4 border-bottom pb-2 fw-bold"><i class="fas fa-address-card me-2"></i>Contact Information</h5>
+                                <div class="info-group mb-3">
+                                    <label class="text-muted small fw-bold text-uppercase">Email Address</label>
+                                    <p class="fs-5 mb-0 text-dark">{{ operator.email }}</p>
+                                </div>
+                                <div class="info-group mb-3">
+                                    <label class="text-muted small fw-bold text-uppercase">Phone Number</label>
+                                    <p class="fs-5 mb-0 text-dark">{{ operator.contact }}</p>
+                                </div>
+                                <div class="info-group mb-3">
+                                    <label class="text-muted small fw-bold text-uppercase">District</label>
+                                    <p class="fs-5 mb-0 text-dark">{{ operator.district.name }}</p>
+                                </div>
+                                <div class="info-group">
+                                    <label class="text-muted small fw-bold text-uppercase">Full Address</label>
+                                    <p class="mb-0 text-dark">{{ operator.address }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Verification & License -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-4 border-bottom pb-2 fw-bold"><i class="fas fa-shield-alt me-2"></i>Verification & License</h5>
+                                
+                                <div class="info-group mb-4">
+                                    <label class="text-muted small fw-bold text-uppercase">Login Username</label>
+                                    <p class="fs-5 mb-0 text-dark">{{ operator.login.username }}</p>
+                                </div>
+
+                                <div class="info-group">
+                                    <label class="text-muted small fw-bold text-uppercase mb-2">License Document</label>
+                                    <div class="license-preview card p-3 bg-light border-0">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center text-secondary">
+                                                <i class="fas fa-file-pdf fa-2x me-3 text-danger"></i>
+                                                <div>
+                                                    <span class="d-block fw-medium">Operator License</span>
+                                                    <small class="text-muted">PDF/Image Document</small>
+                                                </div>
+                                            </div>
+                                            <a href="{{ operator.license.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-external-link-alt me-1"></i>View Document
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics (Placeholder for future) -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="bg-light rounded-3 p-4 border border-light-subtle">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">Account Status</h6>
+                                            <p class="text-muted mb-0 small">Current operating status in the system.</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="d-block fw-bold text-dark fs-5">{{ operator.status|title }}</span>
+                                            <small class="text-success"><i class="fas fa-circle me-1" style="font-size: 8px;"></i>System Verified</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light p-3 text-center border-top">
+                         <span class="text-muted small">Registered Operator Profile &bull; OpenRoutes Admin Panel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-view-wrapper {
+        min-height: calc(100vh - 100px);
+        padding-bottom: 50px;
+        background-color: #f7f9fc;
+    }
+    
+    .profile-avatar-large {
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        color: #1572e8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 32px;
+        border: 4px solid rgba(255,255,255,0.2);
+    }
+
+    .breadcrumb-item a {
+        color: #6c757d;
+    }
+    .breadcrumb-item.active {
+        color: #1572e8;
+        font-weight: 500;
+    }
+    
+    .bg-success-subtle { background-color: rgba(25, 135, 84, 0.2) !important; }
+    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.2) !important; }
+</style>
+
+{% include 'adminT/footer.html' %}

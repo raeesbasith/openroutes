@@ -178,3 +178,23 @@ def operatorReject(request, id):
     operator.status = 'rejected'
     operator.save()
     return HttpResponse("<script>alert('Operator rejected!!!'); window.location.href = '/operator-verification/';</script>")
+
+def operatorsView(request):
+    operators = Operator.objects.filter(status='approved').order_by('operator_id')
+    return render(request, 'adminT/operators_view.html', {'operators': operators})
+
+def operatorBlock(request, id):
+    lob = login.objects.get(login_id=id)
+    lob.status = 'blocked'
+    lob.save()
+    return HttpResponse("<script>alert('Operator blocked!!!'); window.location.href = '/operators-view/';</script>")
+
+def operatorUnblock(request, id):
+    lob = login.objects.get(login_id=id)
+    lob.status = 'active'
+    lob.save()
+    return HttpResponse("<script>alert('Operator unblocked!!!'); window.location.href = '/operators-view/';</script>")
+
+def operatorProfile(request, id):
+    operator = Operator.objects.get(operator_id=id)
+    return render(request, 'adminT/operator_profile.html', {'operator': operator})

@@ -416,10 +416,24 @@
 
                 <!-- Verification -->
                 <li class="nav-item">
-                    <a href="{% url 'operatorVerification' %}" class="nav-link {% if 'operator-verification' in request.path %}active{% endif %}">
-                        <i class="bi bi-person-check"></i>
-                        <span>Operator Verification</span>
+                    <a class="nav-link {% if 'operator' in request.path %}active{% endif %}" data-bs-toggle="collapse" href="#opsSubmenu" role="button" aria-expanded="{% if 'operator' in request.path %}true{% else %}false{% endif %}" aria-controls="opsSubmenu">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Operator Mgmt</span>
                     </a>
+                    <div class="collapse collapse-custom {% if 'operator' in request.path %}show{% endif %}" id="opsSubmenu">
+                        <ul class="nav p-0 m-0 d-block">
+                            <li class="nav-item">
+                                <a href="{% url 'operatorVerification' %}" class="nav-link sub-link {% if 'operator-verification' in request.path %}active{% endif %}">
+                                    <span>Verify Operators</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'operatorsView' %}" class="nav-link sub-link {% if 'operators-view' in request.path %}active{% endif %}">
+                                    <span>Verified Operators</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
         </nav>
@@ -443,7 +457,7 @@
                 {% if request.resolver_match.url_name == 'adminHome' %}Admin Dashboard
                 {% elif 'dist' in request.path or 'location' in request.path %}Location Master
                 {% elif 'disability' in request.path or 'accessibility' in request.path %}Accessibility Master
-                {% elif 'operator-verification' in request.path %}Operator Management
+                {% elif 'operator' in request.path %}Operator Management
                 {% else %}Admin Portal{% endif %}
             </h5>
 

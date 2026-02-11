@@ -1,0 +1,206 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div class="operators-view-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="page-title">Verified Operators Management</h1>
+                    <div class="stats-badge">
+                        <span class="badge bg-primary">Total: {{ operators|length }}</span>
+                    </div>
+                </div>
+
+                <div class="card custom-card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 custom-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th>Operator Details</th>
+                                        <th>Contact Info</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if operators %}
+                                        {% for op in operators %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="avatar-circle">
+                                                        {{ op.operator_name|first|upper }}
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold text-dark">{{ op.operator_name }}</h6>
+                                                        <small class="text-muted">ID: #OP{{ op.operator_id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="contact-info">
+                                                    <div class="mb-1"><i class="fas fa-envelope me-2 text-primary"></i>{{ op.email }}</div>
+                                                    <div><i class="fas fa-phone me-2 text-primary"></i>{{ op.contact }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <span class="d-block fw-medium">{{ op.district.name }}</span>
+                                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;" title="{{ op.address }}">
+                                                        {{ op.address }}
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if op.login.status == 'blocked' %}
+                                                    <span class="badge bg-danger rounded-pill px-3">Blocked</span>
+                                                {% else %}
+                                                    <span class="badge bg-success rounded-pill px-3">Active</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="action-buttons">
+                                                    {% if op.login.status == 'blocked' %}
+                                                        <a href="{% url 'operatorUnblock' op.login.login_id %}" class="btn btn-sm btn-success action-btn" title="Unblock Account" onclick="return confirm('Are you sure you want to unblock this operator?');">
+                                                            <i class="fas fa-check-circle me-1"></i> Unblock
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'operatorBlock' op.login.login_id %}" class="btn btn-sm btn-danger action-btn" title="Block Account" onclick="return confirm('Are you sure you want to block this operator? This will prevent them from logging in.');">
+                                                            <i class="fas fa-ban me-1"></i> Block
+                                                        </a>
+                                                    {% endif %}
+                                                    <a href="{% url 'operatorProfile' op.operator_id %}" class="btn btn-sm btn-primary action-btn text-white" title="View Profile">
+                                                        <i class="fas fa-eye me-1"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center py-5">
+                                                <div class="empty-state">
+                                                    <i class="fas fa-users-slash empty-icon mb-3"></i>
+                                                    <h5>No verified operators found</h5>
+                                                    <p class="text-muted">Verify new operators from the Verification Checklist.</p>
+                                                    <a href="{% url 'operatorVerification' %}" class="btn btn-primary mt-2">Go to Verification</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .operators-view-wrapper {
+        min-height: calc(100vh - 100px);
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .page-title {
+        color: #1a202c;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .custom-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        background: white;
+    }
+
+    .table-header {
+        background-color: #1572e8;
+    }
+
+    .table-header th {
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        padding: 16px;
+        border: none;
+    }
+
+    .custom-table td {
+        padding: 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+        color: #4a5568;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background-color: #e2e8f0;
+        color: #1572e8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 8px 12px;
+    }
+    
+    .bg-primary { background-color: #1572e8 !important; }
+
+    .action-btn {
+        width: auto;
+        min-width: 90px;
+        border-radius: 6px;
+        margin: 0 4px;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-info {
+        background-color: #48abf7 !important;
+        border: none;
+        min-width: 40px !important;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        color: #cbd5e0;
+    }
+
+    .contact-info {
+        font-size: 14px;
+    }
+    
+    .contact-info .text-primary {
+        color: #1572e8 !important;
+        width: 16px;
+    }
+
+    /* Row Hover Effect */
+    .custom-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+</style>
+
+{% include 'adminT/footer.html' %}

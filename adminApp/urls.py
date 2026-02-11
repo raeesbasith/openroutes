@@ -28,4 +28,8 @@ urlpatterns = [
     path('license-view/<int:id>/', views.licenseView, name='licenseView'),
     path('operator-approve/<int:id>/', views.operatorApprove, name='operatorApprove'),
     path('operator-reject/<int:id>/', views.operatorReject, name='operatorReject'),
+    path('operators-view/', views.operatorsView, name='operatorsView'),
+    path('operator-block/<int:id>/', views.operatorBlock, name='operatorBlock'),
+    path('operator-unblock/<int:id>/', views.operatorUnblock, name='operatorUnblock'),
+    path('operator-profile/<int:id>/', views.operatorProfile, name='operatorProfile'),
 ]
