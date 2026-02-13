@@ -1,3 +1,6 @@
+from datetime import datetime
+import csv
+from django.db.models import Sum, F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
@@ -272,4 +275,91 @@ def profile_view(request):
         return render(request, 'operator/profile_view.html', {'operator': operator})
     except Operator.DoesNotExist:
         return redirect('login')
+
+def datewise_report(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('/login/')
+    
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        
+        bookings = None
+        total_amount = 0
+        total_commission = 0
+        net_revenue = 0
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        
+        if start_date and end_date:
+            bookings = Booking.objects.filter(
+                tour__operator=operator,
+                booking_date__date__range=[start_date, end_date]
+            ).order_by('-booking_date')
+            
+            # Calculate totals
+            if bookings:
+                totals = bookings.aggregate(
+                    sum_amount=Sum('total_amount'),
+                    sum_commission=Sum('commission_amount')
+                )
+                
+                total_amount = totals['sum_amount'] or 0
+                total_commission = totals['sum_commission'] or 0
+                net_revenue = total_amount - total_commission
+                
+        return render(request, 'operator/datewise_report.html', {
+            'bookings': bookings,
+            'total_amount': total_amount,
+            'total_commission': total_commission,
+            'net_revenue': net_revenue,
+            'start_date': start_date,
+            'end_date': end_date
+        })
+        
+    except Operator.DoesNotExist:
+        return redirect('/login/')
+    
+def bookings_export(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('/login/')
+    
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        
+        bookings = Booking.objects.filter(tour__operator=operator).order_by('-booking_date')
+        
+        if start_date and end_date:
+            bookings = bookings.filter(booking_date__date__range=[start_date, end_date])
+            
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="bookings_report_{datetime.now().strftime("%Y%m%d")}.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['Booking ID', 'Customer Name', 'Tour Package', 'Booking Date', 'Total Persons', 'Total Amount', 'Commission (10%)', 'Net Amount', 'Status'])
+        
+        for booking in bookings:
+            commission = booking.commission_amount or 0
+            net = booking.total_amount - commission
+            writer.writerow([
+                booking.booking_id,
+                booking.traveller.traveller_name,
+                booking.tour.tour_name,
+                booking.booking_date.strftime('%Y-%m-%d'),
+                booking.total_persons,
+                booking.total_amount,
+                commission,
+                net,
+                booking.booking_status
+            ])
+            
+        return response
+        
+    except Operator.DoesNotExist:
+        return redirect('/login/')
 

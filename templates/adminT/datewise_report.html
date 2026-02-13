@@ -1,0 +1,304 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<style>
+    :root {
+      --primary: #0c2d57;
+      --primary-light: #e0e7ff; 
+      --success-bg: #dcfce7;
+      --success-text: #166534;
+      --warning-bg: #fef3c7;
+      --warning-text: #92400e;
+      --danger-bg: #fee2e2;
+      --danger-text: #991b1b;
+      --info-bg: #dbeafe;
+      --info-text: #1e40af;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+
+    .page-container {
+        padding: 30px;
+        max-width: 100%;
+    }
+
+    .page-title-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0;
+    }
+
+    .page-subtitle {
+        color: var(--gray-500);
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        font-size: 20px;
+    }
+
+    .bg-blue-soft { background: var(--info-bg); color: var(--info-text); }
+    .bg-green-soft { background: var(--success-bg); color: var(--success-text); }
+    
+    .stat-info h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+        color: var(--gray-900);
+    }
+
+    .stat-info p {
+        margin: 0;
+        color: var(--gray-500);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Filter Card */
+    .filter-card {
+        background: #fff;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid var(--gray-200);
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    /* Table Styles */
+    .bookings-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid var(--gray-200);
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .bookings-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .bookings-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .table thead th {
+        background: var(--gray-50);
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--gray-500);
+        padding: 12px 24px;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .table tbody td {
+        padding: 16px 24px;
+        vertical-align: middle;
+        font-size: 14px;
+        color: var(--gray-700);
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+    
+    @media print {
+        .filter-card, .btn, header, footer {
+            display: none !important;
+        }
+        .page-container {
+            padding: 0;
+        }
+        .bookings-card {
+            box-shadow: none;
+            border: none;
+        }
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-title-box">
+        <div>
+            <h1 class="page-title">Admin Revenue Report</h1>
+            <p class="page-subtitle">Track platform bookings and commissions</p>
+        </div>
+        <div class="d-flex gap-2">
+            {% if bookings %}
+            <a href="{% url 'admin_bookings_export' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-success d-flex align-items-center gap-2 text-white">
+                <i class="bi bi-file-earmark-excel"></i> Export
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="filter-card">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold small text-uppercase">Start Date</label>
+                <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold small text-uppercase">End Date</label>
+                <input type="date" name="end_date" class="form-control" value="{{ end_date }}" required>
+            </div>
+            <div class="col-md-4 d-flex">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter me-2"></i>Filter Report
+                </button>
+                <a href="{% url 'admin_datewise_report' %}" class="btn btn-light ms-2">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    {% if bookings is not None %}
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon bg-blue-soft">
+                <i class="fas fa-list-alt"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ bookings.count }}</h3>
+                <p>Total Bookings</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-blue-soft" style="background: #eff6ff; color: #3b82f6;">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-info">
+                <h3>₹ {{ total_booking_amount|floatformat:2 }}</h3>
+                <p>Total Sales (GMV)</p>
+            </div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #166534 0%, #15803d 100%); color: white; border: none;">
+            <div class="stat-icon" style="background: rgba(255,255,255,0.2); color: white;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+                <h3 style="color: white;">₹ {{ total_commission|floatformat:2 }}</h3>
+                <p style="color: rgba(255,255,255,0.8);">Admin Revenue (Commission)</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-warning-soft" style="background: #fffbeb; color: #b45309;">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="stat-info">
+                <h3>₹ {{ payable_to_operators|floatformat:2 }}</h3>
+                <p>Payable to Operators</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="bookings-card">
+        <div class="bookings-header">
+            <h4>Report Results ({{ start_date }} to {{ end_date }})</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>ID</th>
+                        <th>Operator</th>
+                        <th>Customer</th>
+                        <th>Total Amount</th>
+                        <th style="background-color: #f0fdf4; color: #166534; border-bottom: 2px solid #166534;">Commission</th>
+                        <th>Payable</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">{{ booking.booking_date|date:"M d, Y" }}</div>
+                            <div class="small text-muted">{{ booking.booking_date|time:"H:i" }}</div>
+                        </td>
+                        <td><span class="fw-bold text-primary">#{{ booking.booking_id }}</span></td>
+                        <td>{{ booking.tour.operator.operator_name }}</td>
+                        <td>{{ booking.traveller.traveller_name }}</td>
+                        <td>₹ {{ booking.total_amount }}</td>
+                        <td class="text-success fw-bold" style="background-color: #f0fdf4;">+ ₹ {{ booking.commission_amount|default:"0"|floatformat:2 }}</td>
+                        <td class="text-muted">₹ {{ booking.net_amount|floatformat:2 }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if booking.booking_status == 'confirmed' %}bg-success text-white
+                                {% elif booking.booking_status == 'pending' %}bg-warning text-dark
+                                {% elif booking.booking_status == 'cancelled' %}bg-danger text-white
+                                {% else %}bg-secondary text-white{% endif %}">
+                                {{ booking.booking_status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
+                                <p>No bookings found for the selected date range.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% include 'adminT/footer.html' %}

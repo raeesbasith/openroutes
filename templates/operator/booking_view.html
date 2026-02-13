@@ -212,7 +212,7 @@
     .status-approved { background: #dbeafe; color: #1e40af; }
     .status-confirmed, .status-success { background: #dbeafe; color: #1e40af; }
     .status-paid { background: var(--success-bg); color: var(--success-text); }
-    .status-completed { background: var(--info-bg); color: var(--info-text); }
+    .status-completed { background: #f3e8ff; color: #6b21a8; }
     .status-cancelled { background: var(--danger-bg); color: var(--danger-text); }
     
     .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -393,15 +393,15 @@
                                 </button>
                                 
                                 {% if booking.booking_status == 'pending' %}
-                                <button class="action-btn approve" title="Confirm Booking" onclick="updateStatus('{{ booking.booking_id }}', 'confirmed')">
-                                    <i class="bi bi-check-lg"></i>
+                                <button class="btn btn-sm btn-success d-flex align-items-center gap-1 py-0" title="Confirm Booking" onclick="updateStatus('{{ booking.booking_id }}', 'confirmed')" style="height: 32px;">
+                                    <i class="bi bi-check-lg"></i> Confirm
                                 </button>
                                 <button class="action-btn reject" title="Cancel Booking" onclick="updateStatus('{{ booking.booking_id }}', 'cancelled')">
                                     <i class="bi bi-x-lg"></i>
                                 </button>
                                 {% elif booking.booking_status == 'paid' %}
-                                <button class="action-btn text-success border-success bg-white" title="Mark as Completed" onclick="updateStatus('{{ booking.booking_id }}', 'completed')">
-                                    <i class="bi bi-check-circle-fill"></i>
+                                <button class="btn btn-sm btn-primary d-flex align-items-center gap-1 py-0" title="Mark as Completed" onclick="updateStatus('{{ booking.booking_id }}', 'completed')" style="height: 32px;">
+                                    <i class="bi bi-check-circle"></i>Completed
                                 </button>
                                 {% endif %}
                             </div>

@@ -23,6 +23,9 @@
 
     
    // Back to top button
+   // Initially hide the button to avoid it showing on load
+   $('.back-to-top').hide();
+
    $(window).scroll(function () {
     if ($(this).scrollTop() > 300) {
         $('.back-to-top').fadeIn('slow');

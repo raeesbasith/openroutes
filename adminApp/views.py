@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_control
+from django.db.models import Sum
+import csv
+from datetime import datetime
 from .models import *
 from operatorApp.models import Operator
 from guestApp.models import login, TravellerProfile
@@ -223,6 +226,72 @@ def travellerUnblock(request, id):
 def bookingsView(request):
     bookings = Booking.objects.all().order_by('-booking_date')
     return render(request, 'adminT/bookings_view.html', {'bookings': bookings})
+
+def admin_datewise_report(request):
+    bookings = None
+    total_booking_amount = 0
+    total_commission = 0
+    payable_to_operators = 0
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    if start_date and end_date:
+        bookings = Booking.objects.filter(
+            booking_date__date__range=[start_date, end_date]
+        ).order_by('-booking_date')
+        
+        # Calculate totals
+        if bookings:
+            totals = bookings.aggregate(
+                sum_amount=Sum('total_amount'),
+                sum_commission=Sum('commission_amount')
+            )
+            
+            total_booking_amount = totals['sum_amount'] or 0
+            total_commission = totals['sum_commission'] or 0
+            payable_to_operators = total_booking_amount - total_commission
+            
+    return render(request, 'adminT/datewise_report.html', {
+        'bookings': bookings,
+        'total_booking_amount': total_booking_amount,
+        'total_commission': total_commission,
+        'payable_to_operators': payable_to_operators,
+        'start_date': start_date,
+        'end_date': end_date
+    })
+
+def admin_bookings_export(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    bookings = Booking.objects.all().order_by('-booking_date')
+    
+    if start_date and end_date:
+        bookings = bookings.filter(booking_date__date__range=[start_date, end_date])
+        
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="admin_bookings_report_{datetime.now().strftime("%Y%m%d")}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Booking ID', 'Operator', 'Customer', 'Tour', 'Date', 'Total Amount', 'Commission (10%)', 'Payable to Operator', 'Status'])
+    
+    for booking in bookings:
+        commission = booking.commission_amount or 0
+        payable = booking.total_amount - commission
+        writer.writerow([
+            booking.booking_id,
+            booking.tour.operator.operator_name,
+            booking.traveller.traveller_name,
+            booking.tour.tour_name,
+            booking.booking_date.strftime('%Y-%m-%d'),
+            booking.total_amount,
+            commission,
+            payable,
+            booking.booking_status
+        ])
+        
+    return response
 
 
 

@@ -15,8 +15,13 @@ class Booking(models.Model):
     base_amount = models.FloatField()
     accessibility_amount = models.FloatField(default=0.0)
     total_amount = models.FloatField()
+    commission_amount = models.FloatField(default=0.0)
     booking_status = models.CharField(max_length=20, default='pending')
     booking_date = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def net_amount(self):
+        return self.total_amount - self.commission_amount
 
 class BookingAccessibility(models.Model):
     booking_acc_id = models.AutoField(primary_key=True)

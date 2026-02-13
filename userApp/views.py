@@ -8,7 +8,10 @@ from userApp.models import *
 from guestApp.models import *
 import uuid
 from django.db.models import Case, When, Value, IntegerField
-import google.generativeai as genai
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -176,6 +179,7 @@ def booking_confirm(request, tour_id):
         booking.base_amount = base_amount
         booking.accessibility_amount = acc_amount
         booking.total_amount = total_amount
+        booking.commission_amount = total_amount * 0.10  # 10% Commission
         booking.save()
 
         # Save selected accessibilities per person (one record per person-accessibility pair)

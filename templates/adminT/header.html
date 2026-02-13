@@ -530,10 +530,17 @@
 
                 <!-- Booking Management -->
                 <li class="nav-item">
-                    <a href="{% url 'bookingsView' %}"
-                       class="nav-link {% if 'bookings' in request.path %}active{% endif %}">
+                    <a href="{% url 'bookingsView' %}" class="nav-link {% if 'bookings-view' in request.path %}active{% endif %}">
                         <i class="bi bi-calendar-check"></i>
                         <span>Bookings</span>
+                    </a>
+                </li>
+
+                <!-- Admin Reports -->
+                <li class="nav-item">
+                    <a href="{% url 'admin_datewise_report' %}" class="nav-link {% if 'reports' in request.path %}active{% endif %}">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Reports</span>
                     </a>
                 </li>
             </ul>
