@@ -1,5 +1,5 @@
 from django.db import models
-from adminApp.models import District
+from adminApp.models import District, Accessibility
 
 # Create your models here.
 class login(models.Model):
@@ -31,3 +31,11 @@ class TravellerProfile(models.Model):
     pincode = models.CharField(max_length=10)
     login = models.ForeignKey(login, on_delete=models.CASCADE)
     reg_date = models.DateTimeField(auto_now_add=True)
+
+class TravellerAccessibility(models.Model):
+    id = models.AutoField(primary_key=True)
+    traveller = models.ForeignKey(TravellerProfile, on_delete=models.CASCADE)
+    accessibility = models.ForeignKey(Accessibility, on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ('traveller', 'accessibility')

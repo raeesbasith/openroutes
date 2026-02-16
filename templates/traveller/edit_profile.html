@@ -203,6 +203,27 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Accessibility Preferences Section -->
+                            <h5 class="mb-4 mt-5 text-muted border-bottom pb-2">Accessibility Preferences</h5>
+                            <div class="row row-margin">
+                                <div class="col-12">
+                                    <label class="form-label mb-3">Select the accessibility features relevant to you:</label>
+                                    <div class="row g-3">
+                                        {% for acc in accessibilities %}
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="form-check p-3 border rounded bg-light">
+                                                <input class="form-check-input" type="checkbox" name="accessibility" value="{{ acc.accessibility_id }}" id="acc{{ acc.accessibility_id }}" 
+                                                    {% if acc.accessibility_id in current_accessibilities %}checked{% endif %}>
+                                                <label class="form-check-label w-100 stretched-link" for="acc{{ acc.accessibility_id }}">
+                                                    {{ acc.accessibility_feature }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="d-flex justify-content-end mt-5">
                                 <a href="{% url 'traveller_profile' %}" class="btn btn-cancel">Cancel</a>

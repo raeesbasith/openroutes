@@ -5,6 +5,32 @@
         color: rgba(255, 255, 255, 0.5) !important; /* Transparent text to see image behind */
         text-shadow: 1px 1px 10px rgba(0,0,0,0.3); /* Slight shadow for readability */
     }
+    /* Recommended Tours Styles */
+    .package-card {
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 20px;
+        height: 100%;
+        border: 1px solid #eee;
+    }
+    .package-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .package-image {
+        height: 220px;
+        background-color: #f8f9fa;
+        overflow: hidden;
+        position: relative;
+    }
+    .package-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 </style>
             <!-- Carousel Start -->
             <div class="carousel-header">
@@ -68,6 +94,69 @@
             <!-- Carousel End -->
         </div>
         <!-- Navbar & Hero End -->
+
+        <!-- Recommended Tours Start -->
+        <div class="container-fluid packages py-5">
+            <div class="container py-5">
+                <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+                    <h5 class="section-title px-3">Recommended For You</h5>
+                    <h1 class="mb-0">Tours Matching Your Preferences</h1>
+                </div>
+                
+                {% if recommended_tours %}
+                <div class="row g-4">
+                    {% for tour in recommended_tours %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="package-card">
+                            <div class="package-image">
+                                {% if tour.tourimages_set.first %}
+                                <img src="{{ tour.tourimages_set.first.image.url }}" alt="{{ tour.tour_name }}">
+                                {% else %}
+                                <img src="{% static 'traveller/img/about-img.jpg' %}" alt="Tour Image">
+                                {% endif %}
+                            </div>
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <small class="m-0"><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ tour.location.name }}</small>
+                                    <small class="m-0"><i class="fa fa-calendar-alt text-primary me-2"></i>{{ tour.duration_days }} days</small>
+                                    <small class="m-0"><i class="fa fa-user text-primary me-2"></i>{{ tour.max_persons }}</small>
+                                </div>
+                                <a class="h5 d-block text-decoration-none text-truncate mb-3" href="{% url 'tour_detail' tour.tour_id %}">{{ tour.tour_name }}</a>
+                                
+                                <div class="mb-3">
+                                    {% if tour.avg_rating %}
+                                        <div class="text-primary small">
+                                            <i class="fas fa-star"></i> {{ tour.avg_rating|floatformat:1 }} / 5.0
+                                        </div>
+                                    {% else %}
+                                        <small class="text-muted">Not yet rated</small>
+                                    {% endif %}
+                                </div>
+
+                                <div class="d-flex justify-content-between border-top mt-2 pt-3">
+                                    <h5 class="m-0 text-primary">${{ tour.price }}</h5>
+                                    <a href="{% url 'tour_detail' tour.tour_id %}" class="btn btn-sm btn-primary rounded-pill px-3">Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <div class="p-5 border rounded bg-light">
+                            <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                            <h3 class="text-muted">No Recommended Tours Found</h3>
+                            <p class="mb-4">We couldn't find any tours in your district that match your specific accessibility preferences at the moment.</p>
+                            <a href="{% url 'tour_packages' %}" class="btn btn-primary rounded-pill py-3 px-5">Explore All Tours</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Recommended Tours End -->
 
         <!-- About Start -->
         <div class="container-fluid about py-5">

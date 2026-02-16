@@ -19,7 +19,29 @@ from django.db.models import Avg
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def traveller_home(request):
     if request.session.get('login_id'):
-        return render(request, 'traveller/traveller_home.html')
+        login_id = request.session['login_id']
+        traveller = get_object_or_404(TravellerProfile, login_id=login_id)
+        
+        # Base Query: Available tours in the traveller's district
+        recommended_tours = Tour.objects.filter(status='available', location__district=traveller.district)
+        
+        # Filter by Traveller's Accessibility Needs
+        needed_access_ids = list(TravellerAccessibility.objects.filter(traveller=traveller).values_list('accessibility_id', flat=True))
+        
+        if needed_access_ids:
+            # Filter for tours that have AT LEAST ONE of the needed accessibilities
+            # We use filter(field__in=list) for OR matching logic
+            recommended_tours = recommended_tours.filter(touraccessibility__accessibility_id__in=needed_access_ids).distinct()
+            
+        # Annotate with average rating and order by rating (descending)
+        recommended_tours = recommended_tours.annotate(
+            avg_rating=Avg('review__rating')
+        ).order_by('-avg_rating')[:6] # Top 6 recommendations
+        
+        context = {
+            'recommended_tours': recommended_tours
+        }
+        return render(request, 'traveller/traveller_home.html', context)
     else:
         return redirect('login')
 
@@ -342,6 +364,18 @@ def edit_profile(request):
         district_id = request.POST.get('district')
         if district_id:
             traveller.district = District.objects.get(district_id=district_id)
+            
+        # Update Accessibility Preferences
+        selected_accessibilities = request.POST.getlist('accessibility')
+        # Clear existing preferences
+        TravellerAccessibility.objects.filter(traveller=traveller).delete()
+        # Add new preferences
+        for acc_id in selected_accessibilities:
+            try:
+                acc = Accessibility.objects.get(accessibility_id=acc_id)
+                TravellerAccessibility.objects.create(traveller=traveller, accessibility=acc)
+            except Accessibility.DoesNotExist:
+                continue
         
         # Email update - check for uniqueness if changed
         new_email = request.POST.get('email')
@@ -354,7 +388,16 @@ def edit_profile(request):
         return HttpResponse("<script>alert('Profile updated successfully!'); window.location.href='/profile/';</script>")
 
     districts = District.objects.all()
-    return render(request, 'traveller/edit_profile.html', {'traveller': traveller, 'districts': districts})
+    accessibilities = Accessibility.objects.all()
+    # Get current selections to pre-fill checkboxes
+    current_accessibilities = TravellerAccessibility.objects.filter(traveller=traveller).values_list('accessibility_id', flat=True)
+    
+    return render(request, 'traveller/edit_profile.html', {
+        'traveller': traveller, 
+        'districts': districts,
+        'accessibilities': accessibilities,
+        'current_accessibilities': current_accessibilities
+    })
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def my_bookings(request):
