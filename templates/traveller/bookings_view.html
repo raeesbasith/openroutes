@@ -37,8 +37,8 @@
     }
 
     .booking-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        /* transform: translateY(-3px); */
+        /* box-shadow: 0 10px 25px rgba(0,0,0,0.08); */
     }
 
     .booking-header {
@@ -177,7 +177,35 @@
         background-color: #0d2558;
         color: white;
     }
+
+    .rating-stars {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+
+    .rating-stars input {
+        display: none;
+    }
+
+    .rating-stars label {
+        font-size: 2rem;
+        color: #ccc;
+        cursor: pointer;
+        padding: 0 5px;
+    }
+
+    .rating-stars input:checked ~ label,
+    .rating-stars label:hover,
+    .rating-stars input:checked ~ label,
+    .rating-stars label:hover,
+    .rating-stars label:hover ~ label {
+        color: #ffc107;
+    }
 </style>
+
+<!-- Add jQuery to handle modal behavior if not already included -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <div class="bookings-section">
     <div class="container">
@@ -271,9 +299,60 @@
                                                 <i class="fas fa-check-circle me-2"></i>Paid
                                             </button>
                                         {% elif booking.booking_status == 'completed' %}
-                                            <button class="btn btn-info rounded-pill" disabled style="background-color: #cff4fc; color: #055160; border-color: #b6effb; opacity: 1;">
+                                            <button class="btn btn-info rounded-pill w-100 mb-2" disabled style="background-color: #cff4fc; color: #055160; border-color: #b6effb; opacity: 1;">
                                                 <i class="fas fa-flag-checkered me-2"></i>Completed
                                             </button>
+                                            
+                                            {% if booking.has_review %}
+                                                <div class="text-center">
+                                                    {% for i in "12345"|make_list %}
+                                                        {% if forloop.counter <= booking.user_rating %}
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star text-warning"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <button type="button" class="btn btn-warning rounded-pill w-100" data-bs-toggle="modal" data-bs-target="#reviewModal-{{ booking.booking_id }}">
+                                                    <i class="fas fa-star me-2"></i>Rate Tour
+                                                </button>
+                                                
+                                                <!-- Review Modal -->
+                                                <div class="modal fade" id="reviewModal-{{ booking.booking_id }}" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Rate {{ booking.tour.tour_name }}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form action="{% url 'submit_review' booking.booking_id %}" method="POST">
+                                                                {% csrf_token %}
+                                                                <div class="modal-body text-start">
+                                                                    <div class="mb-3 text-center">
+                                                                        <label class="form-label d-block">Your Rating</label>
+                                                                        <div class="rating-stars">
+                                                                            <input type="radio" name="rating" value="5" id="star5-{{ booking.booking_id }}" required><label for="star5-{{ booking.booking_id }}">★</label>
+                                                                            <input type="radio" name="rating" value="4" id="star4-{{ booking.booking_id }}"><label for="star4-{{ booking.booking_id }}">★</label>
+                                                                            <input type="radio" name="rating" value="3" id="star3-{{ booking.booking_id }}"><label for="star3-{{ booking.booking_id }}">★</label>
+                                                                            <input type="radio" name="rating" value="2" id="star2-{{ booking.booking_id }}"><label for="star2-{{ booking.booking_id }}">★</label>
+                                                                            <input type="radio" name="rating" value="1" id="star1-{{ booking.booking_id }}"><label for="star1-{{ booking.booking_id }}">★</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Comments (Optional)</label>
+                                                                        <textarea name="comment" class="form-control" rows="3"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>

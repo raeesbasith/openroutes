@@ -273,6 +273,29 @@
     <div class="tour-content">
 
         <h1 class="tour-title">{{ tour.tour_name }}</h1>
+        
+        <div class="rating-header mb-3">
+             {% if avg_rating %}
+               <div class="d-flex align-items-center">
+                 <div class="text-warning me-2">
+                   {% with rating=avg_rating|floatformat:0 %}
+                       {% for i in "12345"|make_list %}
+                           {% if forloop.counter <= rating|add:"0" %}
+                               <i class="fas fa-star"></i>
+                           {% else %}
+                                <i class="far fa-star"></i>
+                           {% endif %}
+                       {% endfor %}
+                   {% endwith %}
+                 </div>
+                 <span class="fw-bold text-dark me-1">{{ avg_rating|floatformat:1 }}</span>
+                 <span class="text-muted">({{ reviews.count }} reviews)</span>
+               </div>
+             {% else %}
+               <span class="badge bg-secondary">No ratings yet</span>
+             {% endif %}
+        </div>
+        
         <p class="tour-location">
             {{ tour.location.name }}, {{ tour.location.district.name }}
         </p>
@@ -344,6 +367,45 @@
             Book This Tour
         </a>
     </div>
+        </div>
+
+        <!-- REVIEWS SECTION -->
+        <div class="description">
+            <h4>Reviews ({{ reviews.count }})</h4>
+            
+            {% if reviews %}
+                <div class="reviews-list mt-3">
+                    {% for review in reviews %}
+                        <div class="card mb-3 border-0 bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title fw-bold mb-0">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i> 
+                                        {{ review.traveller.traveller_name }}
+                                    </h6>
+                                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                <div class="rating-stars text-warning small mb-2">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% if review.comment %}
+                                    <p class="card-text text-secondary mb-0">{{ review.comment }}</p>
+                                {% else %}
+                                    <p class="card-text text-muted fst-italic mb-0">No comment provided.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted fst-italic">No reviews yet. Be the first to review after booking!</p>
+            {% endif %}
         </div>
 
     </div>

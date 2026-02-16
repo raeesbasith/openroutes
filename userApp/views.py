@@ -13,6 +13,8 @@ try:
 except ImportError:
     genai = None
 
+from django.db.models import Avg
+
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def traveller_home(request):
@@ -25,11 +27,13 @@ def traveller_home(request):
 def tour_packages_view(request):
     if not request.session.get('login_id'):
         return redirect('login')
-
+    
     Districts = District.objects.all()
     accessibilities = Accessibility.objects.all()
-    # Base queryset
-    Tour_list = Tour.objects.all().order_by('price')
+    # Base queryset with average rating annotation
+    Tour_list = Tour.objects.all().annotate(
+        avg_rating=Avg('review__rating')
+    ).order_by('price')
 
     # Apply filters from GET params
     district = request.GET.get('district')
@@ -116,7 +120,13 @@ def chatbot_api(request):
 
 def tour_detail(request, tour_id):
     tour = get_object_or_404(Tour, tour_id=tour_id)
-    return render(request, 'traveller/tour_detail.html', {'tour': tour})
+    reviews = Review.objects.filter(tour=tour).order_by('-created_at')
+    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+    return render(request, 'traveller/tour_detail.html', {
+        'tour': tour, 
+        'reviews': reviews, 
+        'avg_rating': avg_rating
+    })
 
 def booking(request, tour_id):
     tour = Tour.objects.get(tour_id=tour_id)
@@ -205,6 +215,37 @@ def payment(request, booking_id):
         return HttpResponse("<script>alert('Booking not found.');window.location.href='/tour-packages/';</script>")
     
     return render(request, 'traveller/payment.html', {'booking': booking})
+
+def submit_review(request, booking_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return HttpResponse("<script>alert('Please login first.'); window.location.href='/login/';</script>")
+
+    if request.method == 'POST':
+        try:
+            booking = Booking.objects.get(booking_id=booking_id)
+            if booking.traveller.login_id != login_id:
+                return HttpResponse("<script>alert('Unauthorized access.'); window.location.href='/my-bookings/';</script>")
+            
+            if hasattr(booking, 'review'):
+                 return HttpResponse("<script>alert('You have already reviewed this booking.'); window.location.href='/my-bookings/';</script>")
+
+            rating = request.POST.get('rating')
+            comment = request.POST.get('comment')
+
+            Review.objects.create(
+                booking=booking,
+                tour=booking.tour,
+                traveller=booking.traveller,
+                rating=rating,
+                comment=comment
+            )
+            return HttpResponse("<script>alert('Review submitted successfully!'); window.location.href='/my-bookings/';</script>")
+        
+        except Booking.DoesNotExist:
+             return HttpResponse("<script>alert('Booking not found.'); window.location.href='/my-bookings/';</script>")
+    
+    return redirect('my_bookings')
 
 def process_payment(request, booking_id):
     """Process the payment for a booking"""
@@ -339,6 +380,12 @@ def my_bookings(request):
                 booking.tour_image_url = image_obj.image.url
             else:
                 booking.tour_image_url = None
+            
+            try:
+                booking.has_review = booking.review is not None
+                booking.user_rating = booking.review.rating
+            except Review.DoesNotExist:
+                booking.has_review = False
                 
     except TravellerProfile.DoesNotExist:
          return HttpResponse("<script>alert('Profile not found.'); window.location.href='/login/';</script>")

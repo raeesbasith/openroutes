@@ -36,3 +36,12 @@ class Payment(models.Model):
     amount = models.FloatField()
     payment_date = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=20, default='success')
+
+class Review(models.Model):
+    review_id = models.AutoField(primary_key=True)
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
+    traveller = models.ForeignKey(TravellerProfile, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
