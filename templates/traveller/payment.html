@@ -849,7 +849,7 @@
                     <div class="form-row full">
                         <div class="form-group">
                             <label>Card Number</label>
-                            <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNumber">
+                            <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNumber" pattern="[0-9]{16}" title="Enter a valid 16-digit credit card number (no spaces)" required>
                             <div class="card-icons">
                                 <i class="fab fa-cc-visa"></i>
                                 <i class="fab fa-cc-mastercard"></i>
@@ -861,17 +861,17 @@
                     <div class="form-row full">
                         <div class="form-group">
                             <label>Cardholder Name</label>
-                            <input type="text" name="card_name" placeholder="Name as on card">
+                            <input type="text" name="card_name" placeholder="Name as on card" pattern="[A-Z][a-zA-Z\s]*" title="Name must start with a capital letter and contain only letters and spaces" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Expiry Date</label>
-                            <input type="text" name="card_expiry" placeholder="MM/YY" maxlength="5" id="cardExpiry">
+                            <input type="text" name="card_expiry" placeholder="MM/YY" maxlength="5" id="cardExpiry" pattern="^(0[1-9]|1[0-2])\/\d{2}$" title="Enter expiry date in MM/YY format (e.g. 05/28)" required>
                         </div>
                         <div class="form-group">
                             <label>CVV</label>
-                            <input type="password" name="card_cvv" placeholder="•••" maxlength="4">
+                            <input type="password" name="card_cvv" placeholder="•••" maxlength="4" pattern="[0-9]{3,4}" title="Enter a valid 3 or 4 digit CVV" required>
                         </div>
                     </div>
                 </div>
@@ -1116,11 +1116,27 @@
     const netbankingSection = document.getElementById('netbankingSection');
     const walletSection = document.getElementById('walletSection');
 
+    // Select card inputs to toggle required attribute
+    const cardInputs = cardDetails.querySelectorAll('input');
+
+    function toggleCardRequired(isRequired) {
+        cardInputs.forEach(input => {
+            if (isRequired) {
+                input.setAttribute('required', '');
+            } else {
+                input.removeAttribute('required');
+            }
+        });
+    }
+
     function hideAllSections() {
         cardDetails.classList.remove('visible');
         upiSection.classList.remove('visible');
         netbankingSection.classList.remove('visible');
         walletSection.classList.remove('visible');
+        
+        // Disable validation for hidden sections
+        toggleCardRequired(false);
     }
 
     paymentMethods.forEach(method => {
@@ -1134,6 +1150,7 @@
 
             if (methodType === 'card') {
                 cardDetails.classList.add('visible');
+                toggleCardRequired(true);
             } else if (methodType === 'upi') {
                 upiSection.classList.add('visible');
             } else if (methodType === 'netbanking') {

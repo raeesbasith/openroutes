@@ -288,7 +288,7 @@
                                 <form id="tourForm">
                                     <div class="mb-3">
                                         <label for="tourTitle" class="form-label">Tour Title <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="tourTitle" required placeholder="e.g., European Heritage Tour">
+                                        <input type="text" class="form-control" id="tourTitle" pattern="[A-Z][a-zA-Z\s]*" title="Name must start with a capital letter and contain only letters and spaces" required placeholder="e.g., European Heritage Tour">
                                     </div>
 
                                     <div class="mb-3">
@@ -623,15 +623,15 @@
                                 <form>
                                     <div class="mb-3">
                                         <label class="form-label">Agency Name</label>
-                                        <input type="text" class="form-control" value="OpenRoutes Travel Agency">
+                                        <input type="text" class="form-control" value="OpenRoutes Travel Agency" pattern="[A-Z][a-zA-Z\s]*" title="Name must start with a capital letter and contain only letters and spaces">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" value="admin@openroutes.com">
+                                        <input type="email" class="form-control" value="admin@openroutes.com" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Enter a valid email address">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Phone</label>
-                                        <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                                        <input type="tel" class="form-control" value="9876543210" pattern="[6-9][0-9]{9}" title="Phone number must start with 6-9 and contain 10 digits">
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </form>
