@@ -8,10 +8,6 @@ from userApp.models import *
 from guestApp.models import *
 import uuid
 from django.db.models import Case, When, Value, IntegerField
-try:
-    import google.generativeai as genai
-except ImportError:
-    genai = None
 
 from django.db.models import Avg
 
@@ -90,55 +86,6 @@ def filllocation(request):
     locations = Location.objects.filter(district_id=did).values('location_id', 'name')
     return JsonResponse(list(locations), safe=False)
 
-def chatbot_api(request):
-    if request.method == 'POST':
-        import json
-        data = json.loads(request.body)
-        user_message = data.get('message', '')
-
-        
-        google_api_key = "AIzaSyCIcgQE4YX0a-cdCEI14NX4G40VgliOAHM" # 'YOUR_GOOGLE_GEMINI_API_KEY'
-        
-        if google_api_key:
-            try:
-                import google.generativeai as genai
-                genai.configure(api_key=google_api_key)
-                
-                # Function to try generation with a specific model
-                def generate(model_name):
-                    model = genai.GenerativeModel(model_name)
-                    # Context prompt
-                    context = "You are a helpful assistant for a travel agency website called OpenRoutes that specializes in accessible tourism for people with disabilities. Keep answers concise and helpful."
-                    full_prompt = f"{context}\n\nUser: {user_message}"
-                    return model.generate_content(full_prompt).text
-
-                try:
-                    # Try the fast, free model first
-                    ai_reply = generate('gemini-1.5-flash')
-                except Exception as e1:
-                    # If that fails (e.g. 404), try to find ANY supported model
-                    if "404" in str(e1) or "not found" in str(e1):
-                        found_model = None
-                        for m in genai.list_models():
-                            if 'generateContent' in m.supported_generation_methods:
-                                found_model = m.name
-                                break
-                        
-                        if found_model:
-                             ai_reply = generate(found_model)
-                        else:
-                             raise e1 # Re-raise if we couldn't find a fallback
-                    else:
-                        raise e1
-                
-            except Exception as e:
-                ai_reply = f"Error communicating with AI: {str(e)}"
-        else:
-            # Simulated response for demonstration without API Key
-            ai_reply = f"I am a friendly AI assistant for OpenRoutes (Powered by Gemini). You asked: '{user_message}'. I can help you find accessible tours. (Please configure the Google Gemini API key in userApp/views.py to get real AI answers)"
-
-        return JsonResponse({'reply': ai_reply})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def tour_detail(request, tour_id):
     tour = get_object_or_404(Tour, tour_id=tour_id)

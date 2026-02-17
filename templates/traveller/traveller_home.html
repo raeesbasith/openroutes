@@ -21,15 +21,129 @@
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     .package-image {
+        width: 100%;
         height: 220px;
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #1e3a5f 0%, #3a5f8f 100%);
+        position: relative;
         overflow: hidden;
+    }
+
+    .image-carousel {
+        width: 100%;
+        height: 100%;
         position: relative;
     }
-    .package-image img {
+
+    .carousel-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-slide {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .carousel-slide img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: block;
+    }
+
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #1e63b8;
+        color: #fff;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        z-index: 10;
+        transition: background-color 0.3s;
+        opacity: 0.9;
+    }
+
+    .carousel-nav:hover {
+        background-color: #154a8f;
+        opacity: 1;
+    }
+
+    .carousel-nav.prev {
+        left: 10px;
+    }
+
+    .carousel-nav.next {
+        right: 10px;
+    }
+
+    .carousel-nav:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .carousel-indicators {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+    }
+
+    .carousel-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: background-color 0.3s;
+    }
+
+    .carousel-indicator.active {
+        background-color: #fff;
+        width: 24px;
+        border-radius: 4px;
+    }
+
+    .package-status {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        z-index: 10;
+    }
+
+    .status-available {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .status-limited {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .status-full {
+        background-color: #dc3545;
+        color: #fff;
     }
 </style>
             <!-- Carousel Start -->
@@ -107,35 +221,92 @@
                 <div class="row g-4">
                     {% for tour in recommended_tours %}
                     <div class="col-lg-4 col-md-6">
-                        <div class="package-card">
-                            <div class="package-image">
-                                {% if tour.tourimages_set.first %}
-                                <img src="{{ tour.tourimages_set.first.image.url }}" alt="{{ tour.tour_name }}">
-                                {% else %}
-                                <img src="{% static 'traveller/img/about-img.jpg' %}" alt="Tour Image">
-                                {% endif %}
-                            </div>
-                            <div class="p-4">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <small class="m-0"><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ tour.location.name }}</small>
-                                    <small class="m-0"><i class="fa fa-calendar-alt text-primary me-2"></i>{{ tour.duration_days }} days</small>
-                                    <small class="m-0"><i class="fa fa-user text-primary me-2"></i>{{ tour.max_persons }}</small>
-                                </div>
-                                <a class="h5 d-block text-decoration-none text-truncate mb-3" href="{% url 'tour_detail' tour.tour_id %}">{{ tour.tour_name }}</a>
-                                
-                                <div class="mb-3">
-                                    {% if tour.avg_rating %}
-                                        <div class="text-primary small">
-                                            <i class="fas fa-star"></i> {{ tour.avg_rating|floatformat:1 }} / 5.0
+                        <div class="package-card h-100 border-0 shadow-sm" style="display: flex; flex-direction: column;">
+                            <div class="package-image position-relative" style="height: 220px;">
+                                {% if tour.tourimages_set.all %}
+                                <div class="image-carousel" id="carousel-{{ tour.tour_id }}" style="height: 100%;">
+                                    <div class="carousel-container">
+                                        {% for image in tour.tourimages_set.all %}
+                                        <div class="carousel-slide">
+                                            <img src="{{ image.image.url }}"
+                                                alt="{{ tour.tour_name }} - Image {{ forloop.counter }}" style="width: 100%; height: 100%; object-fit: cover;"/>
                                         </div>
-                                    {% else %}
-                                        <small class="text-muted">Not yet rated</small>
+                                        {% endfor %}
+                                    </div>
+                                    {% with total_images=tour.tourimages_set.all|length %}
+                                    {% if total_images > 1 %}
+                                    <button class="carousel-nav prev"
+                                        onclick="moveCarousel('carousel-{{ tour.tour_id }}', -1)">‹</button>
+                                    <button class="carousel-nav next"
+                                        onclick="moveCarousel('carousel-{{ tour.tour_id }}', 1)">›</button>
+                                    <div class="carousel-indicators" id="indicators-{{ tour.tour_id }}">
+                                        {% for image in tour.tourimages_set.all %}
+                                        <button class="carousel-indicator {% if forloop.first %}active{% endif %}"
+                                            onclick="goToSlide('carousel-{{ tour.tour_id }}', '{{ forloop.counter0 }}')"></button>
+                                        {% endfor %}
+                                    </div>
                                     {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center bg-secondary text-white h-100">
+                                        <i class="fa fa-image fa-3x"></i>
+                                    </div>
+                                {% endif %}
+                                </div>
+                                <span class="package-status status-{{ tour.status|lower }}">{{ tour.status}}</span>
+                            </div>
+
+                            <div class="p-4 d-flex flex-column flex-grow-1">
+                                <!-- Icons Row -->
+                                <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem; font-weight: 500;">
+                                    <span class="m-0"><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ tour.location.name }}</span>
+                                    <span class="m-0"><i class="fa fa-calendar-alt text-primary me-2"></i>{{ tour.duration_days }} days</span>
+                                    <span class="m-0"><i class="fa fa-user text-primary me-2"></i>{{ tour.max_persons }}</span>
                                 </div>
 
-                                <div class="d-flex justify-content-between border-top mt-2 pt-3">
-                                    <h5 class="m-0 text-primary">${{ tour.price }}</h5>
-                                    <a href="{% url 'tour_detail' tour.tour_id %}" class="btn btn-sm btn-primary rounded-pill px-3">Details</a>
+                                <!-- Title -->
+                                <a class="h4 d-block text-decoration-none text-dark mb-3 fw-bold" href="{% url 'tour_detail' tour.tour_id %}">{{ tour.tour_name }}</a>
+
+                                <!-- Rating -->
+                                <div class="mb-3">
+                                     {% if tour.avg_rating %}
+                                       <div class="text-warning small">
+                                         {% with rating=tour.avg_rating|floatformat:0 %}
+                                             {% for i in "12345"|make_list %}
+                                                 {% if forloop.counter <= rating|add:"0" %}
+                                                     <i class="fas fa-star"></i>
+                                                 {% else %}
+                                                      <i class="far fa-star"></i>
+                                                 {% endif %}
+                                             {% endfor %}
+                                         {% endwith %}
+                                         <span class="text-muted ms-1">({{ tour.avg_rating|floatformat:1 }})</span>
+                                       </div>
+                                     {% else %}
+                                       <small class="text-muted">No ratings yet</small>
+                                     {% endif %}
+                                </div>
+
+                                <!-- Accessibility Tags -->
+                                <div class="mb-3 flex-grow-1">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for acc in tour.touraccessibility_set.all %}
+                                        <span class="badge bg-white text-dark border shadow-sm px-2 py-2 fw-normal" style="font-size: 0.8rem;">
+                                            {{ acc.accessibility.accessibility_feature }}
+                                            {% if acc.extra_cost_per_acc > 0 %}
+                                            <small class="ms-1 text-muted">(+₹{{ acc.extra_cost_per_acc|floatformat:0 }})</small>
+                                            {% endif %}
+                                        </span>
+                                        {% empty %}
+                                        <small class="text-muted fst-italic">No specific accessibility features.</small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- Price & Button -->
+                                <div class="d-flex justify-content-between align-items-center border-top mt-2 pt-3">
+                                    <h5 class="m-0 text-primary fw-bold">₹{{ tour.price|floatformat:0 }} <small class="text-muted fw-normal fs-6">/person</small></h5>
+                                    <a href="{% url 'tour_detail' tour.tour_id %}" class="btn btn-sm btn-primary rounded-pill px-4 py-2">View Details</a>
                                 </div>
                             </div>
                         </div>
@@ -487,204 +658,98 @@
 
 
 
-        <!-- Chatbot UI Start -->
-        <!-- Moved to bottom-left to avoid conflict with "Back to Top" button -->
-        <style>
-            @keyframes pulse-blue {
-                0% {
-                    box-shadow: 0 0 0 0 rgba(19, 53, 123, 0.7);
-                    transform: scale(1);
-                }
-                70% {
-                    box-shadow: 0 0 0 15px rgba(19, 53, 123, 0);
-                    transform: scale(1.1);
-                }
-                100% {
-                    box-shadow: 0 0 0 0 rgba(19, 53, 123, 0);
-                    transform: scale(1);
-                }
-            }
-            @keyframes bounce-msg {
-                0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-                40% {transform: translateY(-10px);}
-                60% {transform: translateY(-5px);}
-            }
-            .chatbot-pulse {
-                animation: pulse-blue 2s infinite;
-            }
-            .chatbot-message-bubble {
-                position: absolute;
-                bottom: 80px; 
-                left: 10px;
-                background: white;
-                padding: 10px 15px;
-                border-radius: 20px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-                font-size: 14px;
-                color: #333;
-                white-space: nowrap;
-                opacity: 0;
-                transform: translateY(10px);
-                transition: opacity 0.5s, transform 0.5s;
-                pointer-events: none;
-                border: 2px solid #13357B;
-                z-index: 9998;
-                font-weight: bold;
-            }
-            .chatbot-message-bubble::after {
-                content: '';
-                position: absolute;
-                bottom: -8px;
-                left: 20px;
-                width: 0;
-                height: 0;
-                border-left: 8px solid transparent;
-                border-right: 8px solid transparent;
-                border-top: 8px solid #13357B;
-            }
-            .chatbot-message-bubble.show-bubble {
-                opacity: 1;
-                transform: translateY(0);
-                animation: bounce-msg 2s 1; 
-            }
-        </style>
-        <div id="chatbot-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
-            <div id="chatbot-invite" class="chatbot-message-bubble">Need help? Ask AI! 🤖</div>
-            <button id="chatbot-toggle" class="chatbot-pulse" style="background-color: #13357B; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s, background-color 0.3s;">
-                <i class="fa fa-comments"></i>
-            </button>
-            <div id="chatbot-window" style="display: none; position: absolute; bottom: 85px; left: 0; width: 350px; height: 500px; background-color: white; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); flex-direction: column; overflow: hidden; border: 1px solid #ddd; z-index: 10000;">
-                <div style="background-color: #13357B; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fa fa-robot"></i>
-                        <h5 style="margin: 0; color: white; font-size: 1.1rem;">Travel Assistant</h5>
-                    </div>
-                    <button id="chatbot-close" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
-                </div>
-                <div id="chatbot-messages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-color: #f9f9f9;">
-                    <div style="align-self: flex-start; background-color: #e9ecef; padding: 12px 16px; border-radius: 15px 15px 15px 0; max-width: 85%; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
-                        Hello! I'm your AI travel assistant. How can I help you today?
-                    </div>
-                </div>
-                <div style="padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background-color: white;">
-                    <input type="text" id="chatbot-input" placeholder="Type a message..." style="flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none; background-color: #f8f9fa;">
-                    <button id="chatbot-send" style="background-color: #13357B; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">Send</button>
-                </div>
-            </div>
-        </div>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const toggleBtn = document.getElementById('chatbot-toggle');
-                const closeBtn = document.getElementById('chatbot-close');
-                const chatWindow = document.getElementById('chatbot-window');
-                const sendBtn = document.getElementById('chatbot-send');
-                const inputField = document.getElementById('chatbot-input');
-                const messagesContainer = document.getElementById('chatbot-messages');
-                const inviteBubble = document.getElementById('chatbot-invite');
+            // Carousel functionality
+            const carouselStates = {};
 
-                // Show invite bubble after 3 seconds
-                setTimeout(() => {
-                    if (chatWindow.style.display === 'none') {
-                        inviteBubble.classList.add('show-bubble');
-                    }
-                }, 3000);
+            function initCarousel(carouselId) {
+                const carousel = document.getElementById(carouselId);
+                if (!carousel) return;
 
-                function toggleChat() {
-                    if (chatWindow.style.display === 'none') {
-                        chatWindow.style.display = 'flex';
-                        // Focus input when opened
-                        setTimeout(() => inputField.focus(), 100);
-                        toggleBtn.style.transform = "rotate(90deg) scale(0)";
-                        toggleBtn.style.opacity = "0";
-                        // Hide invite bubble
-                        inviteBubble.classList.remove('show-bubble');
-                    } else {
-                        chatWindow.style.display = 'none';
-                        toggleBtn.style.transform = "rotate(0deg) scale(1)";
-                        toggleBtn.style.opacity = "1";
-                    }
+                const container = carousel.querySelector('.carousel-container');
+                const slides = container.querySelectorAll('.carousel-slide');
+                
+                if (!carouselStates[carouselId]) {
+                    carouselStates[carouselId] = {
+                        currentSlide: 0,
+                        totalSlides: slides.length
+                    };
                 }
 
-                function closeChat() {
-                   chatWindow.style.display = 'none'; 
-                   toggleBtn.style.transform = "rotate(0deg) scale(1)";
-                   toggleBtn.style.opacity = "1";
+                updateCarousel(carouselId);
+            }
+
+            function moveCarousel(carouselId, direction) {
+                if (!carouselStates[carouselId]) {
+                    initCarousel(carouselId);
                 }
 
-                toggleBtn.addEventListener('click', toggleChat);
-                closeBtn.addEventListener('click', closeChat);
+                const state = carouselStates[carouselId];
+                state.currentSlide += direction;
 
-                function addMessage(text, isUser) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.style.alignSelf = isUser ? 'flex-end' : 'flex-start';
-                    messageDiv.style.backgroundColor = isUser ? '#13357B' : '#e9ecef';
-                    messageDiv.style.color = isUser ? 'white' : '#333';
-                    messageDiv.style.padding = '12px 16px';
-                    messageDiv.style.borderRadius = isUser ? '15px 15px 0 15px' : '15px 15px 15px 0';
-                    messageDiv.style.maxWidth = '85%';
-                    messageDiv.style.wordWrap = 'break-word';
-                    messageDiv.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-                    messageDiv.textContent = text;
-                    messagesContainer.appendChild(messageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                if (state.currentSlide < 0) {
+                    state.currentSlide = state.totalSlides - 1;
+                } else if (state.currentSlide >= state.totalSlides) {
+                    state.currentSlide = 0;
                 }
 
-                function sendMessage() {
-                    const message = inputField.value.trim();
-                    if (!message) return;
+                updateCarousel(carouselId);
+            }
 
-                    addMessage(message, true);
-                    inputField.value = '';
+            function goToSlide(carouselId, slideIndex) {
+                if (!carouselStates[carouselId]) {
+                    initCarousel(carouselId);
+                }
 
-                    // Add loading indicator
-                    const loadingDiv = document.createElement('div');
-                    loadingDiv.id = 'chatbot-loading';
-                    loadingDiv.style.alignSelf = 'flex-start';
-                    loadingDiv.style.color = '#888';
-                    loadingDiv.style.padding = '5px 10px';
-                    loadingDiv.style.fontStyle = 'italic';
-                    loadingDiv.style.fontSize = '0.9rem';
-                    loadingDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Thinking...';
-                    messagesContainer.appendChild(loadingDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                carouselStates[carouselId].currentSlide = parseInt(slideIndex);
+                updateCarousel(carouselId);
+            }
 
-                    fetch('{% url "chatbot_api" %}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({ message: message })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Remove loading
-                        const loading = document.getElementById('chatbot-loading');
-                        if (loading) loading.remove();
+            function updateCarousel(carouselId) {
+                const carousel = document.getElementById(carouselId);
+                if (!carousel) return;
 
-                        if (data.reply) {
-                            addMessage(data.reply, false);
-                        } else if (data.error) {
-                            addMessage("Error: " + data.error, false);
+                const state = carouselStates[carouselId];
+                const container = carousel.querySelector('.carousel-container');
+                const indicatorsId = 'indicators-' + carouselId.replace('carousel-', '');
+                const indicators = document.getElementById(indicatorsId);
+
+                // Move container
+                container.style.transform = `translateX(-${state.currentSlide * 100}%)`;
+
+                // Update indicators
+                if (indicators) {
+                    const indicatorButtons = indicators.querySelectorAll('.carousel-indicator');
+                    indicatorButtons.forEach((indicator, index) => {
+                        if (index === state.currentSlide) {
+                            indicator.classList.add('active');
+                        } else {
+                            indicator.classList.remove('active');
                         }
-                    })
-                    .catch(error => {
-                        const loading = document.getElementById('chatbot-loading');
-                        if (loading) loading.remove();
-                        addMessage("Sorry, something went wrong. Please try again.", false);
-                        console.error('Error:', error);
                     });
                 }
 
-                sendBtn.addEventListener('click', sendMessage);
-                inputField.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        sendMessage();
+                // Update navigation buttons
+                const prevBtn = carousel.querySelector('.carousel-nav.prev');
+                const nextBtn = carousel.querySelector('.carousel-nav.next');
+
+                if (prevBtn && nextBtn) {
+                    prevBtn.style.display = state.totalSlides <= 1 ? 'none' : 'flex';
+                    nextBtn.style.display = state.totalSlides <= 1 ? 'none' : 'flex';
+                }
+            }
+
+            // Initialize all carousels on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                const carousels = document.querySelectorAll('.image-carousel');
+                carousels.forEach(carousel => {
+                    const carouselId = carousel.id;
+                    if (carouselId) {
+                        initCarousel(carouselId);
                     }
                 });
             });
         </script>
-        <!-- Chatbot UI End -->
 
 {% include 'traveller/footer.html' %}
