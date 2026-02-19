@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_control
-from django.db.models import Sum
 import csv
 from datetime import datetime
 from .models import *
@@ -243,14 +242,14 @@ def admin_datewise_report(request):
         
         # Calculate totals
         if bookings:
-            totals = bookings.aggregate(
-                sum_amount=Sum('total_amount'),
-                sum_commission=Sum('commission_amount')
-            )
-            
-            total_booking_amount = totals['sum_amount'] or 0
-            total_commission = totals['sum_commission'] or 0
-            payable_to_operators = total_booking_amount - total_commission
+            financial_bookings = bookings.exclude(booking_status='cancelled')
+            total_booking_amount = 0
+            total_commission = 0
+            payable_to_operators = 0
+            for booking in financial_bookings:
+                total_booking_amount += booking.effective_total_amount
+                total_commission += booking.effective_commission_amount
+                payable_to_operators += booking.net_amount
             
     return render(request, 'adminT/datewise_report.html', {
         'bookings': bookings,
@@ -277,15 +276,16 @@ def admin_bookings_export(request):
     writer.writerow(['Booking ID', 'Operator', 'Customer', 'Tour', 'Date', 'Total Amount', 'Commission (10%)', 'Payable to Operator', 'Status'])
     
     for booking in bookings:
-        commission = booking.commission_amount or 0
-        payable = booking.total_amount - commission
+        realized_total = booking.effective_total_amount
+        commission = booking.effective_commission_amount
+        payable = booking.net_amount
         writer.writerow([
             booking.booking_id,
             booking.tour.operator.operator_name,
             booking.traveller.traveller_name,
             booking.tour.tour_name,
             booking.booking_date.strftime('%Y-%m-%d'),
-            booking.total_amount,
+            realized_total,
             commission,
             payable,
             booking.booking_status

@@ -214,6 +214,8 @@
     .status-paid { background: var(--success-bg); color: var(--success-text); }
     .status-completed { background: #f3e8ff; color: #6b21a8; }
     .status-cancelled { background: var(--danger-bg); color: var(--danger-text); }
+    .status-cancel_requested { background: #ede9fe; color: #6d28d9; }
+    .status-refunded { background: #dcfce7; color: #166534; }
     
     .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
     
@@ -262,6 +264,41 @@
     .modal-detail-row:last-child { border-bottom: none; }
     .modal-label { color: var(--gray-500); font-weight: 500; }
     .modal-value { color: var(--gray-900); font-weight: 600; }
+
+    .btn-approve-refund {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        border-radius: 6px; /* Matches other buttons */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 0 10px; /* Reduced horizontal padding */
+        height: 32px; /* Fixed height to match others */
+        font-size: 0.875rem; /* Standard btn-sm size */
+        line-height: 1.5;
+    }
+    
+    .btn-approve-refund:hover {
+        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        transform: translateY(-1px); /* More subtle lift */
+        box-shadow: 0 6px 12px rgba(109, 40, 217, 0.35);
+        color: white;
+    }
+
+    .btn-approve-refund:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(109, 40, 217, 0.2);
+    }
+
+    .btn-approve-refund i {
+        font-size: 1.1em;
+    }
 
 </style>
 
@@ -320,6 +357,8 @@
                 <button class="filter-btn" onclick="filterTable('pending', this)">Pending</button>
                 <button class="filter-btn" onclick="filterTable('confirmed', this)">Confirmed</button>
                 <button class="filter-btn" onclick="filterTable('completed', this)">Completed</button>
+                <button class="filter-btn" onclick="filterTable('cancel_requested', this)">Cancellation</button>
+                <button class="filter-btn" onclick="filterTable('refunded', this)">Refunded</button>
             </div>
         </div>
 
@@ -381,8 +420,20 @@
                                 <span class="status-badge status-completed"><span class="status-dot"></span> Completed</span>
                             {% elif booking.booking_status == 'cancelled' %}
                                 <span class="status-badge status-cancelled"><span class="status-dot"></span> Cancelled</span>
+                            {% elif booking.booking_status == 'cancel_requested' %}
+                                <span class="status-badge status-cancel_requested"><span class="status-dot"></span> Cancellation Requested</span>
+                            {% elif booking.booking_status == 'refunded' %}
+                                <span class="status-badge status-refunded"><span class="status-dot"></span> Refunded</span>
                             {% else %}
                                 <span class="status-badge">{{ booking.booking_status|title }}</span>
+                            {% endif %}
+                            {% if booking.cancellation_reason %}
+                            <div class="text-muted small mt-1">
+                                Reason: {{ booking.cancellation_reason }}
+                            </div>
+                            {% endif %}
+                            {% if booking.booking_status == 'refunded' and booking.refund_amount %}
+                            <div class="text-success small">₹{{ booking.refund_amount|floatformat:2 }} refunded</div>
                             {% endif %}
                         </td>
                         <td class="text-end">
@@ -402,6 +453,10 @@
                                 {% elif booking.booking_status == 'paid' %}
                                 <button class="btn btn-sm btn-primary d-flex align-items-center gap-1 py-0" title="Mark as Completed" onclick="updateStatus('{{ booking.booking_id }}', 'completed')" style="height: 32px;">
                                     <i class="bi bi-check-circle"></i>Completed
+                                </button>
+                                {% elif booking.booking_status == 'cancel_requested' %}
+                                <button class="btn-approve-refund" title="Approve Refund" data-bs-toggle="modal" data-bs-target="#refundModal{{ booking.booking_id }}">
+                                    <i class="bi bi-check-lg" style="margin-right: -2px;"></i> Refund 
                                 </button>
                                 {% endif %}
                             </div>
@@ -475,6 +530,43 @@
                                     </div>
                                 </div>
                             </div>
+                            {% if booking.booking_status == 'cancel_requested' %}
+                            <div class="modal fade" id="refundModal{{ booking.booking_id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form class="refund-form" data-booking-id="{{ booking.booking_id }}">
+                                            {% csrf_token %}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Approve Refund #{{ booking.booking_id }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="text-muted small mb-3">
+                                                    {% if booking.cancellation_requested_at %}
+                                                        Traveller requested cancellation on {{ booking.cancellation_requested_at|date:"M d, Y H:i" }}.
+                                                    {% else %}
+                                                        Traveller requested cancellation.
+                                                    {% endif %}
+                                                </p>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Refund Amount (₹)</label>
+                                                    <input type="number" name="refund_amount" min="0" step="0.01" class="form-control" value="{{ booking.total_amount }}" required>
+                                                    <small class="text-muted">Maximum refundable: ₹{{ booking.total_amount|floatformat:2 }}</small>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Notes (optional)</label>
+                                                    <textarea name="refund_notes" class="form-control" rows="3" placeholder="Add internal notes"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-danger">Approve Refund</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
@@ -556,6 +648,35 @@
         }
         return cookieValue;
     }
+
+    document.querySelectorAll('.refund-form').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const bookingId = this.dataset.bookingId;
+            const params = new URLSearchParams(new FormData(this));
+
+            fetch('/operator-home/process-refund/' + bookingId + '/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: params.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Something went wrong while processing the refund.');
+            });
+        });
+    });
 </script>
 
 {% include 'operator/footer.html' %}

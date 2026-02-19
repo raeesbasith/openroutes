@@ -267,17 +267,22 @@
                         </td>
                         <td><span class="fw-bold text-primary">#{{ booking.booking_id }}</span></td>
                         <td>{{ booking.tour.tour_name }}</td>
-                        <td class="text-muted">₹ {{ booking.total_amount }}</td>
-                        <td class="text-danger">- ₹ {{ booking.commission_amount|floatformat:2 }}</td>
+                        <td class="text-muted">₹ {{ booking.effective_total_amount|floatformat:2 }}</td>
+                        <td class="text-danger">- ₹ {{ booking.effective_commission_amount|floatformat:2 }}</td>
                         <td class="fw-bold text-success">₹ {{ booking.net_amount|floatformat:2 }}</td>
                         <td>
                             <span class="badge 
                                 {% if booking.booking_status == 'confirmed' %}bg-success text-white
                                 {% elif booking.booking_status == 'pending' %}bg-warning text-dark
                                 {% elif booking.booking_status == 'cancelled' %}bg-danger text-white
+                                {% elif booking.booking_status == 'cancellation_requested' %}bg-info text-dark
+                                {% elif booking.booking_status == 'refunded' %}bg-secondary text-white
                                 {% else %}bg-secondary text-white{% endif %}">
                                 {{ booking.booking_status|title }}
                             </span>
+                            {% if booking.booking_status == 'refunded' %}
+                            <div class="small text-muted mt-1">Refunded ₹{{ booking.refund_amount|floatformat:2 }}</div>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}

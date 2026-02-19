@@ -123,6 +123,16 @@
         color: #0dcaf0;
     }
 
+    .status-cancel_requested {
+        background-color: rgba(129, 140, 248, 0.15);
+        color: #4f46e5;
+    }
+
+    .status-refunded {
+        background-color: rgba(16, 185, 129, 0.18);
+        color: #047857;
+    }
+
     .price-tag {
         font-size: 1.5rem;
         font-weight: 700;
@@ -142,15 +152,26 @@
 
     .img-box {
         width: 100%;
-        height: 150px;
-        border-radius: 10px;
+        height: 160px; /* Slightly taller */
+        border-radius: 12px;
         overflow: hidden;
+        position: relative;
     }
 
     .img-box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+    
+    /* Responsive border */
+    @media (min-width: 768px) {
+        .border-end-md {
+            border-right: 1px solid #dee2e6;
+        }
+        .border-start-md {
+            border-left: 1px solid #dee2e6;
+        }
     }
 
     .empty-state {
@@ -199,6 +220,20 @@
     .rating-stars label:hover ~ label {
         color: #ffc107;
     }
+
+    .cancellation-alert {
+        background-color: #fff7ed;
+        border: 1px dashed #f59e0b;
+        border-radius: 12px;
+        padding: 15px 18px;
+        margin: 0 25px 25px 25px; /* Aligns with booking-body padding */
+    }
+
+    .cancellation-alert h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #b45309;
+    }
 </style>
 
 <!-- Add jQuery to handle modal behavior if not already included -->
@@ -222,61 +257,128 @@
                     <div class="booking-card">
                         <div class="booking-header">
                             <div>
-                                <h4 class="tour-name">{{ booking.tour.tour_name }}</h4>
+                                <h4 class="tour-name mb-1">{{ booking.tour.tour_name }}</h4>
+                                <span class="booking-id">Booking ID: #{{ booking.booking_id }}</span>
                             </div>
                             <span class="status-badge status-{{ booking.booking_status|lower }}">
-                                {{ booking.booking_status|title }}
+                                {% if booking.booking_status == 'cancel_requested' %}
+                                    Cancellation Requested
+                                {% else %}
+                                    {{ booking.booking_status|title }}
+                                {% endif %}
                             </span>
                         </div>
+                        
+                        <!-- Modals placed here to keep structure clean -->
+                        {% if booking.booking_status == 'pending' %}
+                        <div class="modal fade" id="cancelModal-{{ booking.booking_id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form action="{% url 'cancel_booking' booking.booking_id %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Cancel Booking</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="mb-3">Please let us know why you are cancelling (optional).</p>
+                                            <textarea name="cancellation_reason" class="form-control" rows="3" placeholder="Share more details"></textarea>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
+                                            <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if booking.booking_status == 'paid' or booking.booking_status == 'confirmed' %}
+                        <div class="modal fade" id="requestCancelModal-{{ booking.booking_id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form action="{% url 'request_cancellation' booking.booking_id %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Request Cancellation</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="mb-3">This will notify the operator to review and process your refund.</p>
+                                            <div class="mb-3">
+                                                <label class="form-label">Reason for cancellation</label>
+                                                <textarea name="cancellation_reason" class="form-control" rows="4" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger">Submit Request</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <div class="booking-body">
                             <div class="row align-items-center">
                                 <!-- Tour Image -->
-                                <div class="col-md-3 mb-3 mb-md-0">
-                                    <div class="img-box">
+                                <div class="col-md-3 mb-4 mb-md-0">
+                                    <div class="img-box shadow-sm position-relative">
                                         {% if booking.tour_image_url %}
                                             <img src="{{ booking.tour_image_url }}" alt="{{ booking.tour.tour_name }}">
                                         {% else %}
                                             <img src="{% static 'guest/img/destination-1.jpg' %}" alt="Default Image">
                                         {% endif %}
+                                        <div class="position-absolute bottom-0 start-0 w-100 p-2 text-white" style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                            <small class="fw-bold"><i class="fas fa-map-marker-alt me-1"></i> {{ booking.tour.location.name }}</small>
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 <!-- Booking Details -->
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <div class="row">
-                                        <div class="col-sm-6 info-row">
-                                            <div class="info-label">Tour Date</div>
-                                            <div class="info-value"><i class="far fa-calendar-alt text-primary me-1"></i> {{ booking.tour_date|date:"F d, Y" }}</div>
+                                <div class="col-md-6 mb-4 mb-md-0 border-end-md">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="info-label text-muted small text-uppercase fw-bold">Tour Date</div>
+                                            <div class="info-value fw-semibold text-dark"><i class="far fa-calendar-alt text-primary me-2"></i>{{ booking.tour_date|date:"d M, Y" }}</div>
                                         </div>
-                                        <div class="col-sm-6 info-row">
-                                            <div class="info-label">Travellers</div>
-                                            <div class="info-value"><i class="fas fa-users text-primary me-1"></i> {{ booking.total_persons }} Person(s)</div>
+                                        <div class="col-6">
+                                            <div class="info-label text-muted small text-uppercase fw-bold">Travellers</div>
+                                            <div class="info-value fw-semibold text-dark"><i class="fas fa-user-friends text-primary me-2"></i>{{ booking.total_persons }} Person(s)</div>
                                         </div>
-                                        <div class="col-sm-6 info-row">
-                                            <div class="info-label">Booked On</div>
-                                            <div class="info-value">{{ booking.booking_date|date:"M d, Y" }}</div>
+                                        <div class="col-6">
+                                            <div class="info-label text-muted small text-uppercase fw-bold">Booked On</div>
+                                            <div class="info-value text-secondary">{{ booking.booking_date|date:"d M, Y" }}</div>
                                         </div>
-                                        <div class="col-sm-6 info-row">
-                                            <div class="info-label">Location</div>
-                                            <div class="info-value">{{ booking.tour.location.name }}</div>
+                                        <div class="col-6">
+                                            <div class="info-label text-muted small text-uppercase fw-bold">Duration</div>
+                                            <div class="info-value text-secondary">{{ booking.tour.duration_days }} Days</div>
                                         </div>
                                     </div>
                                     
                                     {% if booking.bookingaccessibility_set.exists %}
-                                    <div class="mt-2">
-                                        <div class="info-label mb-2">Requested Accessibility</div>
-                                        <div>
-                                            {% for acc in booking.bookingaccessibility_set.all %}
-                                                <span class="accessibility-tag">{{ acc.accessibility.accessibility_feature }}</span>
-                                            {% endfor %}
+                                    <div class="mt-4 pt-3 border-top">
+                                        <div class="d-flex align-items-start gap-2">
+                                            <i class="fas fa-universal-access text-primary mt-1"></i>
+                                            <div>
+                                                <div class="info-label text-muted small text-uppercase fw-bold mb-2">Requested Support</div>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    {% for acc in booking.bookingaccessibility_set.all %}
+                                                        <span class="badge bg-light text-primary border border-primary-subtle rounded-pill fw-normal px-3 py-2">
+                                                            {{ acc.accessibility.accessibility_feature }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     {% endif %}
-
                                 </div>
 
                                 <!-- Cost & Action -->
-                                <div class="col-md-3 text-md-end text-start border-start-md ps-md-4">
+                                <div class="col-md-3 text-center text-md-end ps-md-4">
                                     <div class="info-label">Total Amount</div>
                                     <div class="price-tag mb-3">₹{{ booking.total_amount }}</div>
                                     
@@ -287,13 +389,22 @@
                                             <button class="btn btn-secondary rounded-pill" disabled style="background-color: #e9ecef; color: #6c757d; border-color: #dee2e6;">
                                                 <i class="fas fa-clock me-2"></i>Awaiting Confirmation
                                             </button>
+                                            <button type="button" class="btn btn-outline-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#cancelModal-{{ booking.booking_id }}">
+                                                <i class="fas fa-times me-2"></i>Cancel Booking
+                                            </button>
                                         {% elif booking.booking_status == 'confirmed' %}
                                             <a href="{% url 'payment' booking.booking_id %}" class="btn btn-primary rounded-pill">
                                                 <i class="fas fa-credit-card me-2"></i>Pay Now
                                             </a>
+                                            <button type="button" class="btn btn-outline-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#requestCancelModal-{{ booking.booking_id }}">
+                                                <i class="fas fa-undo me-2"></i>Request Cancellation
+                                            </button>
                                         {% elif booking.booking_status == 'paid' %}
                                             <button class="btn btn-success rounded-pill" disabled style="background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; opacity: 1;">
                                                 <i class="fas fa-check-circle me-2"></i>Paid
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#requestCancelModal-{{ booking.booking_id }}">
+                                                <i class="fas fa-undo me-2"></i>Request Cancellation
                                             </button>
                                         {% elif booking.booking_status == 'completed' %}
                                             <button class="btn btn-info rounded-pill w-100 mb-2" disabled style="background-color: #cff4fc; color: #055160; border-color: #b6effb; opacity: 1;">
@@ -350,11 +461,51 @@
                                                     </div>
                                                 </div>
                                             {% endif %}
+                                        {% elif booking.booking_status == 'cancel_requested' %}
+                                            <button class="btn btn-warning rounded-pill" disabled style="background-color: #fff7ed; color: #b45309; border-color: #fed7aa; opacity: 1;">
+                                                <i class="fas fa-info-circle me-2"></i>Cancellation Requested
+                                            </button>
+                                        {% elif booking.booking_status == 'cancelled' %}
+                                            <button class="btn btn-outline-secondary rounded-pill" disabled>
+                                                <i class="fas fa-ban me-2"></i>Cancelled
+                                            </button>
+                                        {% elif booking.booking_status == 'refunded' %}
+                                            <button class="btn btn-outline-success rounded-pill" disabled>
+                                                <i class="fas fa-undo-alt me-2"></i>Refunded ₹{{ booking.refund_amount|floatformat:2 }}
+                                            </button>
                                         {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {% if booking.booking_status == 'cancel_requested' or booking.booking_status == 'cancelled' or booking.booking_status == 'refunded' %}
+                        <div class="cancellation-alert">
+                            <h5 class="mb-2">
+                                {% if booking.booking_status == 'cancel_requested' %}
+                                    Awaiting operator response
+                                {% elif booking.booking_status == 'refunded' %}
+                                    Refund processed
+                                {% else %}
+                                    Booking cancelled
+                                {% endif %}
+                            </h5>
+                            {% if booking.cancellation_reason %}
+                            <p class="mb-1"><strong>Reason:</strong> {{ booking.cancellation_reason }}</p>
+                            {% endif %}
+                            {% if booking.cancellation_requested_at %}
+                                <p class="text-muted small mb-1">
+                                    Requested on {{ booking.cancellation_requested_at|date:"M d, Y H:i" }}
+                                </p>
+                            {% endif %}
+                            {% if booking.refund_amount > 0 %}
+                                <p class="mb-0"><strong>Refund Amount:</strong> ₹{{ booking.refund_amount|floatformat:2 }}
+                                    {% if booking.refund_processed_at %}
+                                        <span class="text-muted small">on {{ booking.refund_processed_at|date:"M d, Y" }}</span>
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

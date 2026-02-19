@@ -10,6 +10,7 @@ import uuid
 from django.db.models import Case, When, Value, IntegerField
 
 from django.db.models import Avg
+from django.utils import timezone
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -246,6 +247,49 @@ def process_payment(request, booking_id):
     
     return HttpResponse("<script>alert('Invalid request.');window.location.href='/tour-packages/';</script>")    
 
+def cancel_booking(request, booking_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+    if request.method != 'POST':
+        return redirect('my_bookings')
+
+    booking = get_object_or_404(Booking, booking_id=booking_id, traveller__login_id=login_id)
+
+    if booking.booking_status != 'pending':
+        return HttpResponse("<script>alert('Only pending bookings can be cancelled directly. For confirmed bookings, please request cancellation.'); window.location.href='/my-bookings/';</script>")
+
+    cancellation_reason = request.POST.get('cancellation_reason', '').strip()
+    booking.booking_status = 'cancelled'
+    booking.cancellation_reason = cancellation_reason if cancellation_reason else None
+    booking.cancellation_requested_at = timezone.now()
+    booking.save()
+
+    return HttpResponse("<script>alert('Booking cancelled successfully.'); window.location.href='/my-bookings/';</script>")
+
+def request_cancellation(request, booking_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+    if request.method != 'POST':
+        return redirect('my_bookings')
+
+    booking = get_object_or_404(Booking, booking_id=booking_id, traveller__login_id=login_id)
+
+    if booking.booking_status not in ['paid', 'confirmed']:
+        return HttpResponse("<script>alert('Only confirmed or paid bookings can request cancellation.'); window.location.href='/my-bookings/';</script>")
+
+    cancellation_reason = request.POST.get('cancellation_reason', '').strip()
+    if not cancellation_reason:
+        return HttpResponse("<script>alert('Please provide a reason for cancellation.'); window.history.back();</script>")
+
+    booking.booking_status = 'cancel_requested'
+    booking.cancellation_reason = cancellation_reason
+    booking.cancellation_requested_at = timezone.now()
+    booking.save()
+
+    return HttpResponse("<script>alert('Cancellation request submitted. Operator will review it shortly.'); window.location.href='/my-bookings/';</script>")
+
 def profile_view(request):
     login_id = request.session.get('login_id')
     if not login_id:
@@ -354,9 +398,10 @@ def my_bookings(request):
     
     try:
         traveller = TravellerProfile.objects.get(login_id=login_id)
-        # Order by pending first, then by date descending
+        # Prioritize actionable items first
         bookings = Booking.objects.filter(traveller=traveller).annotate(
             status_priority=Case(
+                When(booking_status='cancellation_requested', then=Value(0)),
                 When(booking_status='pending', then=Value(1)),
                 default=Value(2),
                 output_field=IntegerField(),

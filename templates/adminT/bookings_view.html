@@ -67,8 +67,15 @@
                                                     <span class="badge bg-warning text-dark">Pending</span>
                                                 {% elif booking.booking_status == 'cancelled' %}
                                                     <span class="badge bg-danger">Cancelled</span>
+                                                {% elif booking.booking_status == 'cancellation_requested' %}
+                                                    <span class="badge bg-info text-dark">Cancellation Requested</span>
+                                                {% elif booking.booking_status == 'refunded' %}
+                                                    <span class="badge bg-secondary">Refunded</span>
                                                 {% else %}
                                                     <span class="badge bg-secondary">{{ booking.booking_status|title }}</span>
+                                                {% endif %}
+                                                {% if booking.cancellation_reason %}
+                                                    <div class="small text-muted mt-1">Reason: {{ booking.cancellation_reason }}</div>
                                                 {% endif %}
                                             </td>
                                             <!-- <td class="text-center">

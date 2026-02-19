@@ -1,6 +1,5 @@
 from datetime import datetime
 import csv
-from django.db.models import Sum, F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
@@ -9,6 +8,7 @@ from adminApp.models import District, Location, Accessibility
 from guestApp.models import Operator
 from userApp.models import Booking
 from .models import Tour, TourAccessibility, TourImages
+from django.utils import timezone
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -253,16 +253,57 @@ def update_booking_status(request, booking_id):
         
     if request.method == 'POST':
         new_status = request.POST.get('status')
+        allowed_statuses = {'pending', 'confirmed', 'cancelled', 'completed'}
+        if new_status not in allowed_statuses:
+            return JsonResponse({'status': 'error', 'message': 'Invalid status update'})
         try:
             operator = Operator.objects.get(login_id=login_id)
             booking = Booking.objects.get(booking_id=booking_id, tour__operator=operator)
             booking.booking_status = new_status
+            if new_status == 'cancelled':
+                if not booking.cancellation_reason:
+                    booking.cancellation_reason = 'Cancelled by operator'
+                if not booking.cancellation_requested_at:
+                    booking.cancellation_requested_at = timezone.now()
             booking.save()
             return JsonResponse({'status': 'success'})
         except (Operator.DoesNotExist, Booking.DoesNotExist):
             return JsonResponse({'status': 'error', 'message': 'Booking not found or unauthorized'})
             
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+
+def process_refund(request, booking_id):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return JsonResponse({'status': 'error', 'message': 'Not logged in'})
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        booking = Booking.objects.get(booking_id=booking_id, tour__operator=operator)
+    except (Operator.DoesNotExist, Booking.DoesNotExist):
+        return JsonResponse({'status': 'error', 'message': 'Booking not found or unauthorized'})
+
+    if booking.booking_status != 'cancel_requested':
+        return JsonResponse({'status': 'error', 'message': 'No pending cancellation request for this booking'})
+
+    try:
+        refund_amount = float(request.POST.get('refund_amount', booking.total_amount))
+    except ValueError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid refund amount'})
+
+    if refund_amount < 0 or refund_amount > booking.total_amount:
+        return JsonResponse({'status': 'error', 'message': 'Refund amount must be between 0 and the total booking amount'})
+
+    booking.refund_amount = refund_amount
+    booking.refund_notes = request.POST.get('refund_notes', '').strip() or None
+    booking.refund_processed_at = timezone.now()
+    booking.booking_status = 'refunded'
+    booking.save()
+
+    return JsonResponse({'status': 'success'})
 
 
 def profile_view(request):
@@ -298,15 +339,13 @@ def datewise_report(request):
                 booking_date__date__range=[start_date, end_date]
             ).order_by('-booking_date')
             
-            # Calculate totals
             if bookings:
-                totals = bookings.aggregate(
-                    sum_amount=Sum('total_amount'),
-                    sum_commission=Sum('commission_amount')
-                )
-                
-                total_amount = totals['sum_amount'] or 0
-                total_commission = totals['sum_commission'] or 0
+                financial_bookings = bookings.exclude(booking_status='cancelled')
+                total_amount = 0
+                total_commission = 0
+                for booking in financial_bookings:
+                    total_amount += booking.effective_total_amount
+                    total_commission += booking.effective_commission_amount
                 net_revenue = total_amount - total_commission
                 
         return render(request, 'operator/datewise_report.html', {
@@ -344,15 +383,16 @@ def bookings_export(request):
         writer.writerow(['Booking ID', 'Customer Name', 'Tour Package', 'Booking Date', 'Total Persons', 'Total Amount', 'Commission (10%)', 'Net Amount', 'Status'])
         
         for booking in bookings:
-            commission = booking.commission_amount or 0
-            net = booking.total_amount - commission
+            realized_total = booking.effective_total_amount
+            commission = booking.effective_commission_amount
+            net = booking.net_amount
             writer.writerow([
                 booking.booking_id,
                 booking.traveller.traveller_name,
                 booking.tour.tour_name,
                 booking.booking_date.strftime('%Y-%m-%d'),
                 booking.total_persons,
-                booking.total_amount,
+                realized_total,
                 commission,
                 net,
                 booking.booking_status
