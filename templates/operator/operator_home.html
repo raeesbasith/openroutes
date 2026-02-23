@@ -1,685 +1,484 @@
-{% load static %}
+﻿{% load static %}
 {% include "operator/header.html" %}
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="content-section active">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <h2>Dashboard</h2>
-                    <p class="text-muted">Welcome back! Here's what's happening with your tours.</p>
-                </div>
 
-                <!-- Statistics Cards -->
-                <div class="row g-4 mb-4">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-primary">
-                                <i class="bi bi-map"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>24</h3>
-                                <p>Active Tours</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-success">
-                                <i class="bi bi-calendar-check"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>156</h3>
-                                <p>Total Bookings</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-warning">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>342</h3>
-                                <p>Customers</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-info">
-                                <i class="bi bi-currency-dollar"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>$45,230</h3>
-                                <p>Revenue</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Dashboard Content -->
+<style>
+    :root {
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        --info-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
 
-                <!-- Recent Bookings -->
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Recent Bookings</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Booking ID</th>
-                                                <th>Customer</th>
-                                                <th>Tour</th>
-                                                <th>Date</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>#BK001</td>
-                                                <td>John Doe</td>
-                                                <td>European Heritage Tour</td>
-                                                <td>2024-01-20</td>
-                                                <td><span class="badge bg-success">Confirmed</span></td>
-                                                <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td>#BK002</td>
-                                                <td>Jane Smith</td>
-                                                <td>Mountain Adventure</td>
-                                                <td>2024-01-19</td>
-                                                <td><span class="badge bg-warning">Pending</span></td>
-                                                <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td>#BK003</td>
-                                                <td>Mike Johnson</td>
-                                                <td>Coastal Paradise</td>
-                                                <td>2024-01-18</td>
-                                                <td><span class="badge bg-success">Confirmed</span></td>
-                                                <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Quick Actions</h5>
-                            </div>
-                            <div class="card-body">
-                                <a href="#add-tour" class="btn btn-primary w-100 mb-2">
-                                    <i class="bi bi-plus-circle"></i> Add New Tour
-                                </a>
-                                <a href="#bookings" class="btn btn-outline-primary w-100 mb-2">
-                                    <i class="bi bi-calendar-check"></i> View All Bookings
-                                </a>
-                                <a href="#tours" class="btn btn-outline-primary w-100 mb-2">
-                                    <i class="bi bi-map"></i> Manage Tours
-                                </a>
-                                <a href="#reports" class="btn btn-outline-primary w-100">
-                                    <i class="bi bi-graph-up"></i> View Reports
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    .dashboard-container {
+        padding: 1.5rem;
+        background-color: #f8fafc;
+        min-height: 100vh;
+    }
+
+    /* Welcome Card */
+    .welcome-card {
+        background: var(--primary-gradient);
+        border-radius: 16px;
+        color: white;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+    }
+
+    .welcome-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 30%;
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 100%);
+        transform: skewX(-20deg);
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .stat-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.025em;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Chart Cards */
+    .chart-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        height: 100%;
+    }
+
+    .card-header-styled {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title-styled {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+</style>
+
+<div class="dashboard-container">
+    
+    <!-- Hero Welcome Section -->
+    <div class="welcome-card">
+        <div class="d-flex justify-content-between align-items-center welcome-content">
+            <div>
+                <h2 class="fw-bold mb-2">Welcome back, {{ operator.operator_name }}! 👋</h2>
+                <p class="mb-0 opacity-75">Here's what's happening with your tours today.</p>
             </div>
-        </section>
-
-        <!-- Tours Management Section -->
-        <section id="tours" class="content-section">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2>Tour Management</h2>
-                            <p class="text-muted">Manage all your tours</p>
-                        </div>
-                        <a href="#add-tour" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add New Tour
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Search and Filter -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Search tours..." id="tourSearch">
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-select" id="tourStatusFilter">
-                                    <option value="">All Status</option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="draft">Draft</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-select" id="tourCategoryFilter">
-                                    <option value="">All Categories</option>
-                                    <option value="adventure">Adventure</option>
-                                    <option value="heritage">Heritage</option>
-                                    <option value="beach">Beach</option>
-                                    <option value="mountain">Mountain</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-outline-primary w-100" onclick="filterTours()">
-                                    <i class="bi bi-funnel"></i> Filter
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tours Grid -->
-                <div class="row g-4" id="toursGrid">
-                    <div class="col-md-6 col-lg-4">
-                        <div class="tour-management-card">
-                            <div class="tour-image">
-                                <img src="https://images.unsplash.com/photo-1531572753322-ad063cecc140?ixlib=rb-4.0.3&auto=format&fit=crop&w=2076&q=80" alt="Tour">
-                                <div class="tour-status-badge active">Active</div>
-                            </div>
-                            <div class="tour-body">
-                                <h5>European Heritage Tour</h5>
-                                <p class="text-muted small">Explore historic European cities</p>
-                                <div class="tour-meta mb-3">
-                                    <span><i class="bi bi-clock"></i> 7 Days</span>
-                                    <span><i class="bi bi-people"></i> Max 12</span>
-                                    <span><i class="bi bi-currency-dollar"></i> $1,299</span>
-                                </div>
-                                <div class="tour-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="editTour(1)">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="viewTour(1)">
-                                        <i class="bi bi-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteTour(1)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="tour-management-card">
-                            <div class="tour-image">
-                                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Tour">
-                                <div class="tour-status-badge active">Active</div>
-                            </div>
-                            <div class="tour-body">
-                                <h5>Mountain Adventure</h5>
-                                <p class="text-muted small">Accessible mountain experiences</p>
-                                <div class="tour-meta mb-3">
-                                    <span><i class="bi bi-clock"></i> 5 Days</span>
-                                    <span><i class="bi bi-people"></i> Max 8</span>
-                                    <span><i class="bi bi-currency-dollar"></i> $899</span>
-                                </div>
-                                <div class="tour-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="editTour(2)">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="viewTour(2)">
-                                        <i class="bi bi-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteTour(2)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="tour-management-card">
-                            <div class="tour-image">
-                                <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=2021&q=80" alt="Tour">
-                                <div class="tour-status-badge draft">Draft</div>
-                            </div>
-                            <div class="tour-body">
-                                <h5>Coastal Paradise</h5>
-                                <p class="text-muted small">Relaxing beach destinations</p>
-                                <div class="tour-meta mb-3">
-                                    <span><i class="bi bi-clock"></i> 6 Days</span>
-                                    <span><i class="bi bi-people"></i> Max 10</span>
-                                    <span><i class="bi bi-currency-dollar"></i> $1,099</span>
-                                </div>
-                                <div class="tour-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="editTour(3)">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="viewTour(3)">
-                                        <i class="bi bi-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteTour(3)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="d-none d-md-block">
+                <a href="{% url 'tour_regn_view' %}" class="btn btn-light text-primary fw-semibold px-4 py-2 shadow-sm border-0">
+                    <i class="bi bi-plus-lg me-2"></i>Create New Package
+                </a>
             </div>
-        </section>
-
-        <!-- Add/Edit Tour Section -->
-        <section id="add-tour" class="content-section">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <h2>Add New Tour</h2>
-                    <p class="text-muted">Create a new tour package for your customers</p>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Tour Information</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="tourForm">
-                                    <div class="mb-3">
-                                        <label for="tourTitle" class="form-label">Tour Title <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="tourTitle" pattern="[A-Z][a-zA-Z\s]*" title="Name must start with a capital letter and contain only letters and spaces" required placeholder="e.g., European Heritage Tour">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="tourDescription" class="form-label">Description <span class="text-danger">*</span></label>
-                                        <textarea class="form-control" id="tourDescription" rows="5" required placeholder="Describe your tour..."></textarea>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tourDuration" class="form-label">Duration (Days) <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="tourDuration" required min="1" placeholder="7">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tourMaxGuests" class="form-label">Max Guests <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="tourMaxGuests" required min="1" placeholder="12">
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tourPrice" class="form-label">Price (USD) <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="tourPrice" required min="0" step="1" placeholder="1300">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tourCategory" class="form-label">Category <span class="text-danger">*</span></label>
-                                            <select class="form-select" id="tourCategory" required>
-                                                <option value="">Select Category</option>
-                                                <option value="adventure">Adventure</option>
-                                                <option value="heritage">Heritage</option>
-                                                <option value="beach">Beach</option>
-                                                <option value="mountain">Mountain</option>
-                                                <option value="cultural">Cultural</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="tourDestination" class="form-label">Destination <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="tourDestination" required placeholder="e.g., Paris, France">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="tourImage" class="form-label">Tour Image URL</label>
-                                        <input type="url" class="form-control" id="tourImage" placeholder="https://example.com/image.jpg">
-                                        <small class="text-muted">Or upload an image file</small>
-                                        <input type="file" class="form-control mt-2" id="tourImageFile" accept="image/*">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Accessibility Features</label>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="wheelchairAccess">
-                                                    <label class="form-check-label" for="wheelchairAccess">
-                                                        Wheelchair Accessible
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="audioGuideAccess">
-                                                    <label class="form-check-label" for="audioGuideAccess">
-                                                        Audio Guide Available
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="signLanguageAccess">
-                                                    <label class="form-check-label" for="signLanguageAccess">
-                                                        Sign Language Interpreter
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="tourStatus" class="form-label">Status</label>
-                                        <select class="form-select" id="tourStatus">
-                                            <option value="draft">Draft</option>
-                                            <option value="active">Active</option>
-                                            <option value="inactive">Inactive</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="d-flex gap-2">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-save"></i> Save Tour
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="resetTourForm()">
-                                            <i class="bi bi-arrow-counterclockwise"></i> Reset
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Tour Preview</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="tourPreview">
-                                    <p class="text-muted text-center">Fill in the form to see preview</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5 class="mb-0">Tips</h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="small">
-                                    <li>Use clear, descriptive titles</li>
-                                    <li>Include all accessibility features</li>
-                                    <li>Set realistic pricing</li>
-                                    <li>Add high-quality images</li>
-                                    <li>Review before publishing</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bookings Section -->
-        <section id="bookings" class="content-section">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <h2>Bookings Management</h2>
-                    <p class="text-muted">View and manage all tour bookings</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <h5 class="mb-0">All Bookings</h5>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <select class="form-select form-select-sm d-inline-block w-auto">
-                                    <option>All Status</option>
-                                    <option>Confirmed</option>
-                                    <option>Pending</option>
-                                    <option>Cancelled</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Booking ID</th>
-                                        <th>Customer</th>
-                                        <th>Tour</th>
-                                        <th>Date</th>
-                                        <th>Guests</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#BK001</td>
-                                        <td>John Doe<br><small class="text-muted">john@example.com</small></td>
-                                        <td>European Heritage Tour</td>
-                                        <td>2024-01-20</td>
-                                        <td>2</td>
-                                        <td>$2,598</td>
-                                        <td><span class="badge bg-success">Confirmed</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" onclick="viewBooking('BK001')">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="confirmBooking('BK001')">
-                                                <i class="bi bi-check"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#BK002</td>
-                                        <td>Jane Smith<br><small class="text-muted">jane@example.com</small></td>
-                                        <td>Mountain Adventure</td>
-                                        <td>2024-01-19</td>
-                                        <td>1</td>
-                                        <td>$899</td>
-                                        <td><span class="badge bg-warning">Pending</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" onclick="viewBooking('BK002')">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="confirmBooking('BK002')">
-                                                <i class="bi bi-check"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#BK003</td>
-                                        <td>Mike Johnson<br><small class="text-muted">mike@example.com</small></td>
-                                        <td>Coastal Paradise</td>
-                                        <td>2024-01-18</td>
-                                        <td>4</td>
-                                        <td>$4,396</td>
-                                        <td><span class="badge bg-success">Confirmed</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" onclick="viewBooking('BK003')">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-info" onclick="editBooking('BK003')">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Customers Section -->
-        <section id="customers" class="content-section">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <h2>Customers</h2>
-                    <p class="text-muted">Manage your customer database</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Total Bookings</th>
-                                        <th>Total Spent</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>John Doe</td>
-                                        <td>john@example.com</td>
-                                        <td>+1 234-567-8900</td>
-                                        <td>3</td>
-                                        <td>$5,200</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary">
-                                                <i class="bi bi-eye"></i> View
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jane Smith</td>
-                                        <td>jane@example.com</td>
-                                        <td>+1 234-567-8901</td>
-                                        <td>2</td>
-                                        <td>$2,500</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary">
-                                                <i class="bi bi-eye"></i> View
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Reports Section -->
-        <section id="reports" class="content-section">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <h2>Reports & Analytics</h2>
-                    <p class="text-muted">View detailed reports and analytics</p>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Revenue Overview</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="revenueChart" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Tour Popularity</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="popularityChart" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Settings Section -->
-        <section id="settings" class="content-section">
-            <div class="container-fluid">
-                <div class="page-header mb-4">
-                    <h2>Settings</h2>
-                    <p class="text-muted">Manage your account and system settings</p>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Profile Settings</h5>
-                            </div>
-                            <div class="card-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label class="form-label">Agency Name</label>
-                                        <input type="text" class="form-control" value="OpenRoutes Travel Agency" pattern="[A-Z][a-zA-Z\s]*" title="Name must start with a capital letter and contain only letters and spaces">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" value="admin@openroutes.com" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Enter a valid email address">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Phone</label>
-                                        <input type="tel" class="form-control" value="9876543210" pattern="[6-9][0-9]{9}" title="Phone number must start with 6-9 and contain 10 digits">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">System Settings</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label">Currency</label>
-                                    <select class="form-select">
-                                        <option>USD ($)</option>
-                                        <option>EUR (€)</option>
-                                        <option>GBP (£)</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Timezone</label>
-                                    <select class="form-select">
-                                        <option>UTC-5 (EST)</option>
-                                        <option>UTC-8 (PST)</option>
-                                        <option>UTC+0 (GMT)</option>
-                                    </select>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
-                                    <label class="form-check-label" for="emailNotifications">
-                                        Email Notifications
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save Settings</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </div>
 
-    {% include 'operator/footer.html' %}
+    <!-- Stats Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Revenue -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Total Revenue</p>
+                        <h3 class="stat-value">₹{{ revenue|floatformat:0 }}</h3>
+                    </div>
+                    <div class="stat-icon-wrapper bg-indigo-subtle text-indigo" style="background-color: #e0e7ff; color: #4338ca;">
+                        <i class="bi bi-currency-rupee"></i>
+                    </div>
+                </div>
+                <div class="mt-3 d-flex align-items-center text-sm">
+                    <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 me-2">
+                        <i class="bi bi-graph-up-arrow me-1"></i>+12.5%
+                    </span>
+                    <span class="text-secondary small">vs last month</span>
+                </div>
+            </div>
+        </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="script.js"></script>
+        <!-- Bookings -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Total Bookings</p>
+                        <h3 class="stat-value">{{ total_bookings }}</h3>
+                    </div>
+                    <div class="stat-icon-wrapper" style="background-color: #dcfce7; color: #15803d;">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="mt-3 d-flex align-items-center text-sm">
+                    <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 me-2">
+                        <i class="bi bi-arrow-up-short me-1"></i>New
+                    </span>
+                    <span class="text-secondary small">Confirmed bookings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Tours -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Active Tours</p>
+                        <h3 class="stat-value">{{ active_tours_count }}</h3>
+                    </div>
+                    <div class="stat-icon-wrapper" style="background-color: #fee2e2; color: #b91c1c;">
+                        <i class="bi bi-map"></i>
+                    </div>
+                </div>
+                <div class="mt-3 d-flex align-items-center text-sm">
+                    <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1 me-2">
+                        Running
+                    </span>
+                    <span class="text-secondary small">Currently active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Happy Customers</p>
+                        <h3 class="stat-value">{{ customers_count }}</h3>
+                    </div>
+                    <div class="stat-icon-wrapper" style="background-color: #fef3c7; color: #b45309;">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <div class="mt-3 d-flex align-items-center text-sm">
+                    <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1 me-2">
+                        <i class="bi bi-star-fill me-1"></i>4.8
+                    </span>
+                    <span class="text-secondary small">Avg Rating</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="chart-card">
+                <div class="card-header-styled">
+                    <div>
+                        <h5 class="card-title-styled">Revenue Analytics</h5>
+                        <p class="text-secondary small mb-0">Monthly earnings overview</p>
+                    </div>
+                    <select class="form-select form-select-sm w-auto border-0 bg-light">
+                        <option>This Year</option>
+                        <option>Last Year</option>
+                    </select>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="chart-card">
+                <div class="card-header-styled">
+                    <h5 class="card-title-styled">Booking Status</h5>
+                    <button class="btn btn-sm btn-light rounded-circle p-1" style="width: 32px; height: 32px;">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                </div>
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 pb-3">
+                    <div style="width: 220px; height: 220px; position: relative;" class="mb-3">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                    <!-- Legend will be improved via JS plugins or custom HTML -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Tours Section -->
+    <div class="row g-4 margin-bottom-last">
+        <div class="col-12">
+            <div class="chart-card">
+                <div class="card-header-styled">
+                    <div>
+                        <h5 class="card-title-styled">Top Performing Packages</h5>
+                        <p class="text-secondary small mb-0">Based on total bookings</p>
+                    </div>
+                    <a href="{% url 'tour_view' %}" class="btn btn-primary btn-sm px-3 rounded-pill">View All</a>
+                </div>
+                <div style="height: 350px;">
+                    <canvas id="topToursChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% include 'operator/footer.html' %}
+
+<!-- Closing divs provided by header/footer structure -->
+</div> 
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart Configuration
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.scale.grid.color = '#f1f5f9';
+        
+        // Data injected from Django
+        const revenueLabels = JSON.parse('{{ revenue_labels_json|escapejs }}');
+        const revenueData = JSON.parse('{{ revenue_values_json|escapejs }}');
+        const tourLabels = JSON.parse('{{ tour_labels_json|escapejs }}');
+        const tourData = JSON.parse('{{ tour_data_json|escapejs }}');
+        const statusRawData = JSON.parse('{{ status_data_json|escapejs }}');
+
+        // Status Colors Configuration
+        const statusColors = {
+            'confirmed': '#10b981',        // Emerald
+            'pending': '#f59e0b',          // Amber
+            'cancelled': '#ef4444',        // Red
+            'completed': '#3b82f6',        // Blue
+            'paid': '#8b5cf6',             // Violet
+            'refunded': '#64748b',         // Slate
+            'cancel_requested': '#ec4899'  // Pink
+        };
+        
+        // Fallback palette for unknown statuses
+        const palette = [
+            '#14b8a6', // Teal
+            '#f97316', // Orange
+            '#84cc16', // Lime
+            '#06b6d4', // Cyan
+            '#a855f7', // Purple
+            '#f43f5e'  // Rose
+        ];
+
+        const statusLabels = statusRawData.map(item => {
+            const status = item.booking_status || 'Unknown';
+            return status.charAt(0).toUpperCase() + status.slice(1);
+        });
+        const statusValues = statusRawData.map(item => item.count);
+        
+        const statusBackgrounds = statusRawData.map((item, index) => {
+            const key = (item.booking_status || '').toLowerCase();
+            if (statusColors[key]) {
+                return statusColors[key];
+            }
+            // Use palette based on index for unknown statuses to ensure they are different from each other
+            return palette[index % palette.length];
+        });
+
+        // 1. Revenue Area Chart
+        const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        const gradient = ctxRevenue.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
+        gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+        new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: revenueData,
+                    borderColor: '#4f46e5',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#4f46e5',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        titleFont: { size: 13 },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                return '₹ ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 4] },
+                        ticks: {
+                            callback: value => '₹' + value/1000 + 'k'
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 2. Status Doughnut Chart
+        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        
+        if (statusRawData.length === 0) {
+             // Handle empty state if needed, maybe show a placeholder
+             document.getElementById('statusChart').parentElement.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No bookings yet</div>';
+        } else {
+            new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusValues,
+                        backgroundColor: statusBackgrounds,
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 15,
+                                font: { size: 11 },
+                                boxWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100) + '%';
+                                    return ` ${context.label}: ${value} (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Top Tours Bar Chart
+        const ctxTours = document.getElementById('topToursChart').getContext('2d');
+        new Chart(ctxTours, {
+            type: 'bar',
+            data: {
+                labels: tourLabels,
+                datasets: [{
+                    label: 'Bookings',
+                    data: tourData,
+                    backgroundColor: '#6366f1',
+                    borderRadius: 6,
+                    barPercentage: 0.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Horizontal bars
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { display: false }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>

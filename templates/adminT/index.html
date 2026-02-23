@@ -6,6 +6,9 @@
         <h3 class="fw-bold mb-3">Dashboard</h3>
         <h6 class="op-7 mb-2">Welcome to OpenRoutes Administration</h6>
     </div>
+    <div class="ms-md-auto py-2 py-md-0">
+        <a href="{% url 'operatorsView' %}" class="btn btn-primary btn-round">Manage Operators</a>
+    </div>
 </div>
 
 <div class="row">
@@ -21,7 +24,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Travellers</p>
-                            <h4 class="card-title">1,254</h4>
+                            <h4 class="card-title">{{ travellers_count }}</h4>
                         </div>
                     </div>
                 </div>
@@ -40,7 +43,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Operators</p>
-                            <h4 class="card-title">45</h4>
+                            <h4 class="card-title">{{ operators_count }}</h4>
                         </div>
                     </div>
                 </div>
@@ -59,7 +62,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Bookings</p>
-                            <h4 class="card-title">3,892</h4>
+                            <h4 class="card-title">{{ bookings_count }}</h4>
                         </div>
                     </div>
                 </div>
@@ -78,7 +81,7 @@
                     <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                             <p class="card-category">Verified</p>
-                            <h4 class="card-title">98%</h4>
+                            <h4 class="card-title">{{ verified_percentage }}%</h4>
                         </div>
                     </div>
                 </div>
@@ -88,41 +91,46 @@
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
         <div class="card card-round">
             <div class="card-header">
-                <div class="card-head-row card-tools-still-right">
-                    <h4 class="card-title">System Overview</h4>
+                <div class="card-head-row">
+                    <div class="card-title">Monthly Revenue (Current Year)</div>
                 </div>
-                <p class="card-category">
-                    Manage the OpenRoutes platform, verify operators, and oversee system accessibility features from here.
-                </p>
             </div>
             <div class="card-body">
-               <div class="row">
-                   <div class="col-md-4">
-                       <ul class="list-group list-group-flush">
-                           <li class="list-group-item d-flex justify-content-between align-items-center">
-                               Pending Operator Approvals
-                               <span class="badge bg-warning rounded-pill">3</span>
-                           </li>
-                           <li class="list-group-item d-flex justify-content-between align-items-center">
-                               New User Registrations (Today)
-                               <span class="badge bg-primary rounded-pill">12</span>
-                           </li>
-                           <li class="list-group-item d-flex justify-content-between align-items-center">
-                               New Districts Added
-                               <span class="badge bg-secondary rounded-pill">0</span>
-                           </li>
-                       </ul>
+                <div class="chart-container" style="min-height: 375px; position: relative;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Pending Tasks</div>
+                </div>
+            </div>
+            <div class="card-body">
+               <div class="list-group list-group-flush">
+                   <div class="list-group-item d-flex justify-content-between align-items-center">
+                       <span>Pending Operator Approvals</span>
+                       <span class="badge bg-warning rounded-pill">{{ pending_operators_count }}</span>
                    </div>
-                   <div class="col-md-8">
-                       <div class="alert alert-info" role="alert">
-                           <h4 class="alert-heading">Getting Started</h4>
-                           <p>Use the sidebar navigation to manage Location Data (Districts, Locations), Accessibility Features (Disabilities, Features), and verify Tour Operators.</p>
-                           <hr>
-                           <p class="mb-0">Need help? Contact system support.</p>
-                       </div>
+                   <!-- You can add more tasks here dynamically if needed -->
+                   <div class="list-group-item d-flex justify-content-between align-items-center">
+                       <span>New Travellers (Recent 5)</span>
+                       <span class="badge bg-primary rounded-pill">{{ recent_travellers|length }}</span>
+                   </div>
+               </div>
+               
+               <div class="alert alert-info mt-3 mb-0" role="alert">
+                   <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Quick Actions</h5>
+                   <hr>
+                   <div class="d-grid gap-2">
+                       <a href="{% url 'operatorVerification' %}" class="btn btn-outline-primary btn-sm">Verify Operators</a>
+                       <a href="{% url 'distRegn' %}" class="btn btn-outline-secondary btn-sm">Add New District</a>
                    </div>
                </div>
             </div>
@@ -130,4 +138,242 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-md-8">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row card-tools-still-right">
+                    <div class="card-title">Recent Bookings</div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Booking ID</th>
+                                <th scope="col">Date/Time</th>
+                                <th scope="col">Traveller</th>
+                                <th scope="col">Tour</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in recent_bookings %}
+                            <tr>
+                                <th scope="row">#{{ booking.booking_id }}</th>
+                                <td>{{ booking.booking_date|date:"M d, Y H:i" }}</td>
+                                <td>{{ booking.traveller.traveller_name }}</td>
+                                <td>{{ booking.tour.tour_name|truncatechars:20 }}</td>
+                                <td>₹{{ booking.total_amount|floatformat:2 }}</td>
+                                <td>
+                                    {% if booking.booking_status == 'confirmed' %}
+                                    <span class="badge badge-success">Confirmed</span>
+                                    {% elif booking.booking_status == 'pending' %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% elif booking.booking_status == 'cancelled' %}
+                                    <span class="badge badge-danger">Cancelled</span>
+                                    {% else %}
+                                    <span class="badge badge-dark">{{ booking.booking_status|title }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No recent bookings found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-title">Booking Status Distribution</div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="min-height: 375px; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-title">New Users</div>
+            </div>
+            <div class="card-body">
+                {% for traveller in recent_travellers %}
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar avatar-sm me-2">
+                        <span class="avatar-title rounded-circle border border-white bg-secondary">{{ traveller.traveller_name|slice:":1"|upper }}</span>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">{{ traveller.traveller_name }}</h6>
+                        <small class="text-muted">{{ traveller.reg_date|timesince }} ago</small>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center">No new users recently.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
 {% include 'adminT/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // -------------------------------------------------------------------------
+    // 1. Revenue Chart (Line/Area)
+    // -------------------------------------------------------------------------
+    try {
+        var revenueLabels = JSON.parse('{{ months_labels_json|escapejs }}');
+        var revenueData = JSON.parse('{{ revenue_data_json|escapejs }}');
+        
+        var ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        var gradientRevenue = ctxRevenue.createLinearGradient(0, 0, 0, 400);
+        gradientRevenue.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); // Blue 500 low opacity
+        gradientRevenue.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+        new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: revenueData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: gradientRevenue,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3b82f6',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return '₹ ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [4, 4], color: '#f1f5f9' },
+                        ticks: {
+                            callback: function(value) { return '₹' + value/1000 + 'k'; }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.error("Error initializing Revenue Chart:", e);
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. Booking Status Chart (Doughnut)
+    // -------------------------------------------------------------------------
+    try {
+        var statusLabels = JSON.parse('{{ status_labels_json|escapejs }}') || [];
+        var statusData = JSON.parse('{{ status_data_json|escapejs }}') || [];
+        
+        if (statusData.length === 0) {
+            document.getElementById('statusChart').parentElement.innerHTML = 
+                '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No data</div>';
+        } else {
+            var ctxStatus = document.getElementById('statusChart').getContext('2d');
+            
+            // Generate colors dynamically if needed, or stick to a fixed palette
+            var baseStatusColors = {
+                'Confirmed': '#10b981', // Emerald
+                'Pending': '#f59e0b',   // Amber
+                'Cancelled': '#ef4444', // Red
+                'Completed': '#3b82f6', // Blue
+                'Paid': '#8b5cf6',      // Violet
+                'Refunded': '#64748b',  // Slate
+                'Cancel Requested': '#ec4899' // Pink
+            };
+            
+            var fallbackPalette = ['#14b8a6', '#f97316', '#84cc16', '#06b6d4', '#a855f7', '#f43f5e'];
+
+            var statusBackgrounds = statusLabels.map(function(label, index) {
+                // Try direct match or title case match
+                if (baseStatusColors[label]) return baseStatusColors[label];
+                return fallbackPalette[index % fallbackPalette.length];
+            });
+
+            new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: statusBackgrounds,
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 15,
+                                font: { size: 11 },
+                                boxWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var value = context.parsed;
+                                    var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    var percentage = Math.round((value / total) * 100) + '%';
+                                    return ` ${context.label}: ${value} (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Error initializing Status Chart:", e);
+    }
+});
+</script>

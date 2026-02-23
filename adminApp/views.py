@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_control
 import csv
+import json
 from datetime import datetime
+from django.utils import timezone
 from .models import *
+from django.db.models import Count, Sum
 from operatorApp.models import Operator
 from guestApp.models import login, TravellerProfile
 from userApp.models import Booking
@@ -11,10 +14,75 @@ from userApp.models import Booking
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def adminHome(request):
-    if 'login_id' in request.session:
-        return render(request, 'adminT/index.html')
-    else:
+    if 'login_id' not in request.session:
         return redirect('/login/')
+    
+    # Dashboard Statistics
+    travellers_count = TravellerProfile.objects.count()
+    operators_count = Operator.objects.count()
+    bookings_count = Booking.objects.count()
+    verified_operators_count = Operator.objects.filter(status='approved').count()
+    pending_operators_count = Operator.objects.filter(status='pending').count()
+    
+    # Calculate percentage of verified operators
+    verified_percentage = 0
+    if operators_count > 0:
+        verified_percentage = int((verified_operators_count / operators_count) * 100)
+
+    # Recent Data
+    recent_bookings = Booking.objects.select_related('traveller', 'tour').order_by('-booking_date')[:5]
+    recent_travellers = TravellerProfile.objects.order_by('-reg_date')[:5]
+
+    # Analytics 1: Booking Status Distribution
+    status_counts = Booking.objects.values('booking_status').annotate(count=Count('booking_id'))
+    status_labels = [item['booking_status'].title().replace('_', ' ') for item in status_counts]
+    status_data = [item['count'] for item in status_counts]
+
+    # Analytics 2: Monthly Revenue (Current Year)
+    today = timezone.now()
+    current_year = today.year
+    months_labels = []
+    revenue_data_points = []
+    
+    # Initialize all months
+    import calendar
+    for i in range(1, 13):
+        months_labels.append(calendar.month_abbr[i])
+        revenue_data_points.append(0)
+
+    start_of_year = datetime(current_year, 1, 1)
+    revenue_bookings = Booking.objects.filter(
+        booking_date__gte=start_of_year, 
+        booking_status__in=['confirmed', 'completed', 'paid']
+    )
+    
+    for booking in revenue_bookings:
+        month_idx = booking.booking_date.month - 1
+        revenue_data_points[month_idx] += booking.effective_total_amount # Using property from previous context
+
+    # Additional Analytics: Operator Status Distribution
+    op_status_counts = Operator.objects.values('status').annotate(count=Count('operator_id'))
+    op_status_labels = [item['status'].title() for item in op_status_counts]
+    op_status_data = [item['count'] for item in op_status_counts]
+
+    context = {
+        'travellers_count': travellers_count,
+        'operators_count': operators_count,
+        'bookings_count': bookings_count,
+        'verified_percentage': verified_percentage,
+        'pending_operators_count': pending_operators_count,
+        'recent_bookings': recent_bookings,
+        'recent_travellers': recent_travellers,
+        'today': datetime.now().date(),
+        'status_labels_json': json.dumps(status_labels),
+        'status_data_json': json.dumps(status_data),
+        'months_labels_json': json.dumps(months_labels),
+        'revenue_data_json': json.dumps(revenue_data_points),
+        'op_status_labels_json': json.dumps(op_status_labels),
+        'op_status_data_json': json.dumps(op_status_data),
+    }
+    
+    return render(request, 'adminT/index.html', context)
 def distRegn(request):
     return render(request, 'adminT/districtRegn.html')
 

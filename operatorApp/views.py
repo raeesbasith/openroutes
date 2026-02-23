@@ -1,10 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
+import json
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_control
-from django.db.models import Sum, Q  # Added for aggregations
+from django.db.models import Sum, Count, Q
+from django.db.models.functions import TruncMonth
+from django.core.serializers.json import DjangoJSONEncoder
 from adminApp.models import District, Location, Accessibility
 from guestApp.models import Operator
 from userApp.models import Booking
@@ -24,6 +27,84 @@ def operator_home(request):
         try:
             operator = Operator.objects.get(login_id=login_id)
             context['operator'] = operator
+            
+            # Dashboard Statistics
+            context['active_tours_count'] = Tour.objects.filter(
+                operator=operator, 
+                status='available'
+            ).count()
+            
+            context['total_bookings'] = Booking.objects.filter(
+                tour__operator=operator
+            ).count()
+            
+            context['customers_count'] = Booking.objects.filter(
+                tour__operator=operator
+            ).values('traveller').distinct().count()
+            
+            # Calculate Revenue (Confirmed, Completed, and Paid Bookings)
+            revenue_list = [booking.net_amount for booking in Booking.objects.filter(
+                tour__operator=operator,
+                booking_status__in=['confirmed', 'completed', 'paid']
+            )]
+            context['revenue'] = sum(revenue_list) if revenue_list else 0
+            
+            # --- Graph Data Preparation ---
+            
+            # 1. Booking Status Distribution
+            status_data = Booking.objects.filter(
+                tour__operator=operator
+            ).values('booking_status').annotate(count=Count('booking_id'))
+            
+            context['status_data_json'] = json.dumps(list(status_data), cls=DjangoJSONEncoder)
+
+            # 2. Monthly Revenue (Current Year)
+            today = timezone.now()
+            current_year = today.year
+            revenue_by_month = {}
+            
+            # Initialize all months for the current year
+            for month in range(1, 13):
+                month_date = datetime(current_year, month, 1)
+                key = month_date.strftime('%Y-%m')
+                label = month_date.strftime('%b') # Jan, Feb, etc.
+                revenue_by_month[key] = {'label': label, 'total': 0.0, 'sort_date': month_date}
+
+            start_of_year = datetime(current_year, 1, 1)
+            
+            # Fetch relevant bookings for the current year
+            monthly_bookings = Booking.objects.filter(
+                tour__operator=operator,
+                booking_status__in=['confirmed', 'completed', 'paid'],
+                booking_date__gte=start_of_year
+            )
+            
+            for booking in monthly_bookings:
+                # Ensure we are using the local time or date properly to match the keys
+                # Using strftime on datetime object from DB (which is typically timezone aware or naive depending on settings)
+                month_key = booking.booking_date.strftime('%Y-%m')
+                if month_key in revenue_by_month:
+                   revenue_by_month[month_key]['total'] += booking.net_amount
+
+            # Sort by sort_date
+            sorted_items = sorted(revenue_by_month.values(), key=lambda x: x['sort_date'])
+            revenue_labels = [item['label'] for item in sorted_items]
+            revenue_values = [item['total'] for item in sorted_items]
+            
+            context['revenue_labels_json'] = json.dumps(revenue_labels)
+            context['revenue_values_json'] = json.dumps(revenue_values)
+
+            # 3. Top 5 Performing Tours
+            top_tours = Booking.objects.filter(
+                tour__operator=operator
+            ).values('tour__tour_name').annotate(bookings=Count('booking_id')).order_by('-bookings')[:5]
+            
+            tour_labels = [t['tour__tour_name'] for t in top_tours]
+            tour_data = [t['bookings'] for t in top_tours]
+            
+            context['tour_labels_json'] = json.dumps(tour_labels)
+            context['tour_data_json'] = json.dumps(tour_data)
+            
         except Operator.DoesNotExist:
             pass
             
