@@ -1,1764 +1,335 @@
-
 {% load static %}
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Add New Tour</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <style>
-    :root {
-      --primary: #0c2d57;
-      --primary-dark: #081b37;
-      --accent: #ff4b5c;
-      --accent-soft: #ffe2e5;
-      --bg: #f4f6fb;
-      --card-bg: #ffffff;
-      --text-main: #1b1f3b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --success: #16a34a;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text-main);
-    }
-
-    /* Top navbar (matches your screenshot, without sidebar) */
-    .topbar {
-      height: 64px;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .topbar-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #6ee7b7, #0c2d57);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .topbar-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .topbar-pill {
-      background: #f3f4ff;
-      color: var(--primary);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .user-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: default;
-    }
-
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: #0c2d57;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .user-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .user-role {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Page container */
-    .page {
-      max-width: 1120px;
-      margin: 28px auto 40px auto;
-      padding: 0 24px;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      color: var(--text-main);
-    }
-
-    .page-subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .page-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 9px 18px;
-      font-size: 14px;
-      font-weight: 500;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      text-decoration: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .btn-outline {
-      background: #fff;
-      color: var(--primary);
-      border-color: #cbd5f5;
-    }
-
-    .btn-outline:hover {
-      background: #eef2ff;
-    }
-
-    /* Layout cards */
-    .layout-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      gap: 20px;
-      align-items: flex-start;
-    }
-
-    @media (max-width: 960px) {
-      .layout-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
-      padding: 20px 20px 18px 20px;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      gap: 10px;
-    }
-
-    .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .card-caption {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .badge-soft {
-      background: #eff6ff;
-      color: #2563eb;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    /* Form styles */
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .field-group {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px 16px;
-    }
-
-    @media (max-width: 720px) {
-      .field-group {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .form-control {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .form-label span.required {
-      color: var(--accent);
-      margin-left: 2px;
-    }
-
-    .form-label-note {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .input,
-    .select,
-    .textarea {
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      padding: 9px 10px;
-      font-size: 14px;
-      color: var(--text-main);
-      background: #f9fafb;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease,
-        background-color 0.15s ease;
-    }
-
-    .input:focus,
-    .select:focus,
-    .textarea:focus {
-      outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
-      background: #ffffff;
-    }
-
-    .textarea {
-      min-height: 100px;
-      resize: vertical;
-      line-height: 1.4;
-    }
-
-    .input::placeholder,
-    .textarea::placeholder {
-      color: #9ca3af;
-    }
-
-    .input-addon {
-      display: flex;
-      align-items: stretch;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      background: #f9fafb;
-    }
-
-    .input-addon span {
-      min-width: 40px;
-      background: #f3f4ff;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      border-right: 1px solid var(--border);
-    }
-
-    .input-addon input {
-      border: none;
-      flex: 1;
-      padding: 9px 10px;
-      font-size: 14px;
-      background: transparent;
-    }
-
-    .input-addon input:focus {
-      outline: none;
-      background: #ffffff;
-    }
-
-    .helper-text {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 3px;
-    }
-
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .accessibility-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .accessibility-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      background: #f9fafb;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      transition: all 0.2s ease;
-    }
-
-    .accessibility-item:hover {
-      border-color: #cbd5f5;
-      background: #f3f4ff;
-    }
-
-    .accessibility-item.active {
-      border-color: var(--primary);
-      background: #ffffff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .accessibility-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      flex: 1;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .accessibility-info input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      border-radius: 4px;
-      border: 2px solid var(--border);
-      accent-color: var(--primary);
-      cursor: pointer;
-    }
-
-    .accessibility-cost {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateX(10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    .cost-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .input-cost {
-      width: 100px;
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      background: #ffffff;
-    }
-
-    .input-cost:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(12, 45, 87, 0.1);
-    }
-
-    .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: #f3f4ff;
-  color: #0c2d57;
-  cursor: pointer;
-  user-select: none;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.chip input:checked + span {
-  background: #0f172a;
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 999px;
-}
-
-    .chip:hover {
-      border-color: #bfdbfe;
-    }
-    .chip.active:hover {
-      background: #0c1220;
-    }
-    .chip input {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-      margin: 0;
-      padding: 0;
-    }
-
-    .chip-icon {
-      font-size: 13px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    /* Photo upload */
-    .photo-drop {
-      border-radius: 12px;
-      border: 1px dashed #cbd5f5;
-      padding: 14px 14px 12px 14px;
-      background: #f9fafb;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .photo-drop-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .photo-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      font-size: 16px;
-    }
-
-    .photo-text-main {
-      font-size: 13px;
-      color: var(--text-main);
-      font-weight: 500;
-    }
-
-    .photo-text-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .photo-btn {
-      font-size: 13px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .photo-btn:hover {
-      background: #f3f4ff;
-      border-color: #c4c9ff;
-    }
-
-    .photo-input {
-      display: none;
-    }
-
-    .photo-preview-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .photo-thumb {
-      position: relative;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #e5e7eb;
-      aspect-ratio: 4 / 3;
-    }
-
-    .photo-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .photo-remove {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      background: rgba(15, 23, 42, 0.85);
-      border: none;
-      color: #f9fafb;
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .badge-counter {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #f3f4ff;
-      color: #4b5563;
-    }
-
-    /* Right column summary */
-    .summary-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .metric-card {
-      border-radius: 12px;
-      padding: 10px 11px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-    }
-
-    .metric-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #9ca3af;
-      margin-bottom: 6px;
-    }
-
-    .metric-value {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .metric-tag {
-      font-size: 11px;
-      margin-top: 2px;
-      color: #10b981;
-    }
-
-    .summary-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    .summary-item-label {
-      color: #6b7280;
-    }
-
-    .summary-item-value {
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .divider {
-      height: 1px;
-      background: #e5e7eb;
-      margin: 10px 0 14px 0;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #ecfdf3;
-      color: #166534;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #16a34a;
-    }
-
-    .footer-actions {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding-top: 12px;
-      border-top: 1px solid #e5e7eb;
-      margin-top: 6px;
-    }
-
-    .footer-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .muted-link {
-      font-size: 12px;
-      color: #6b7280;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    .muted-link:hover {
-      color: #4b5563;
-    }
-
-    .toast {
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
-      z-index: 40;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: #ecfdf3;
-      color: #166534;
-      font-size: 13px;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25);
-    }
-
-    .toast-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #16a34a;
-    }
-
-    .error-text {
-      font-size: 12px;
-      color: var(--accent);
-      display: none;
-      margin-top: 4px;
-    }
-
-    .input-error,
-    .select-error,
-    .textarea-error {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
-      background: #fef2f2;
-    }
-    .itinerary {
-        margin-top: 10px;
-        font-size: 14px;
-        color: #374151;
-
-    }
-  </style>
-<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
-<script>
-$(document).ready(function() {
-    $.ajaxSetup({
-        headers: {"X-CSRFToken": '{{csrf_token}}'}
-    });
-
-    $('#districtid').change(function() {
-        var districtid = $(this).val();
-
-        if(districtid == '') {
-            $('#locations').empty().append('<option value="">Select location</option>');
-            return;
-        }
-
-        $.ajax({
-            type: "POST",
-            url: '{% url "filllocation" %}',
-            data: {did: districtid},
-            dataType: "json",
-            success: function (data) {
-                $('#locations').empty().append('<option value="">Select location</option>');
-                if(data.length === 0) {
-                    return;
-                }
-                $.each(data, function (key, val) {
-                    $('#locations').append('<option value="' + val.location_id + '">' + val.name + '</option>');
-                });
-            },
-            error: function(xhr, status, error) {
-                console.log('Error:', error);
-                console.log('Response:', xhr.responseText);
-                $('#locations').empty().append('<option value="">Error loading locations</option>');
-            }
-        });
-    });
-});
-</script>
-</head>
-<body>
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-logo" style="font-size:18px;">TA</div>
-      <div>
-        <div class="topbar-title">OpenRoutes Admin</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:2px;">
-          Manage your tours and bookings
-        </div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <div class="topbar-pill">Add New Tour</div>
-      <div class="user-chip">
-        <div class="user-avatar">A</div>
+{% include 'operator/header.html' %}
+
+<div class="container-fluid py-4">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <div class="user-name">Admin User</div>
-          <div class="user-role">admin@openroutes.com</div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="{% url 'operator_home' %}" class="text-decoration-none text-muted">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tour_view' %}" class="text-decoration-none text-muted">My Tours</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Tour</li>
+                </ol>
+            </nav>
+            <h2 class="h3 fw-bold text-dark">Create New Tour Package</h2>
+            <p class="text-muted small">Fill in the details below to add a new experience to your catalogue.</p>
         </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main page -->
-  <main class="page">
-    <div class="page-header">
-      <div>
-        <a href="{% url 'tour_view' %}" class="btn btn-outline" style="margin-bottom: 16px; width: fit-content; padding: 6px 16px; font-size: 13px;">
-          <i class="bi bi-arrow-left"></i>Back
-        </a>
-        <div class="page-title">Create New Tour Package</div>
-        <div class="page-subtitle">
-          Add a new experience to your catalogue. You can fine‑tune all details later.
-        </div>
-      </div>
-      <div class="page-actions">
-        <button type="button" class="btn btn-outline">Discard</button>
-        <button type="submit" form="tour-form" class="btn btn-primary">
-          Save Tour
-        </button>
-      </div>
-    </div>
-
-    <div class="layout-grid">
-      <!-- Left: Main form -->
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Tour Details</div>
-            <div class="card-caption">
-              Core information about the tour package.
-            </div>
-          </div>
-          <span class="badge-soft">Step 1 of 1</span>
-        </div>
-
-        <form id="tour-form" autocomplete="off" method="POST" enctype="multipart/form-data" action="{% url 'tour_regn_insert' %}">
-          {% csrf_token %}
-          <!-- District & Location -->
-          <div class="field-group">
-            <div class="form-control">
-              <label class="form-label">
-                District<span class="required">*</span>
-              </label>
-              <select name="district" id="districtid" class="select">
-                                        <option value="">Select District</option>
-                                        {% for d in districts %}
-                                            <option value="{{ d.district_id }}">{{ d.name }}</option>
-                                        {% endfor %}
-                                    </select>
-              <div class="helper-text">Used to group tours by region.</div>
-              <div class="error-text" data-error-for="district">
-                Please choose a district.
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="form-label">
-                Location<span class="required">*</span>
-                <span class="form-label-note">Changes with district</span>
-              </label>
-              <select
-                id="locations"
-                name="location"
-                class="select"
-                required
-              >
-                <option value="">Select location</option>
-              </select>
-              <div class="error-text" data-error-for="location">
-                Please choose a location.
-              </div>
-            </div>
-          </div>
-
-          <!-- Tour name & duration -->
-          <div class="field-group">
-            <div class="form-control">
-              <label class="form-label">
-                Tour name<span class="required">*</span>
-              </label>
-              <input
-                id="tourName"
-                name="tour_name"
-                class="input"
-                type="text"
-                placeholder="Ex: Galle Fort & Sunset Cruise"
-                pattern="[A-Z][a-zA-Z\s]*"
-                title="Name must start with a capital letter and contain only letters and spaces"
-                required
-              />
-              <div class="helper-text">
-                This is visible to customers on all listings.
-              </div>
-              <div class="error-text" data-error-for="tourName">
-                Please enter a tour name.
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="form-label">
-                Duration<span class="required">*</span>
-                <span class="form-label-note">In days or hours</span>
-              </label>
-              <input
-                id="duration"
-                name="duration"
-                class="input"
-                type="text"
-                placeholder="Ex: 3 days / 2 nights"
-                required
-              />
-              <div class="error-text" data-error-for="duration">
-                Please specify duration.
-              </div>
-            </div>
-          </div>
-
-          <!-- Price & max persons -->
-          <div class="field-group">
-            <div class="form-control">
-              <label class="form-label">
-                Price per person<span class="required">*</span>
-              </label>
-              <div class="input-addon">
-                <span>LKR</span>
-                <input
-                  id="price"
-                  name="price"
-                  type="number"
-                  min="0"
-                  step="1"
-                  placeholder="25000"
-                  required
-                />
-              </div>
-              <div class="helper-text">
-                You can add seasonal pricing rules later.
-              </div>
-              <div class="error-text" data-error-for="price">
-                Please enter a valid price.
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="form-label">
-                Maximum guests<span class="required">*</span>
-              </label>
-              <input
-                id="maxPersons"
-                name="max_persons"
-                class="input"
-                type="number"
-                min="1"
-                max="100"
-                placeholder="10"
-                required
-              />
-              <div class="helper-text">
-                We’ll flag overbookings beyond this limit.
-              </div>
-              <div class="error-text" data-error-for="maxPersons">
-                Please specify max guests (at least 1).
-              </div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="form-control">
-            <label class="form-label">
-              Short description<span class="required">*</span>
-              <span class="form-label-note">
-                Highlight what makes this tour special
-              </span>
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              class="textarea"
-              placeholder="Ex: Explore the colonial streets of Galle, enjoy a scenic coastal drive, and end the day with a private sunset cruise in the Indian Ocean."
-              required
-            ></textarea>
-            <div
-              id="descriptionCounter"
-              class="helper-text"
-              style="display:flex;justify-content:space-between;"
-            >
-              <span>Use at least 40 characters.</span>
-              <span><span id="descriptionCount">0</span> / 400</span>
-            </div>
-            <div class="error-text" data-error-for="description">
-              Please add a short description (min 40 characters).
-            </div>
-          </div>
-          <!-- Accessibility -->
-          <div class="form-control">
-            <label class="form-label">
-              Accessibility features & extra costs
-              <span class="form-label-note">Select features and specify additional costs (if any)</span>
-            </label>
-            <div class="accessibility-list" id="accessibilityList">
-              {% for a in accessibilities %}
-                <div class="accessibility-item">
-                  <label class="accessibility-info">
-                    <input type="checkbox" name="accessibility" value="{{ a.accessibility_id }}" class="acc-checkbox">
-                    <span>{{ a.accessibility_feature }}</span>
-                  </label>
-                  <div class="accessibility-cost" style="display: none;">
-                    <span class="cost-label">+ INR</span>
-                    <input type="number" name="extra_cost_{{ a.accessibility_id }}" step="1" min="0" placeholder="0" class="input-cost">
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-            <div class="helper-text">
-              Selecting a feature allows you to specify a per-person surcharge for that accessibility option.
-            </div>
-          </div>
-          <!-- itinerary -->
-          <div class="form-control">
-            <label class="form-label">
-              Tour itinerary<span class="required">*</span>
-              <span class="form-label-note">
-                Upload itinerary document
-              </span>
-            </label>
-            <div class="photo-drop" id="itineraryDrop">
-              <div class="photo-drop-header">
-                <div class="photo-icon">📁</div>
-                <div style="flex:1;min-width:180px;">
-                  <div class="photo-text-main">
-                    Upload pdf file
-                  </div>
-                  <div class="photo-text-sub">
-                    PDF format only.
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  id="itineraryButton"
-                  class="photo-btn"
-                  style="white-space:nowrap;"
-                >
-                  <span>+ Add file</span>
-                </button>
-              </div>
-              <input
-                id="itineraryFile"
-                name="itinerary"
-                class="photo-input"
-                type="file"
-                accept=".pdf,application/pdf"
-              />
-              <div
-                id="itineraryPreview"
-                class="photo-preview-grid"
-                aria-live="polite"
-              ></div>
-            </div>
-            <div class="error-text" data-error-for="itinerary">
-              Please add a PDF file.
-            </div>
-          </div>
-          
-          <!-- Photos -->
-          <div class="form-control">
-            <label class="form-label">
-              Tour photos<span class="required">*</span>
-              <span class="form-label-note">
-                Add at least 1, up to 8 images
-              </span>
-            </label>
-            <div class="photo-drop" id="photoDrop">
-              <div class="photo-drop-header">
-                <div class="photo-icon">📷</div>
-                <div style="flex:1;min-width:180px;">
-                  <div class="photo-text-main">
-                    Drag & drop to upload, or choose files
-                  </div>
-                  <div class="photo-text-sub">
-                    JPG or PNG, at least 1200×800px recommended.
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  id="photoButton"
-                  class="photo-btn"
-                  style="white-space:nowrap;"
-                >
-                  <span>+ Add photos</span>
-                </button>
-                <span id="photoCounter" class="badge-counter">
-                  0 / 8 selected
-                </span>
-              </div>
-              <input
-                id="photos"
-                name="tour_images"
-                class="photo-input"
-                type="file"
-                accept="image/*"
-                multiple
-              />
-              <div
-                id="photoPreview"
-                class="photo-preview-grid"
-                aria-live="polite"
-              ></div>
-            </div>
-            <div class="error-text" data-error-for="photos">
-              Please add at least one photo.
-            </div>
-          </div>
-        </form>
-      </section>
-
-      <!-- Right: Live summary / quick actions -->
-      <aside class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Preview & Settings</div>
-            <div class="card-caption">
-              Quick summary of the package before publishing.
-            </div>
-          </div>
-          <span class="badge-soft" id="statusBadge">Draft</span>
-        </div>
-
-        <div class="summary-metrics">
-          <div class="metric-card">
-            <div class="metric-label">Base price</div>
-            <div class="metric-value" id="summaryPrice">LKR 0</div>
-            <div class="metric-tag">per person</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Capacity</div>
-            <div class="metric-value">
-              <span id="summaryMaxPersons">0</span> guests
-            </div>
-            <div class="metric-tag" id="summaryDuration">
-              Duration: Not set
-            </div>
-          </div>
-        </div>
-
-        <div class="summary-list">
-          <div>
-            <span class="summary-item-label">Tour name:</span>
-            <span
-              class="summary-item-value"
-              id="summaryTourName"
-            >
-              Untitled tour
-            </span>
-          </div>
-          <div>
-            <span class="summary-item-label">Location:</span>
-            <span
-              class="summary-item-value"
-              id="summaryLocation"
-            >
-              Not selected
-            </span>
-          </div>
-          <div>
-            <span class="summary-item-label">Accessibility:</span>
-            <span id="summaryAccessibility">No features selected</span>
-          </div>
-          <div>
-            <span class="summary-item-label">Photos:</span>
-            <span class="summary-item-value" id="summaryPhotos">
-              0 attached
-            </span>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div style="margin-bottom:14px;">
-          <div class="status-pill">
-            <span class="status-dot"></span>
-            <span id="summaryStatusText">Not yet published</span>
-          </div>
-        </div>
-
-        <div class="pill-row" style="margin-bottom:12px;">
-          <span class="badge-soft">Auto‑save enabled</span>
-          <span class="badge-soft" style="background:#ecfdf3;color:#166534;">
-            Visibility: Private
-          </span>
-        </div>
-
-        <p
-          style="
-            font-size:12px;
-            color:#6b7280;
-            line-height:1.4;
-            margin-bottom:10px;
-          "
-        >
-          Once this tour is published, it will be visible on your website,
-          booking engine, and any connected marketplaces.
-        </p>
-
-        <div class="footer-actions">
-          <div class="footer-left">
-            <span class="muted-link">Preview customer view</span>
-            <span class="muted-link">Duplicate from existing tour</span>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button
-              type="button"
-              class="btn btn-outline"
-              style="padding:7px 14px;font-size:13px;"
-            >
-              Save as draft
+        <div class="d-flex gap-2">
+            <a href="{% url 'tour_view' %}" class="btn btn-outline-secondary d-flex align-items-center">
+                <i class="bi bi-x-lg me-2"></i> Cancel
+            </a>
+            <button type="submit" form="tourForm" class="btn btn-primary d-flex align-items-center">
+                <i class="bi bi-check2-circle me-2"></i> Publish Tour
             </button>
-            <button
-              type="submit"
-              form="tour-form"
-              class="btn btn-primary"
-              style="padding:7px 16px;font-size:13px;"
-            >
-              Publish tour
-            </button>
-          </div>
         </div>
-      </aside>
     </div>
-  </main>
 
-  <!-- Toast -->
-  <div id="toast" class="toast">
-    <span class="toast-dot"></span>
-    <span id="toastMessage">Tour saved successfully.</span>
-  </div>
+    <form id="tourForm" method="POST" enctype="multipart/form-data" action="{% url 'tour_regn_insert' %}" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="row g-4">
+            <!-- Left Column: Main Form -->
+            <div class="col-lg-8">
+                <!-- Section 1: Basic Information -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="card-title h6 mb-0 text-primary fw-bold"><i class="bi bi-info-circle me-2"></i>Basic Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="district" class="form-label fw-medium text-secondary">District <span class="text-danger">*</span></label>
+                                <select class="form-select" id="district" name="district" required>
+                                    <option value="" selected disabled>Select District</option>
+                                    {% for d in districts %}
+                                        <option value="{{ d.district_id }}">{{ d.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select a district.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="location" class="form-label fw-medium text-secondary">Location <span class="text-danger">*</span></label>
+                                <select class="form-select" id="location" name="location" required disabled>
+                                    <option value="" selected disabled>Select District First</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a location.</div>
+                            </div>
 
-  <!-- Inline JS -->
-  <script>
-    (function () {
-      const districtSelect = document.getElementById("district");
-      const locationSelect = document.getElementById("location");
-      const tourNameInput = document.getElementById("tourName");
-      const priceInput = document.getElementById("price");
-      const maxPersonsInput = document.getElementById("maxPersons");
-      const durationInput = document.getElementById("duration");
-      const descriptionInput = document.getElementById("description");
-      const descriptionCount = document.getElementById("descriptionCount");
+                            <div class="col-12">
+                                <label for="tour_name" class="form-label fw-medium text-secondary">Tour Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tour_name" name="tour_name" placeholder="Ex: Amazing Galle Fort Tour" required>
+                                <div class="form-text text-muted small">Choose a catchy name that describes the experience.</div>
+                                <div class="invalid-feedback">Please enter a tour name.</div>
+                            </div>
 
-      const form = document.getElementById("tour-form");
-      const toast = document.getElementById("toast");
-      const toastMessage = document.getElementById("toastMessage");
+                            <div class="col-md-6">
+                                <label for="duration" class="form-label fw-medium text-secondary">Duration <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                                    <input type="text" class="form-control" id="duration" name="duration" placeholder="Ex: 3 Days / 2 Nights" required>
+                                </div>
+                                <div class="invalid-feedback">Please specify the duration.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="max_persons" class="form-label fw-medium text-secondary">Maximum Guests <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-people"></i></span>
+                                    <input type="number" class="form-control" id="max_persons" name="max_persons" min="1" placeholder="Ex: 15" required>
+                                </div>
+                                <div class="invalid-feedback">Please specify max guests.</div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="price" class="form-label fw-medium text-secondary">Price per Person <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text fw-bold text-primary">INR</span>
+                                    <input type="number" class="form-control" id="price" name="price" min="0" placeholder="0.00" required>
+                                </div>
+                                <div class="form-text text-muted small">Set the base price for a single adult.</div>
+                                <div class="invalid-feedback">Please enter a valid price.</div>
+                            </div>
 
-      const summaryPrice = document.getElementById("summaryPrice");
-      const summaryMaxPersons = document.getElementById("summaryMaxPersons");
-      const summaryDuration = document.getElementById("summaryDuration");
-      const summaryTourName = document.getElementById("summaryTourName");
-      const summaryLocation = document.getElementById("summaryLocation");
-      const summaryAccessibility =
-        document.getElementById("summaryAccessibility");
-      const summaryPhotos = document.getElementById("summaryPhotos");
-      const summaryStatusText =
-        document.getElementById("summaryStatusText");
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-medium text-secondary">Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe the tour highlights, itinerary summary, and what makes it special..." required minlength="40"></textarea>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">Minimum 40 characters.</small>
+                                    <small class="text-muted" id="descCount">0 chars</small>
+                                </div>
+                                <div class="invalid-feedback">Description must be at least 40 characters.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      const accessibilityList = document.getElementById(
-        "accessibilityList"
-      );
-      const statusBadge = document.getElementById("statusBadge");
+                <!-- Section 2: Accessibility -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="card-title h6 mb-0 text-primary fw-bold"><i class="bi bi-universal-access me-2"></i>Accessibility & Enhancements</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="alert alert-primary bg-primary-subtle border-0 mb-4 rounded-3">
+                            <i class="bi bi-lightbulb me-2"></i>
+                            <small class="text-primary-emphasis">Select features available for this tour. You can add an extra surcharge per person for specific accessibility arrangements.</small>
+                        </div>
+                        <div class="row g-3">
+                            {% for a in accessibilities %}
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3 h-100 bg-light position-relative">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input accessibility-check" type="checkbox" name="accessibility" value="{{ a.accessibility_id }}" id="acc_{{ a.accessibility_id }}">
+                                        <label class="form-check-label fw-medium text-dark" for="acc_{{ a.accessibility_id }}">
+                                            {{ a.accessibility_feature }}
+                                        </label>
+                                    </div>
+                                    <div class="mt-3 pt-2 border-top" id="cost_wrapper_{{ a.accessibility_id }}" style="display: none;">
+                                        <label class="form-label small text-muted mb-1">Extra Surcharge (per person)</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-white">INR</span>
+                                            <input type="number" class="form-control" name="extra_cost_{{ a.accessibility_id }}" placeholder="0" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-      // Helpers
-      function setError(fieldId, message) {
-        const field = document.getElementById(fieldId);
-        const errorEl = document.querySelector(
-          '[data-error-for="' + fieldId + '"]'
-        );
-        if (field) {
-          const isTextarea = field.tagName === "TEXTAREA";
-          const isSelect = field.tagName === "SELECT";
-          field.classList.add(
-            isTextarea
-              ? "textarea-error"
-              : isSelect
-              ? "select-error"
-              : "input-error"
-          );
-        }
-        if (errorEl) {
-          errorEl.textContent = message;
-          errorEl.style.display = "block";
-        }
-      }
+            <!-- Right Column: Media, Itinerary & Summary -->
+            <div class="col-lg-4">
+                <!-- Live Summary Card (Sticky) -->
+                <div class="sticky-top" style="top: 100px; z-index: 10;">
+                    <div class="card border-0 shadow-sm mb-4 bg-primary text-white">
+                        <div class="card-body p-4">
+                            <h6 class="text-uppercase text-white-50 small fw-bold mb-3">Preview Summary</h6>
+                            <h3 class="mb-4 fw-bold" id="summaryPrice">INR 0</h3>
+                            
+                            <div class="vstack gap-3">
+                                <div class="d-flex justify-content-between border-bottom border-white-50 pb-2">
+                                    <span class="text-white-50"><i class="bi bi-people me-2"></i>Capacity</span>
+                                    <span class="fw-bold" id="summaryGuests">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom border-white-50 pb-2">
+                                    <span class="text-white-50"><i class="bi bi-clock me-2"></i>Duration</span>
+                                    <span class="fw-bold" id="summaryDuration">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom border-white-50 pb-2">
+                                    <span class="text-white-50"><i class="bi bi-geo-alt me-2"></i>Destination</span>
+                                    <div class="text-end text-truncate" style="max-width: 150px;">
+                                        <span class="fw-bold" id="summaryLocation">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-      function clearError(fieldId) {
-        const field = document.getElementById(fieldId);
-        const errorEl = document.querySelector(
-          '[data-error-for="' + fieldId + '"]'
-        );
-        if (field) {
-          field.classList.remove(
-            "input-error",
-            "select-error",
-            "textarea-error"
-          );
-        }
-        if (errorEl) {
-          errorEl.style.display = "none";
-        }
-      }
+                    <!-- Media Uploads -->
+                    <div class="card border-0 shadow-sm mb-4">
+                         <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="card-title h6 mb-0 text-primary fw-bold"><i class="bi bi-images me-2"></i>Gallery</h5>
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <label for="tour_images" class="form-label d-block text-start fw-medium text-muted">Upload Images <span class="text-danger">*</span></label>
+                                <div class="upload-box border rounded-3 p-3 bg-light">
+                                    <input class="form-control form-control-sm" type="file" id="tour_images" name="tour_images" accept="image/*" multiple required>
+                                    <div class="form-text text-muted small mt-2">Max 8 images (JPG/PNG). Good photos drive bookings!</div>
+                                </div>
+                                <div class="invalid-feedback text-start">Please upload at least one image.</div>
+                            </div>
+                            <div id="imagePreview" class="row g-2 mt-2 justify-content-center"></div>
+                        </div>
+                    </div>
 
-      function showToast(message) {
-        toastMessage.textContent = message;
-        toast.style.display = "flex";
-        clearTimeout(showToast._timeout);
-        showToast._timeout = setTimeout(function () {
-          toast.style.display = "none";
-        }, 2600);
-      }
-
-      function updateSummary() {
-        // Price / capacity / duration
-        const priceValue = priceInput.value
-          ? Math.round(Number(priceInput.value)).toLocaleString("en-LK")
-          : "0";
-        summaryPrice.textContent = "LKR " + priceValue;
-
-        const maxPersonsValue = maxPersonsInput.value || "0";
-        summaryMaxPersons.textContent = maxPersonsValue;
-        summaryDuration.textContent = durationInput.value
-          ? "Duration: " + durationInput.value
-          : "Duration: Not set";
-
-        // Tour name
-        summaryTourName.textContent =
-          tourNameInput.value.trim() || "Untitled tour";
-
-        // Location
-        const districtText =
-          districtSelect.options[districtSelect.selectedIndex]
-            ?.text || "";
-        const locationText =
-          locationSelect.options[locationSelect.selectedIndex]
-            ?.text || "";
-        if (districtText && locationText) {
-          summaryLocation.textContent =
-            locationText + " · " + districtText + " district";
-        } else if (!districtText && !locationText) {
-          summaryLocation.textContent = "Not selected";
-        } else {
-          summaryLocation.textContent =
-            (locationText || "Location not set") +
-            (districtText ? " · " + districtText + " district" : "");
-        }
-
-        // Accessibility
-        const selectedItems =
-          accessibilityList.querySelectorAll(".accessibility-item.active");
-        if (selectedItems.length === 0) {
-          summaryAccessibility.textContent = "No features selected";
-        } else {
-          const labels = Array.prototype.map.call(
-            selectedItems,
-            function (item) {
-              const name = item.querySelector(".accessibility-info span").textContent.trim();
-              const cost = item.querySelector(".input-cost").value;
-              return name + (cost ? " (+LKR " + Number(cost).toLocaleString() + ")" : "");
-            }
-          );
-          summaryAccessibility.textContent =
-            labels.join(", ");
-        }
-
-        // Photos
-        const count = photoPreview.querySelectorAll(".photo-thumb")
-          .length;
-        summaryPhotos.textContent = count + " attached";
-
-        // Status
-        const isComplete = Boolean(
-          tourNameInput.value &&
-            districtSelect.value &&
-            locationSelect.value &&
-            priceInput.value &&
-            maxPersonsInput.value &&
-            durationInput.value &&
-            descriptionInput.value.length >= 40 &&
-            count > 0
-        );
-        statusBadge.textContent = isComplete ? "Ready" : "Draft";
-        summaryStatusText.textContent = isComplete
-          ? "Ready to publish"
-          : "Not yet published";
-      }
-
-      // District -> location options
-      /*
-      districtSelect.addEventListener("change", function () {
-        clearError("district");
-        const value = this.value;
-        locationSelect.innerHTML =
-          '<option value="">Select location</option>';
-        if (locationsByDistrict[value]) {
-          locationsByDistrict[value].forEach(function (loc) {
-            var opt = document.createElement("option");
-            opt.value = loc.toLowerCase().replace(/\s+/g, "-");
-            opt.textContent = loc;
-            locationSelect.appendChild(opt);
-          });
-        }
-        clearError("location");
-        updateSummary();
-      });
-
-      locationSelect.addEventListener("change", function () {
-        clearError("location");
-        updateSummary();
-      });
-      */
-
-      // Accessibility toggles
-      accessibilityList.addEventListener("change", function (e) {
-        if (e.target.classList.contains("acc-checkbox")) {
-          const item = e.target.closest(".accessibility-item");
-          const costDiv = item.querySelector(".accessibility-cost");
-          const costInput = item.querySelector(".input-cost");
-
-          if (e.target.checked) {
-            item.classList.add("active");
-            costDiv.style.display = "flex";
-            // costInput.required = true;
-          } else {
-            item.classList.remove("active");
-            costDiv.style.display = "none";
-            // costInput.required = false;
-            costInput.value = "";
-          }
-          updateSummary();
-        }
-      });
-
-      // Cost input event
-      accessibilityList.addEventListener("input", function (e) {
-        if (e.target.classList.contains("input-cost")) {
-          updateSummary();
-        }
-      });
-
-      // Live bindings
-      [tourNameInput, priceInput, maxPersonsInput, durationInput].forEach(
-        function (input) {
-          input.addEventListener("input", function () {
-            clearError(this.id);
-            updateSummary();
-          });
-        }
-      );
-
-      // Description counter
-      // COMMENTED OUT: Backend should enforce description length limits, not frontend JS
-      /*
-      descriptionInput.addEventListener("input", function () {
-        const text = this.value || "";
-        descriptionCount.textContent = String(
-          Math.min(text.length, 400)
-        );
-        if (text.length > 400) {
-          this.value = text.slice(0, 400);
-        }
-        clearError("description");
-        updateSummary();
-      });
-      */
-
-      // ===== ITINERARY FILE UPLOAD =====
-      const itineraryButton = document.getElementById("itineraryButton");
-      const itineraryInput = document.getElementById("itineraryFile");
-      const itineraryDrop = document.getElementById("itineraryDrop");
-      const itineraryPreview = document.getElementById("itineraryPreview");
-
-      itineraryButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        itineraryInput.click();
-      });
-
-      itineraryInput.addEventListener("change", function () {
-        if (this.files && this.files.length) {
-          handleItineraryFile(this.files[0]);
-        }
-      });
-
-      ["dragenter", "dragover"].forEach(function (evtName) {
-        itineraryDrop.addEventListener(evtName, function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          itineraryDrop.style.background = "#eef2ff";
-        }, false);
-      });
-
-      ["dragleave", "drop"].forEach(function (evtName) {
-        itineraryDrop.addEventListener(evtName, function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          itineraryDrop.style.background = "#f9fafb";
-        }, false);
-      });
-
-      itineraryDrop.addEventListener("drop", function (e) {
-        const dtFiles = e.dataTransfer?.files;
-        if (dtFiles && dtFiles.length) {
-          itineraryInput.files = dtFiles;
-          handleItineraryFile(dtFiles[0]);
-        }
-      });
-
-      function handleItineraryFile(file) {
-        // COMMENTED OUT: Backend should validate PDF MIME-type, not extension
-        // if (!file.name.endsWith('.pdf')) {
-        //   showToast("Please upload a PDF file.");
-        //   return;
-        // }
-        itineraryPreview.innerHTML = '<div style="padding: 8px; background: #ecfdf3; color: #166534; border-radius: 8px; font-size: 12px;">✓ ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)</div>';
-        clearError("itinerary");
-      }
-
-      // ===== PHOTOS UPLOAD =====
-      const photoButton = document.getElementById("photoButton");
-      const photoInput = document.getElementById("photos");
-      const photoDrop = document.getElementById("photoDrop");
-      const photoPreview = document.getElementById("photoPreview");
-      const photoCounter = document.getElementById("photoCounter");
-      const maxPhotos = 8;
-
-      photoButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        photoInput.click();
-      });
-
-      ["dragenter", "dragover"].forEach(function (evtName) {
-        photoDrop.addEventListener(evtName, function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          photoDrop.style.background = "#eef2ff";
-        }, false);
-      });
-
-      ["dragleave", "drop"].forEach(function (evtName) {
-        photoDrop.addEventListener(evtName, function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          photoDrop.style.background = "#f9fafb";
-        }, false);
-      });
-
-      photoDrop.addEventListener("drop", function (e) {
-        const dtFiles = e.dataTransfer?.files;
-        if (dtFiles && dtFiles.length) {
-          handleFiles(dtFiles);
-        }
-      });
-
-      photoInput.addEventListener("change", function () {
-        if (this.files && this.files.length) {
-          handleFiles(this.files);
-        }
-      });
-
-      function handleFiles(fileList) {
-        // COMMENTED OUT: Backend should enforce max 8 photos limit and image MIME-type validation
-        // const currentCount = photoPreview.querySelectorAll(
-        //   ".photo-thumb"
-        // ).length;
-        // let availableSlots = maxPhotos - currentCount;
-        // if (availableSlots <= 0) {
-        //   showToast("You can upload up to " + maxPhotos + " photos.");
-        //   return;
-        // }
-
-        Array.prototype.forEach.call(fileList, function (file) {
-          // COMMENTED OUT: Backend should validate image MIME-type
-          // if (!file.type.startsWith("image/")) return;
-          // if (availableSlots <= 0) return;
-          // availableSlots--;
-
-          const reader = new FileReader();
-          reader.onload = function (event) {
-            const url = event.target.result;
-
-            const wrapper = document.createElement("div");
-            wrapper.className = "photo-thumb";
-
-            const img = document.createElement("img");
-            img.src = url;
-            img.alt = file.name;
-
-            const removeBtn = document.createElement("button");
-            removeBtn.type = "button";
-            removeBtn.className = "photo-remove";
-            removeBtn.innerHTML = "&times;";
-            removeBtn.title = "Remove";
-
-            removeBtn.addEventListener("click", function () {
-              wrapper.remove();
-              syncFileInput();
-              updatePhotoCounter();
-              updateSummary();
-            });
-
-            wrapper.appendChild(img);
-            wrapper.appendChild(removeBtn);
-            photoPreview.appendChild(wrapper);
-
-            updatePhotoCounter();
-            updateSummary();
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      function updatePhotoCounter() {
-        const count = photoPreview.querySelectorAll(".photo-thumb")
-          .length;
-        photoCounter.textContent = count + " / " + maxPhotos + " selected";
-        clearError("photos");
-      }
-
-      // Sync file input with visible thumbnails (for actual submit, we only
-      // validate count; the backend can receive original FileList)
-      function syncFileInput() {
-        // On this template we simply clear input when all images removed.
-        const count = photoPreview.querySelectorAll(".photo-thumb")
-          .length;
-        if (count === 0) {
-          photoInput.value = "";
-        }
-      }
-
-      // COMMENTED OUT: Backend view (tour_regn_insert) should handle all validation
-      // Frontend validation conflicts with backend and allows JS-bypass vulnerabilities
-      /*
-      // Validate form before "saving"
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        let hasError = false;
-
-        if (!districtSelect.value) {
-          setError("district", "Please choose a district.");
-          hasError = true;
-        }
-        if (!locationSelect.value) {
-          setError("location", "Please choose a location.");
-          hasError = true;
-        }
-        if (!tourNameInput.value.trim()) {
-          setError("tourName", "Please enter a tour name.");
-          hasError = true;
-        }
-        if (!durationInput.value.trim()) {
-          setError("duration", "Please specify duration.");
-          hasError = true;
-        }
-
-        if (!priceInput.value || Number(priceInput.value) <= 0) {
-          setError("price", "Please enter a valid price.");
-          hasError = true;
-        }
-        if (
-          !maxPersonsInput.value ||
-          Number(maxPersonsInput.value) < 1
-        ) {
-          setError("maxPersons", "Please specify max guests (at least 1).");
-          hasError = true;
-        }
-
-        if (
-          !descriptionInput.value ||
-          descriptionInput.value.trim().length < 40
-        ) {
-          setError(
-            "description",
-            "Description must be at least 40 characters."
-          );
-          hasError = true;
-        }
-
-        const photosCount = photoPreview.querySelectorAll(
-          ".photo-thumb"
-        ).length;
-        if (photosCount === 0) {
-          setError("photos", "Please add at least one photo.");
-          hasError = true;
-        }
-
-        if (hasError) {
-          showToast("Please fix the highlighted fields.");
-          return;
-        }
-
-        // Collect accessibility values
-        const selectedAccessibilities = [];
-        const accessibilityCheckboxes = document.querySelectorAll(
-          '#accessibilityChips input[type="checkbox"]:checked'
-        );
-        accessibilityCheckboxes.forEach(function (checkbox) {
-          selectedAccessibilities.push(checkbox.value);
-        });
-
-        // Create FormData
-        const formData = new FormData();
-        formData.append('tour_name', tourNameInput.value);
-        formData.append('location', locationSelect.value);
-        formData.append('description', descriptionInput.value);
-        formData.append('price', priceInput.value);
-        formData.append('duration', durationInput.value);
-        formData.append('max_persons', maxPersonsInput.value);
-
-        // Add accessibility values
-        selectedAccessibilities.forEach(function (val) {
-          formData.append('accessibility', val);
-        });
-
-        // Add itinerary file
-        const itineraryInput = document.getElementById('itineraryFile');
-        if (itineraryInput && itineraryInput.files.length > 0) {
-          formData.append('itinerary', itineraryInput.files[0]);
-        }
-
-      // Add images
-      const photoInputElement = document.querySelector('input[name="tour_images"]');
-      if (photoInputElement.files.length > 0) {
-        Array.from(photoInputElement.files).forEach(function (file) {
-          formData.append('tour_images', file);
-        });
-      }
-
-      // Submit the form
-      this.submit();
-    });
-    */
-
-    // Initial summary
-    updateSummary();
-  })();
-  </script> 
-  {% include 'operator/footer.html' %}
+                    <!-- Itinerary Upload -->
+                    <div class="card border-0 shadow-sm mb-4">
+                         <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="card-title h6 mb-0 text-primary fw-bold"><i class="bi bi-file-earmark-pdf me-2"></i>Itinerary</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <label for="itinerary" class="form-label fw-medium text-muted">Detailed Itinerary (PDF) <span class="text-danger">*</span></label>
+                            <input class="form-control" type="file" id="itinerary" name="itinerary" accept=".pdf,application/pdf" required>
+                            <div class="form-text small">Upload the full day-by-day plan.</div>
+                            <div class="invalid-feedback">Please upload the itinerary PDF.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</div> <!-- Close generic div if present in header -->
+{% include 'operator/footer.html' %}
+</div> <!-- Close wrapper -->
 </body>
 </html>
+
+<!-- Custom Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Bootstrap Validation
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        });
+
+        // Dynamic Location Loading
+        $('#district').change(function() {
+            var did = $(this).val();
+            var locationSelect = $('#location');
+            
+            locationSelect.prop('disabled', true).html('<option value=\"\" selected disabled>Loading...</option>');
+            
+            $.ajax({
+                url: '{% url "filllocations" %}', 
+                type: 'POST',
+                data: {
+                    did: did,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    locationSelect.html('<option value=\"\" selected disabled>Select Location</option>');
+                    if (response.length > 0) {
+                        $.each(response, function(index, item) {
+                            locationSelect.append($('<option>', {
+                                value: item.location_id,
+                                text: item.name
+                            }));
+                        });
+                        locationSelect.prop('disabled', false);
+                    } else {
+                        locationSelect.html('<option value=\"\" disabled>No locations found</option>');
+                    }
+                },
+                error: function() {
+                    locationSelect.html('<option value=\"\" disabled>Error loading locations</option>');
+                }
+            });
+        });
+
+        // Accessibility Toggles
+        $('.accessibility-check').change(function() {
+            var id = $(this).val();
+            var costWrapper = $('#cost_wrapper_' + id);
+            if($(this).is(':checked')) {
+                // Animate showing the cost input
+                costWrapper.slideDown(200);
+            } else {
+                costWrapper.slideUp(200);
+                costWrapper.find('input').val(''); // Clear value on uncheck
+            }
+        });
+
+        // Live Summary Updates
+        $('#price').on('input', function() {
+            var val = $(this).val();
+            $('#summaryPrice').text(val ? 'INR ' + parseFloat(val).toLocaleString('en-IN') : 'INR 0');
+        });
+
+        $('#max_persons').on('input', function() {
+            var val = $(this).val();
+            $('#summaryGuests').text(val ? val + ' Guests' : '-');
+        });
+
+        $('#duration').on('input', function() {
+            $('#summaryDuration').text($(this).val() || '-');
+        });
+
+        $('#location').change(function() {
+            var text = $('#location option:selected').text();
+            $('#summaryLocation').text(text !== 'Select Location' ? text : '-');
+        });
+
+        $('#description').on('input', function() {
+            $('#descCount').text($(this).val().length + ' chars');
+        });
+
+        // Image Preview with remove button (simplified visual only)
+        $('#tour_images').change(function() {
+            var preview = $('#imagePreview');
+            preview.empty();
+            if (this.files) {
+                [].forEach.call(this.files, function(file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var img = $('<img>').attr('src', e.target.result)
+                                      .addClass('rounded-3 object-fit-cover shadow-sm')
+                                      .css({width: '60px', height: '60px'});
+                        var col = $('<div>').addClass('col-auto fade-in').append(img);
+                        preview.append(col);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    });
+</script>
+<style>
+    /* Custom tweaks for professional feel */
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+        font-size: 1.2em;
+        line-height: 1;
+        vertical-align: middle;
+    }
+    .card {
+        border-radius: 0.75rem; 
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+    .accessibility-check:checked {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+</style>

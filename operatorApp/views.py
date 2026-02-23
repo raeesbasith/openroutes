@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_control
+from django.db.models import Sum, Q  # Added for aggregations
 from adminApp.models import District, Location, Accessibility
 from guestApp.models import Operator
 from userApp.models import Booking
@@ -242,7 +243,25 @@ def booking_view(request):
         # Fetch bookings for tours created by this operator
         bookings = Booking.objects.filter(tour__operator=operator).select_related('traveller', 'tour').order_by('-booking_date')
         
-        return render(request, 'operator/booking_view.html', {'bookings': bookings})
+        # Calculate Statistics
+        pending_count = bookings.filter(booking_status='pending').count()
+        confirmed_count = bookings.filter(booking_status__in=['confirmed', 'paid', 'completed']).count()
+        
+        # Calculate Net Revenue: Sum of total_amount for non-cancelled bookings minus any refunds
+        # We consider confirmed, paid, completed, and refunded (in case of partial refund)
+        revenue_qs = bookings.exclude(booking_status__in=['cancelled', 'pending', 'cancel_requested'])
+        gross_revenue = revenue_qs.aggregate(total=Sum('total_amount'))['total'] or 0
+        total_refunds = revenue_qs.aggregate(refunds=Sum('refund_amount'))['refunds'] or 0
+        net_revenue = gross_revenue - total_refunds
+
+        context = {
+            'bookings': bookings,
+            'pending_count': pending_count,
+            'confirmed_count': confirmed_count,
+            'net_revenue': net_revenue
+        }
+        
+        return render(request, 'operator/booking_view.html', context)
     except Operator.DoesNotExist:
         return redirect('login')
 
