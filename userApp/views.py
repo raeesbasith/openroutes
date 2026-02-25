@@ -10,7 +10,12 @@ import uuid
 from django.db.models import Case, When, Value, IntegerField
 
 from django.db.models import Avg
+from datetime import datetime
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+import smtplib
+from email.message import EmailMessage
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -136,6 +141,14 @@ def booking_confirm(request, tour_id):
         caregiver_gender = request.POST.get('caregiver_gender_preference', None)
         tour_date = request.POST.get('tour_date')
 
+        # Validate that tour_date is not in the past or today
+        try:
+             tour_date_obj = datetime.strptime(tour_date, '%Y-%m-%d').date()
+             if tour_date_obj <= timezone.now().date():
+                  return HttpResponse("<script>alert('Error: You cannot book a tour for today or a past date. Please select a future date.');window.history.back();</script>")
+        except ValueError:
+             return HttpResponse("<script>alert('Error: Invalid date format.');window.history.back();</script>")
+
         # Collect accessibility selections per person based on the count provided
         accessibility_selections_per_person = []
         if persons_needing_accessibility > 0:
@@ -242,8 +255,74 @@ def process_payment(request, booking_id):
         # Update booking status to confirmed/paid
         booking.booking_status = 'paid'
         booking.save()
+
+        # Send Payment Confirmation & Invoice Email
+        try:
+            traveller_email = booking.traveller.email
+            subject = "Payment Receipt & Invoice - OpenRoutes"
+            
+            invoice_html = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif;">
+                <div style="border: 1px solid #ccc; padding: 20px; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #4CAF50;">Payment Successful</h2>
+                    <p>Dear {booking.traveller.traveller_name},</p>
+                    <p>Thank you for your payment. Your booking is now confirmed.</p>
+                    
+                    <hr>
+                    <h3>Invoice Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Invoice No:</strong></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">INV-{booking.booking_id}-{transaction_id[:8]}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Transaction ID:</strong></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">{transaction_id}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Date:</strong></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">{timezone.now().strftime('%Y-%m-%d %H:%M')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Tour Package:</strong></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">{booking.tour.tour_name}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Total Amount Paid:</strong></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>₹{booking.total_amount}</strong></td>
+                        </tr>
+                    </table>
+                    
+                    <p style="margin-top: 20px;">You can view your booking details at any time from your account.</p>
+                    
+                    <p>Happy Travels!<br>OpenRoutes Team</p>
+                </div>
+            </body>
+            </html>
+            """
+            
+            msg = EmailMessage()
+            msg.set_content("Thank you for your payment. Please find your invoice details below.") # Fallback text
+            msg.add_alternative(invoice_html, subtype='html')
+            
+            msg['Subject'] = subject
+            msg['From'] = 'raeesbasith15@gmail.com'
+            msg['To'] = traveller_email
+
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login(
+                    'raeesbasith15@gmail.com',
+                    'qfac dtcm rsbb pwyg'
+                )
+                smtp.send_message(msg)
+                
+            print(f"Invoice email sent to {traveller_email}")
+            
+        except Exception as e:
+            print(f"Error sending invoice email: {e}")
         
-        return HttpResponse("<script>alert('Payment successful! Your booking is confirmed.');window.location.href='/tour-packages/';</script>")
+        return HttpResponse("<script>alert('Payment successful! Your booking is confirmed.');window.location.href='/my-bookings/';</script>")
     
     return HttpResponse("<script>alert('Invalid request.');window.location.href='/tour-packages/';</script>")    
 

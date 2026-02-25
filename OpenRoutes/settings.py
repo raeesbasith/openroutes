@@ -142,3 +142,13 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 86400  # 1 day
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# IMPORTANT: Use an App Password, not your regular Gmail password.
+# turn on 2-Step Verification in Google Account -> Security -> App Passwords
+EMAIL_HOST_USER = 'your-email@gmail.com' 
+EMAIL_HOST_PASSWORD = 'your-app-password'
+

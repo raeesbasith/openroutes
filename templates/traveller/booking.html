@@ -514,6 +514,16 @@
 
     // Initial summary
     updateSummary();
+
+    // Set min date to tomorrow
+    const dateInput = document.getElementById('tour_date');
+    if (dateInput) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        dateInput.setAttribute('min', tomorrowStr);
+    }
 </script>
 
 </body>

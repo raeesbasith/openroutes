@@ -13,6 +13,11 @@ from guestApp.models import Operator, login
 from userApp.models import Booking
 from .models import Tour, TourAccessibility, TourImages
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+from email.message import EmailMessage
+import smtplib
+
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -346,32 +351,121 @@ def booking_view(request):
     except Operator.DoesNotExist:
         return redirect('login')
 
+import smtplib
+from email.message import EmailMessage
+from django.http import JsonResponse
+from django.utils import timezone
+
 def update_booking_status(request, booking_id):
     login_id = request.session.get('login_id')
+
     if not login_id:
         return JsonResponse({'status': 'error', 'message': 'Not logged in'})
-        
+
     if request.method == 'POST':
+
         new_status = request.POST.get('status')
+
         allowed_statuses = {'pending', 'confirmed', 'cancelled', 'completed'}
         if new_status not in allowed_statuses:
             return JsonResponse({'status': 'error', 'message': 'Invalid status update'})
+
         try:
             operator = Operator.objects.get(login_id=login_id)
-            booking = Booking.objects.get(booking_id=booking_id, tour__operator=operator)
+            booking = Booking.objects.get(
+                booking_id=booking_id,
+                tour__operator=operator
+            )
+
             booking.booking_status = new_status
+
             if new_status == 'cancelled':
                 if not booking.cancellation_reason:
                     booking.cancellation_reason = 'Cancelled by operator'
                 if not booking.cancellation_requested_at:
                     booking.cancellation_requested_at = timezone.now()
-            booking.save()
-            return JsonResponse({'status': 'success'})
-        except (Operator.DoesNotExist, Booking.DoesNotExist):
-            return JsonResponse({'status': 'error', 'message': 'Booking not found or unauthorized'})
-            
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
+            booking.save()
+
+            print(f"Attempting to send email to {booking.traveller.email}")
+
+            try:
+                traveller_email = booking.traveller.email
+
+                subject = ""
+                message = ""
+
+                if new_status == 'confirmed':
+                    subject = "Booking Confirmation - OpenRoutes"
+                    message = f"""
+Hello {booking.traveller.traveller_name},
+
+Your booking for '{booking.tour.tour_name}' has been CONFIRMED.
+
+Booking ID: BK{booking.booking_id}
+Date: {booking.tour_date}
+Total Amount: {booking.total_amount}
+
+Thank you for choosing OpenRoutes!
+"""
+
+                elif new_status == 'cancelled':
+                    subject = "Booking Rejection/Cancellation - OpenRoutes"
+                    message = f"""
+Hello {booking.traveller.traveller_name},
+
+We regret to inform you that your booking for '{booking.tour.tour_name}' (ID: BK{booking.booking_id}) has been REJECTED/CANCELLED by the operator.
+
+Reason: {booking.cancellation_reason if booking.cancellation_reason else 'Operator declined request'}
+
+If you have already made a payment, please request a refund from your My Bookings page.
+
+We apologize for the inconvenience.
+"""
+
+                elif new_status == 'completed':
+                    subject = "Booking Completed - OpenRoutes"
+                    message = f"""
+Hello {booking.traveller.traveller_name},
+
+Your tour '{booking.tour.tour_name}' is COMPLETED.
+
+Hope you enjoyed the trip!
+
+Thank you for choosing OpenRoutes!
+"""
+
+                # Send Email using Gmail SMTP
+                if subject and message:
+
+                    msg = EmailMessage()
+                    msg.set_content(message)
+
+                    msg['Subject'] = subject
+                    msg['From'] = 'raeesbasith15@gmail.com'
+                    msg['To'] = traveller_email
+
+                    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                        smtp.login(
+                            'raeesbasith15@gmail.com',
+                            'qfac dtcm rsbb pwyg'   # Gmail App Password
+                        )
+                        smtp.send_message(msg)
+
+                    print("Email Sent Successfully")
+
+            except Exception as e:
+                print("Email Error:", e)
+
+            return JsonResponse({'status': 'success'})
+
+        except (Operator.DoesNotExist, Booking.DoesNotExist):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Booking not found or unauthorized'
+            })
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 def process_refund(request, booking_id):
     login_id = request.session.get('login_id')
@@ -402,6 +496,43 @@ def process_refund(request, booking_id):
     booking.refund_processed_at = timezone.now()
     booking.booking_status = 'refunded'
     booking.save()
+    
+    # Send Refund Email
+    try:
+        traveller_email = booking.traveller.email
+        subject = "Refund Processed - OpenRoutes"
+        message = f"""
+Hello {booking.traveller.traveller_name},
+
+Your refund request for booking #BK{booking.booking_id} ('{booking.tour.tour_name}') has been APPROVED.
+
+Refund Details:
+Amount: {refund_amount}
+Notes: {booking.refund_notes if booking.refund_notes else 'Refund processed successfully.'}
+
+The amount will be credited to your original payment method within 5-7 business days.
+
+Thank you for your patience.
+"""
+
+        # Send using same SMTP setup as update_booking_status
+        msg = EmailMessage()
+        msg.set_content(message)
+        msg['Subject'] = subject
+        msg['From'] = 'raeesbasith15@gmail.com'
+        msg['To'] = traveller_email
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(
+                'raeesbasith15@gmail.com',
+                'qfac dtcm rsbb pwyg'
+            )
+            smtp.send_message(msg)
+            
+        print(f"Refund email sent to {traveller_email}")
+        
+    except Exception as e:
+        print(f"Error sending refund email: {e}")
 
     return JsonResponse({'status': 'success'})
 
