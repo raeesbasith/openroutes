@@ -9,7 +9,7 @@ from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
 from django.core.serializers.json import DjangoJSONEncoder
 from adminApp.models import District, Location, Accessibility
-from guestApp.models import Operator
+from guestApp.models import Operator, login
 from userApp.models import Booking
 from .models import Tour, TourAccessibility, TourImages
 from django.utils import timezone
@@ -416,6 +416,77 @@ def profile_view(request):
         return render(request, 'operator/profile_view.html', {'operator': operator})
     except Operator.DoesNotExist:
         return redirect('login')
+
+def profile_edit(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+    
+    try:
+        operator = Operator.objects.get(login_id=login_id)
+        
+        if request.method == 'POST':
+            # Update Operator details
+            operator_name = request.POST.get('operator_name')
+            contact = request.POST.get('contact')
+            address = request.POST.get('address')
+            email = request.POST.get('email')
+            
+            if operator_name: operator.operator_name = operator_name
+            if contact: operator.contact = contact
+            if address: operator.address = address
+            if email: operator.email = email
+            
+            # Handle district update if provided
+            district_id = request.POST.get('district')
+            if district_id:
+                operator.district = District.objects.get(district_id=district_id)
+                
+            operator.save()
+            
+            return HttpResponse("<script>alert('Profile updated successfully!'); window.location.href = '/operator-home/profile/';</script>")
+            
+        districts = District.objects.all()
+        return render(request, 'operator/profile_edit.html', {'operator': operator, 'districts': districts})
+        
+    except Operator.DoesNotExist:
+        return redirect('login')
+
+def change_password(request):
+    login_id = request.session.get('login_id')
+    if not login_id:
+        return redirect('login')
+        
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        try:
+            # Get the login object directly
+            user_login = login.objects.get(login_id=login_id)
+            
+            # Verify current password
+            if user_login.password != current_password:
+                return HttpResponse("<script>alert('Incorrect current password!'); window.history.back();</script>")
+            
+            # Check if new passwords match
+            if new_password != confirm_password:
+                return HttpResponse("<script>alert('New passwords do not match!'); window.history.back();</script>")
+                
+            # Basic validation
+            if len(new_password) < 6:
+                return HttpResponse("<script>alert('Password must be at least 6 characters!'); window.history.back();</script>")
+                
+            # Update password
+            user_login.password = new_password
+            user_login.save()
+            return HttpResponse("<script>alert('Password updated successfully!'); window.location.href = '/operator-home/profile/';</script>")
+            
+        except login.DoesNotExist:
+            return redirect('login')
+            
+    return render(request, 'operator/change_password.html')
 
 def datewise_report(request):
     login_id = request.session.get('login_id')

@@ -189,10 +189,9 @@
         <!-- Header: Avatar & Main Info -->
         <div class="profile-header-content">
              <div class="profile-actions">
-                <!-- <span class="status-badge {% if operator.status == 'approved' %}status-approved{% elif operator.status == 'rejected' %}status-rejected{% else %}status-requested{% endif %}">
-                    <i class="bi bi-shield-check"></i>
-                    {{ operator.status|default:"Pending" }}
-                </span> -->
+                <a href="{% url 'profile_edit' %}" class="btn btn-primary" style="background-color: var(--primary); border: none;">
+                    <i class="bi bi-pencil-square"></i> Edit Profile
+                </a>
             </div>
         </div>
 

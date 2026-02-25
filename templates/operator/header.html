@@ -319,12 +319,14 @@
             </h5>
 
             <div class="top-nav-items">
-                <div class="notification-btn">
+                <div class="notification-btn me-3">
                     <i class="bi bi-bell"></i>
                     <span class="notification-badge">3</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-circle text-secondary" style="font-size: 24px;"></i>
+                    <a href="{% url 'operator_profile' %}" class="text-secondary" title="View Profile">
+                        <i class="bi bi-person-circle" style="font-size: 24px;"></i>
+                    </a>
                 </div>
             </div>
         </header>

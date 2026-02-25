@@ -4,6 +4,8 @@ from django.contrib.auth.hashers import make_password
 from .models import login, Operator
 from .models import TravellerProfile
 from adminApp.models import District
+from email.message import EmailMessage
+import smtplib
 
 # Create your views here.
 
@@ -51,6 +53,16 @@ def traveller_regn(request):
         password = request.POST.get('password')
         name = request.POST.get('name')
         email = request.POST.get('email')
+        Email=request.POST.get('email')  # to address
+        msg = EmailMessage()
+        msg.set_content('Body')
+        msg['Subject'] = "Registration Completed"
+        msg['from'] = 'raeesbasith15@gmail.com'
+        msg['To'] = {Email}
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login('raeesbasith15@gmail.com','qfac dtcm rsbb pwyg')
+            smtp.send_message(msg)
+
         phone = request.POST.get('phone')
         address = request.POST.get('address')
         district_id = request.POST.get('districtid')
@@ -91,6 +103,16 @@ def operator_regn(request):
         contact = request.POST.get('phone')
         address = request.POST.get('address')
         email = request.POST.get('email')
+        Email=request.POST.get('email')  # to address
+        msg = EmailMessage()
+        msg.set_content('Body')
+        msg['Subject'] = "Registration Completed"
+        msg['from'] = 'raeesbasith15@gmail.com'
+        msg['To'] = {Email}
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login('raeesbasith15@gmail.com','qfac dtcm rsbb pwyg')
+            smtp.send_message(msg)
+
         district_id = request.POST.get('districtid')
         license_file = request.FILES.get('license')
 

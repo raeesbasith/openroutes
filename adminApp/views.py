@@ -10,6 +10,8 @@ from django.db.models import Count, Sum
 from operatorApp.models import Operator
 from guestApp.models import login, TravellerProfile
 from userApp.models import Booking
+from email.message import EmailMessage
+import smtplib
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -235,19 +237,52 @@ def licenseView(request, id):
     operator = Operator.objects.get(operator_id=id)
     return render(request, 'adminT/licenseView.html', {'operator': operator})
 
+def send_email_notification(to_email, subject, body):
+    try:
+        print(f"Attempting to send email to: {to_email}")
+        msg = EmailMessage()
+        msg.set_content(body)
+        msg['Subject'] = subject
+        msg['From'] = 'raeesbasith15@gmail.com'
+        msg['To'] = to_email
+        
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as smtp:
+            smtp.login('raeesbasith15@gmail.com', "qfac dtcm rsbb pwyg")
+            smtp.send_message(msg)
+            print("Email sent successfully!")
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return str(e)
+
 def operatorApprove(request, id):
-    operator = Operator.objects.get(operator_id=id)
-    lob = login.objects.get(login_id=operator.login_id)
-    lob.status = 'active'
-    operator.status = 'approved'
-    operator.save() 
-    lob.save()
-    return HttpResponse("<script>alert('Operator approved!!!'); window.location.href = '/operator-verification/';</script>")
+    try:
+        operator = Operator.objects.get(operator_id=id)
+        lob = login.objects.get(login_id=operator.login_id)
+        lob.status = 'active'
+        operator.status = 'approved'
+        operator.save() 
+        lob.save()
+
+        email_result = send_email_notification(
+            operator.email,
+            "Registration Approved",
+            "Your registration has been approved by the admin. You can now login to your account."
+        )
+
+        if email_result is not True:
+            return HttpResponse(f"<script>alert('Operator approved, but email failed: {email_result}'); window.location.href = '/operator-verification/';</script>")
+
+        return HttpResponse("<script>alert('Operator approved!!!'); window.location.href = '/operator-verification/';</script>")
+    except Exception as e:
+        print(f"Error in operatorApprove: {e}")
+        return HttpResponse(f"<script>alert('Error: {str(e)}'); window.location.href = '/operator-verification/';</script>")
 
 def operatorReject(request, id):
     operator = Operator.objects.get(operator_id=id)
     operator.status = 'rejected'
     operator.save()
+    send_email_notification(operator.email, "Registration Rejected", "Your registration request has been rejected by the admin.")
     return HttpResponse("<script>alert('Operator rejected!!!'); window.location.href = '/operator-verification/';</script>")
 
 def operatorsView(request):
@@ -258,12 +293,22 @@ def operatorBlock(request, id):
     lob = login.objects.get(login_id=id)
     lob.status = 'blocked'
     lob.save()
+    try:
+        operator = Operator.objects.get(login=lob)
+        send_email_notification(operator.email, "Account Blocked", "Your operator account has been blocked by the admin.")
+    except Exception as e:
+        print(f"Error sending block email: {e}")
     return HttpResponse("<script>alert('Operator blocked!!!'); window.location.href = '/operators-view/';</script>")
 
 def operatorUnblock(request, id):
     lob = login.objects.get(login_id=id)
     lob.status = 'active'
     lob.save()
+    try:
+        operator = Operator.objects.get(login=lob)
+        send_email_notification(operator.email, "Account Unblocked", "Your operator account has been unblocked by the admin. You can now login.")
+    except Exception as e:
+        print(f"Error sending unblock email: {e}")
     return HttpResponse("<script>alert('Operator unblocked!!!'); window.location.href = '/operators-view/';</script>")
 
 def operatorProfile(request, id):
@@ -279,16 +324,50 @@ def travellerProfile(request, id):
     return render(request, 'adminT/traveller_singleview.html', {'traveller': traveller})
 
 def travellerBlock(request, id):
-    lob = login.objects.get(login_id=id)
-    lob.status = 'blocked'
-    lob.save()
-    return HttpResponse("<script>alert('Traveller blocked!!!'); window.location.href = '/travellers-view/';</script>")
+    try:
+        lob = login.objects.get(login_id=id)
+        lob.status = 'blocked'
+        lob.save()
+        
+        try:
+            # Use filter().first() to avoid exceptions
+            traveller = TravellerProfile.objects.filter(login=lob).first()
+            if traveller:
+                email_res = send_email_notification(traveller.email, "Account Blocked", "Your traveller account has been blocked by the admin.")
+                if email_res is not True:
+                     return HttpResponse(f"<script>alert('Traveller blocked, but email failed: {email_res}'); window.location.href = '/travellers-view/';</script>")
+            else:
+                 print(f"No traveller found for login_id {id}")
+        except Exception as e:
+            print(f"Error sending block email: {e}")
+            return HttpResponse(f"<script>alert('Traveller blocked but email error: {str(e)}'); window.location.href = '/travellers-view/';</script>")
+            
+        return HttpResponse("<script>alert('Traveller blocked!!!'); window.location.href = '/travellers-view/';</script>")
+    except Exception as e:
+         return HttpResponse(f"<script>alert('Error blocking traveller: {str(e)}'); window.location.href = '/travellers-view/';</script>")
 
 def travellerUnblock(request, id):
-    lob = login.objects.get(login_id=id)
-    lob.status = 'active'
-    lob.save()
-    return HttpResponse("<script>alert('Traveller unblocked!!!'); window.location.href = '/travellers-view/';</script>")
+    try:
+        lob = login.objects.get(login_id=id)
+        lob.status = 'active'
+        lob.save()
+        
+        try:
+             # Use filter().first() to avoid exceptions
+            traveller = TravellerProfile.objects.filter(login=lob).first()
+            if traveller:
+                email_res = send_email_notification(traveller.email, "Account Unblocked", "Your traveller account has been unblocked by the admin. You can now login.")
+                if email_res is not True:
+                     return HttpResponse(f"<script>alert('Traveller unblocked, but email failed: {email_res}'); window.location.href = '/travellers-view/';</script>")
+            else:
+                 print(f"No traveller found for login_id {id}")
+        except Exception as e:
+            print(f"Error sending unblock email: {e}")
+            return HttpResponse(f"<script>alert('Traveller unblocked but email error: {str(e)}'); window.location.href = '/travellers-view/';</script>")
+            
+        return HttpResponse("<script>alert('Traveller unblocked!!!'); window.location.href = '/travellers-view/';</script>")
+    except Exception as e:
+         return HttpResponse(f"<script>alert('Error unblocking traveller: {str(e)}'); window.location.href = '/travellers-view/';</script>")
 
 def bookingsView(request):
     bookings = Booking.objects.all().order_by('-booking_date')

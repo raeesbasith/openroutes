@@ -16,6 +16,8 @@ urlpatterns = [
     path('operator-home/update-booking-status/<int:booking_id>/', views.update_booking_status, name='update_booking_status'),
     path('operator-home/process-refund/<int:booking_id>/', views.process_refund, name='process_refund'),
     path('operator-home/profile/', views.profile_view, name='operator_profile'),
+    path('operator-home/profile/edit/', views.profile_edit, name='profile_edit'),
+    path('operator-home/profile/change-password/', views.change_password, name='change_password_operator'),
     path('operator-home/reports/', views.datewise_report, name='datewise_report'),
     path('operator-home/reports/export/', views.bookings_export, name='bookings_export'),
 ]
