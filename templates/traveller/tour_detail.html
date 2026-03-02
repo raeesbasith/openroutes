@@ -321,6 +321,33 @@
             
         </div>
 
+        <!-- OPERATOR INFO -->
+        <div class="description" style="background: #f8fbff; padding: 20px; border-radius: 8px; border: 1px solid #e1e8ed;">
+            <h4 style="margin-top: 0; color: #1e3a5f;">Operator Details</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <strong style="display: block; color: #555; font-size: 13px;">Provided by</strong>
+                    <span style="font-size: 16px; font-weight: 600; color: #333;">{{ tour.operator.operator_name }}</span>
+                </div>
+                <div>
+                    <strong style="display: block; color: #555; font-size: 13px;">Contact</strong>
+                    <span>{{ tour.operator.contact }}</span>
+                </div>
+                <div>
+                    <strong style="display: block; color: #555; font-size: 13px;">Email</strong>
+                    <span>{{ tour.operator.email }}</span>
+                </div>
+                <div>
+                     <strong style="display: block; color: #555; font-size: 13px;">Verified</strong>
+                    {% if tour.operator.status == 'approved' %}
+                        <span style="color: green; font-weight: 600;">✓ Verified Operator</span>
+                    {% else %}
+                        <span style="color: orange;">Pending Verification</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
         <!-- DESCRIPTION -->
         <div class="description">
             <h4>Tour Description</h4>

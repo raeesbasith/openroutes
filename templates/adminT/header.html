@@ -535,6 +535,14 @@
                         <span>Bookings</span>
                     </a>
                 </li>
+                
+                <!-- Tour Packages Management -->
+                <li class="nav-item">
+                    <a href="{% url 'tourPackagesView' %}" class="nav-link {% if 'tour-packages-view' in request.path %}active{% endif %}">
+                        <i class="bi bi-suitcase-fill"></i>
+                        <span>Tour Packages</span>
+                    </a>
+                </li>
 
                 <!-- Admin Reports -->
                 <li class="nav-item">

@@ -1,0 +1,155 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div class="profile-view-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 30px; margin-bottom: 50px;">
+            <div class="col-lg-10">
+                <!-- Breadcrumb -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'tourPackagesView' %}" class="text-decoration-none">Tour Packages</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Package Details</li>
+                        </ol>
+                    </nav>
+                    <a href="{% url 'tourPackagesView' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+
+                <!-- Tour Header Card -->
+                <div class="card border-0 shadow-lg rounded-3 mb-4 overflow-hidden">
+                    <div class="card-header border-0 p-4" style="background: linear-gradient(135deg, #1572e8 0%, #0d47a1 100%); color: white;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h2 class="fw-bold mb-2 text-white">{{ tour_package.tour_name }}</h2>
+                                <div class="d-flex gap-3 align-items-center text-white-50">
+                                    <span><i class="fas fa-map-marker-alt me-1"></i> {{ tour_package.location.name }}, {{ tour_package.location.district.name }}</span>
+                                    <span class="opacity-50">|</span>
+                                    <span><i class="fas fa-user-tie me-1"></i> Operated by: <strong>{{ tour_package.operator.operator_name }}</strong></span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="mb-2">
+                                    {% if tour_package.status == 'available' %}
+                                        <span class="badge bg-success border border-white"><i class="fas fa-check-circle me-1"></i>Available</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary border border-white">{{ tour_package.status|title }}</span>
+                                    {% endif %}
+                                </div>
+                                <h3 class="fw-bold mb-0 text-white">₹{{ tour_package.price }}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tour Info Grid -->
+                    <div class="card-body p-4 bg-white">
+                        <div class="row g-4">
+                            <!-- Basic Info -->
+                            <div class="col-md-8">
+                                <h5 class="text-primary mb-3 fw-bold border-bottom pb-2">Description</h5>
+                                <p class="text-secondary" style="line-height: 1.6;">{{ tour_package.description }}</p>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="p-3 bg-light rounded-3 text-center h-100">
+                                            <i class="fas fa-clock text-primary mb-2 fa-lg"></i>
+                                            <h6 class="mb-1 fw-bold">Duration</h6>
+                                            <span class="text-muted">{{ tour_package.duration_days }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="p-3 bg-light rounded-3 text-center h-100">
+                                            <i class="fas fa-users text-primary mb-2 fa-lg"></i>
+                                            <h6 class="mb-1 fw-bold">Max Persons</h6>
+                                            <span class="text-muted">{{ tour_package.max_persons }} People</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="p-3 bg-light rounded-3 text-center h-100">
+                                            <i class="fas fa-calendar-alt text-primary mb-2 fa-lg"></i>
+                                            <h6 class="mb-1 fw-bold">Created On</h6>
+                                            <span class="text-muted">{{ tour_package.created_at|date:"M d, Y" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sidebar Info -->
+                            <div class="col-md-4">
+                                <!-- Itinerary -->
+                                <div class="card bg-light border-0 mb-4">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3"><i class="fas fa-file-alt me-2 text-primary"></i>Itinerary</h6>
+                                        {% if tour_package.tour_itinerary %}
+                                            <a href="{{ tour_package.tour_itinerary.url }}" target="_blank" class="btn btn-outline-primary w-100">
+                                                <i class="fas fa-download me-2"></i>Download PDF
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted small fst-italic">No itinerary file uploaded.</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Accessibility -->
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white border-bottom fw-bold text-primary">
+                                        <i class="fas fa-wheelchair me-2"></i>Accessibility Features
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        {% for acc in tour_accessibilities %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>{{ acc.accessibility.accessibility_feature }}</span>
+                                            {% if acc.extra_cost_per_acc > 0 %}
+                                                <span class="badge bg-info text-dark rounded-pill">+ ₹{{ acc.extra_cost_per_acc }}</span>
+                                            {% else %}
+                                                <span class="badge bg-success rounded-pill">Included</span>
+                                            {% endif %}
+                                        </li>
+                                        {% empty %}
+                                        <li class="list-group-item text-muted text-center py-3">
+                                            No accessibility info listed.
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tour Images Gallery -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white p-4 border-bottom">
+                        <h5 class="fw-bold m-0"><i class="fas fa-images me-2 text-primary"></i>Tour App Gallery</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if tour_images %}
+                        <div class="row g-3">
+                            {% for img in tour_images %}
+                            <div class="col-md-3 col-sm-6">
+                                <div class="gallery-item position-relative overflow-hidden rounded-3 shadow-sm" style="height: 200px;">
+                                    <img src="{{ img.image.url }}" class="w-100 h-100 object-fit-cover" alt="Tour Image" 
+                                         style="transition: transform 0.3s ease; cursor: pointer;"
+                                         onmouseover="this.style.transform='scale(1.05)'" 
+                                         onmouseout="this.style.transform='scale(1)'">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5 bg-light rounded-3">
+                            <i class="fas fa-image fa-3x text-muted mb-3 opacity-25"></i>
+                            <p class="text-muted">No images uploaded for this tour package.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'adminT/footer.html' %}

@@ -37,6 +37,9 @@ urlpatterns = [
     path('traveller-block/<int:id>/', views.travellerBlock, name='travellerBlock'),
     path('traveller-unblock/<int:id>/', views.travellerUnblock, name='travellerUnblock'),
     path('bookings-view/', views.bookingsView, name='bookingsView'),
+    path('tour-packages-view/', views.tourPackagesView, name='tourPackagesView'),
+    path('tour-package-single/<int:id>/', views.tourPackageSingle, name='tourPackageSingle'),
     path('reports/', views.admin_datewise_report, name='admin_datewise_report'),
+
     path('reports/export/', views.admin_bookings_export, name='admin_bookings_export'),
 ]

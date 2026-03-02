@@ -7,7 +7,7 @@ from datetime import datetime
 from django.utils import timezone
 from .models import *
 from django.db.models import Count, Sum
-from operatorApp.models import Operator
+from operatorApp.models import Operator, Tour, TourImages, TourAccessibility
 from guestApp.models import login, TravellerProfile
 from userApp.models import Booking
 from email.message import EmailMessage
@@ -439,6 +439,25 @@ def admin_bookings_export(request):
         ])
         
     return response
+
+def tourPackagesView(request):
+    if 'login_id' not in request.session:
+        return redirect('/login/')
+    tour_packages = Tour.objects.all().select_related('operator', 'location')
+    return render(request, 'adminT/packages_view.html', {'tour_packages': tour_packages})
+
+def tourPackageSingle(request, id):
+    if 'login_id' not in request.session:
+        return redirect('/login/')
+    tour_package = Tour.objects.get(tour_id=id)
+    tour_images = TourImages.objects.filter(tour=tour_package)
+    tour_accessibilities = TourAccessibility.objects.filter(tour=tour_package).select_related('accessibility')
+    return render(request, 'adminT/package_single.html', {
+        'tour_package': tour_package,
+        'tour_images': tour_images,
+        'tour_accessibilities': tour_accessibilities
+    })
+
 
 
 

@@ -1,0 +1,138 @@
+{% load static %}
+{% include 'adminT/header.html' %}
+
+<div class="packages-view-wrapper">
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="page-title">Tour Packages Management</h1>
+                    <div class="stats-badge">
+                        <span class="badge bg-primary">Total: {{ tour_packages|length }}</span>
+                    </div>
+                </div>
+
+                <div class="card custom-card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 custom-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th>Tour Name</th>
+                                        <th>Operator</th>
+                                        <th>Location</th>
+                                        <th>Price & Duration</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if tour_packages %}
+                                        {% for tour in tour_packages %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="avatar-circle bg-info text-white" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                        {{ tour.tour_name|first|upper }}
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold text-dark">{{ tour.tour_name }}</h6>
+                                                        <small class="text-muted">ID: #TOUR{{ tour.tour_id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <a href="{% url 'operatorProfile' tour.operator.operator_id %}" class="fw-medium text-decoration-none">{{ tour.operator.operator_name }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <span class="d-block fw-medium">{{ tour.location.name }}</span>
+                                                    <small class="text-muted">{{ tour.location.district.name }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <span class="d-block fw-bold text-success">₹{{ tour.price }}</span>
+                                                    <small class="text-muted">{{ tour.duration_days }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if tour.status == 'available' %}
+                                                    <span class="badge bg-success rounded-pill px-3">Available</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary rounded-pill px-3">{{ tour.status|title }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="action-buttons">
+                                                    <a href="{% url 'tourPackageSingle' tour.tour_id %}" class="btn btn-sm btn-primary action-btn text-white" title="View Details">
+                                                        <i class="fas fa-eye me-1"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-5">
+                                                <div class="empty-state">
+                                                    <i class="fas fa-suitcase-rolling empty-icon mb-3" style="font-size: 48px; color: #ccc;"></i>
+                                                    <h5>No tour packages found</h5>
+                                                    <p class="text-muted">Currently there are no tour packages listed.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .table-header th {
+        font-weight: 600;
+        color: #495057;
+        padding: 1rem;
+        border: none;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .custom-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .custom-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-1px);
+    }
+
+    .custom-table td {
+        vertical-align: middle;
+        padding: 1rem;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+    }
+</style>
+
+{% include 'adminT/footer.html' %}
