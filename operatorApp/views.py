@@ -705,3 +705,16 @@ def bookings_export(request):
     except Operator.DoesNotExist:
         return redirect('/login/')
 
+def delete_operator_account(request):
+    login_id = request.session.get('login_id')
+    try:
+        if not login_id:
+            return redirect('login')
+        
+        user_login = login.objects.get(login_id=login_id)
+        user_login.delete()
+        request.session.flush()
+        return HttpResponse("<script>alert('Your account has been deleted successfully.'); window.location.href='/';</script>")
+    except Exception as e:
+        return HttpResponse(f"<script>alert('Error: {str(e)}'); window.history.back();</script>")
+

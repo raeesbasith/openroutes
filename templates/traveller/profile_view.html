@@ -244,6 +244,7 @@
                     <div class="action-btn-group">
                         <a href="{% url 'edit_profile' %}" class="btn btn-profile-primary"><i class="fas fa-edit me-2"></i> Edit Profile</a>
                         <a href="{% url 'change_password' %}" class="btn btn-profile-primary" style="background-color: #23a6d5;"><i class="fas fa-key me-2"></i> Change Password</a>
+                        <a href="{% url 'delete_traveller_account' %}" class="btn btn-profile-primary" style="background-color: #dc3545;" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');"><i class="fas fa-trash-alt me-2"></i> Delete Account</a>
                         <a href="{% url 'traveller_home' %}" class="btn btn-profile-secondary"><i class="fas fa-arrow-left me-2"></i><i class="fas fa-home"></i> Back to Home</a>
                     </div>
                 </div>

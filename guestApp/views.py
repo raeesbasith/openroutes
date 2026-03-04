@@ -53,16 +53,6 @@ def traveller_regn(request):
         password = request.POST.get('password')
         name = request.POST.get('name')
         email = request.POST.get('email')
-        Email=request.POST.get('email')  # to address
-        msg = EmailMessage()
-        msg.set_content('Body')
-        msg['Subject'] = "Registration Completed"
-        msg['from'] = 'raeesbasith15@gmail.com'
-        msg['To'] = {Email}
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login('raeesbasith15@gmail.com','qfac dtcm rsbb pwyg')
-            smtp.send_message(msg)
-
         phone = request.POST.get('phone')
         address = request.POST.get('address')
         district_id = request.POST.get('districtid')
@@ -72,26 +62,61 @@ def traveller_regn(request):
         if login.objects.filter(username=username).exists():
             return HttpResponse('<script>alert("Username already exists! Please choose a different username."); window.location.href="/traveller-register/";</script>')
         
-        lob = login()
-        lob.username = username
-        lob.password = password
-        lob.role = 'traveller'
-        lob.status = 'active'
-        lob.save()
+        if TravellerProfile.objects.filter(email=email).exists():
+             return HttpResponse('<script>alert("Email already registered! Please use a different email."); window.location.href="/traveller-register/";</script>')
 
-        district = District.objects.get(district_id=district_id)
-        tob = TravellerProfile()
-        tob.traveller_name = name
-        tob.email = email
-        tob.phone = phone
-        tob.address = address
-        tob.district = district
-        tob.pincode = pincode
-        tob.city = city
-        tob.login = lob
-        tob.save()
+        try:
+            lob = login()
+            lob.username = username
+            lob.password = password
+            lob.role = 'traveller'
+            lob.status = 'active'
+            lob.save()
 
-        return HttpResponse('<script>alert("Registration successful! Please login to continue."); window.location.href="/login/";</script>')
+            district = District.objects.get(district_id=district_id)
+            tob = TravellerProfile()
+            tob.traveller_name = name
+            tob.email = email
+            tob.phone = phone
+            tob.address = address
+            tob.district = district
+            tob.pincode = pincode
+            tob.city = city
+            tob.login = lob
+            tob.save()
+
+            # Send Welcome Email
+            try:
+                msg = EmailMessage()
+                msg.set_content(f"""
+Hello {name},
+
+Welcome to OpenRoutes!
+
+Your traveller account has been successfully created. You can now log in and explore our accessible tour packages.
+
+Username: {username}
+
+Happy Travels!
+The OpenRoutes Team
+""")
+                msg['Subject'] = "Welcome to OpenRoutes - Registration Successful"
+                msg['From'] = 'raeesbasith15@gmail.com'
+                msg['To'] = email
+                
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('raeesbasith15@gmail.com', 'qfac dtcm rsbb pwyg')
+                    smtp.send_message(msg)
+                    print(f"Welcome email sent to {email}")
+            except Exception as e:
+                print(f"Error sending welcome email: {e}")
+                # Don't fail registration if email fails, just log it
+
+            return HttpResponse('<script>alert("Registration successful! Please login to continue."); window.location.href="/login/";</script>')
+            
+        except Exception as e:
+            return HttpResponse(f'<script>alert("Error during registration: {str(e)}"); window.history.back();</script>')
+    
     districts = District.objects.all()
     return render(request, 'guest/traveller_regn.html', {'districts': districts})
 

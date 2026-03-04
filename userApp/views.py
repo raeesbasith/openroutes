@@ -7,9 +7,7 @@ from operatorApp.models import Tour, TourAccessibility, TourImages
 from userApp.models import *
 from guestApp.models import *
 import uuid
-from django.db.models import Case, When, Value, IntegerField
-
-from django.db.models import Avg
+from django.db.models import Case, When, Value, IntegerField, Count, Avg
 from datetime import datetime
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -24,21 +22,30 @@ def traveller_home(request):
         login_id = request.session['login_id']
         traveller = get_object_or_404(TravellerProfile, login_id=login_id)
         
-        # Base Query: Available tours in the traveller's district
-        recommended_tours = Tour.objects.filter(status='available', location__district=traveller.district)
+        # Base Query: Available tours (not limited to only traveller's district anymore)
+        recommended_tours = Tour.objects.filter(status='available')
         
-        # Filter by Traveller's Accessibility Needs
+        # Filter by Traveller's Accessibility Needs (Must match at least one)
         needed_access_ids = list(TravellerAccessibility.objects.filter(traveller=traveller).values_list('accessibility_id', flat=True))
         
         if needed_access_ids:
             # Filter for tours that have AT LEAST ONE of the needed accessibilities
             # We use filter(field__in=list) for OR matching logic
             recommended_tours = recommended_tours.filter(touraccessibility__accessibility_id__in=needed_access_ids).distinct()
-            
-        # Annotate with average rating and order by rating (descending)
+        
+        # Annotate and Sort:
+        # 1. District Priority: Same district first
+        # 2. Review Count: More reviews first (Descending)
+        # 3. Average Rating: Higher rating first (Descending)
         recommended_tours = recommended_tours.annotate(
+            district_priority=Case(
+                When(location__district=traveller.district, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            review_count=Count('review', distinct=True),
             avg_rating=Avg('review__rating')
-        ).order_by('-avg_rating')[:6] # Top 6 recommendations
+        ).order_by('-district_priority', '-review_count', '-avg_rating')[:6] # Top 6 recommendations
         
         context = {
             'recommended_tours': recommended_tours
@@ -505,3 +512,16 @@ def my_bookings(request):
          return HttpResponse("<script>alert('Profile not found.'); window.location.href='/login/';</script>")
          
     return render(request, 'traveller/bookings_view.html', {'bookings': bookings})
+
+def delete_traveller_account(request):
+    if not request.session.get('login_id'):
+        return redirect('login')
+    
+    login_id = request.session['login_id']
+    try:
+        user_login = login.objects.get(login_id=login_id)
+        user_login.delete()
+        request.session.flush()
+        return HttpResponse("<script>alert('Your account has been deleted successfully.'); window.location.href='/';</script>")
+    except Exception as e:
+        return HttpResponse(f"<script>alert('Error: {str(e)}'); window.history.back();</script>")

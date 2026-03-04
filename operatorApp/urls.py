@@ -20,4 +20,5 @@ urlpatterns = [
     path('operator-home/profile/change-password/', views.change_password, name='change_password_operator'),
     path('operator-home/reports/', views.datewise_report, name='datewise_report'),
     path('operator-home/reports/export/', views.bookings_export, name='bookings_export'),
+    path('delete-account/', views.delete_operator_account, name='delete_operator_account'),
 ]

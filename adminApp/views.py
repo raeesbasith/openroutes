@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 from django.utils import timezone
 from .models import *
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, ProtectedError
 from operatorApp.models import Operator, Tour, TourImages, TourAccessibility
 from guestApp.models import login, TravellerProfile
 from userApp.models import Booking
@@ -105,9 +105,14 @@ def distView(request):
     return render(request, 'adminT/districtView.html', {'districts':districts})
 
 def distDelete(request, id):
-    district = District.objects.get(district_id=id)
-    district.delete()
-    return HttpResponse("<script>alert('District deleted successfully!!!');window.location.href ='/distView/';</script>")
+    try:
+        district = District.objects.get(district_id=id)
+        district.delete()
+        return HttpResponse("<script>alert('District deleted successfully!!!');window.location.href ='/distView/';</script>")
+    except District.DoesNotExist:
+        return HttpResponse("<script>alert('District does not exist!');window.location.href ='/distView/';</script>")
+    except ProtectedError:
+        return HttpResponse("<script>alert('Cannot delete this district as it is being used in other records!');window.location.href ='/distView/';</script>")
 
 def distEdit(request,id):
     if request.method=='POST':
@@ -142,9 +147,14 @@ def locationView(request):
     return render(request, 'adminT/locationView.html', {'districts': districts, 'locationdata': locations})
 
 def locationDelete(request, id):
-    location = Location.objects.get(location_id=id)
-    location.delete()
-    return HttpResponse("<script>alert('Location deleted successfully!!!');window.location.href ='/locationView/';</script>")
+    try:
+        location = Location.objects.get(location_id=id)
+        location.delete()
+        return HttpResponse("<script>alert('Location deleted successfully!!!');window.location.href ='/locationView/';</script>")
+    except Location.DoesNotExist:
+        return HttpResponse("<script>alert('Location not found!');window.location.href ='/locationView/';</script>")
+    except ProtectedError:
+        return HttpResponse("<script>alert('Cannot delete this location as it is being used in other records!');window.location.href ='/locationView/';</script>")
 
 def locationEdit(request,id):
     if request.method == 'POST':

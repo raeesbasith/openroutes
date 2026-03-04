@@ -20,4 +20,5 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change_password'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
+    path('delete-account/', views.delete_traveller_account, name='delete_traveller_account'),
 ]

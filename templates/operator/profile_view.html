@@ -188,9 +188,12 @@
         
         <!-- Header: Avatar & Main Info -->
         <div class="profile-header-content">
-             <div class="profile-actions">
+             <div class="profile-actions" style="display: flex; gap: 10px;">
                 <a href="{% url 'profile_edit' %}" class="btn btn-primary" style="background-color: var(--primary); border: none;">
                     <i class="bi bi-pencil-square"></i> Edit Profile
+                </a>
+                <a href="{% url 'delete_operator_account' %}" class="btn btn-danger" style="background-color: var(--accent); border: none;" onclick="return confirm('Are you sure you want to delete your account? This will permanently delete your profile, tours, and bookings. This action cannot be undone.');">
+                    <i class="bi bi-trash"></i> Delete Account
                 </a>
             </div>
         </div>
